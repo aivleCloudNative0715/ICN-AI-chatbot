@@ -1,39 +1,20 @@
 /* src/app/globals.css */
-
-/* Tailwind CSS directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* PrimeReact theme imports */
-/* 여기서 'lara-light-blue'는 예시 테마입니다. 필요에 따라 변경하세요. */
-@import "primereact/resources/themes/lara-light-blue/theme.css";
-@import "primereact/resources/primereact.min.css";
-@import "primeicons/primeicons.css";
+/* PrimeReact CSS */
+@import 'primereact/resources/themes/lara-light-indigo/theme.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primeicons/primeicons.css';
 
-/* 기존에 있던 사용자 정의 CSS 변수 및 스타일 */
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans); /* If you use Next.js's default font system like @next/font/google */
-  --font-mono: var(--font-geist-mono); /* If you use Next.js's default font system like @next/font/google */
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  /* Next.js Font 사용 시: font-family: var(--font-sans); */
 }
