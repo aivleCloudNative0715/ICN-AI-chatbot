@@ -18,3 +18,32 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 툴팁 본문 스타일 조정 (배경색, 텍스트 색상, 크기) */
+.p-tooltip .p-tooltip-text {
+  background-color: #ffffff !important; /* 이미지에 보이는 흰색 배경 */
+  color: #4A5568 !important; /* 이미지에 보이는 진한 회색 텍스트 */
+  padding: 0.2rem 0.4rem !important; /* 패딩을 더 줄여서 크기 더 작게 */
+  border-radius: 0.25rem !important; /* 모서리 둥글기 */
+  font-size: 0.7rem !important; /* 폰트 크기 더 작게 (text-xs보다 작음) */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important; /* 그림자 조절 */
+  white-space: nowrap !important; /* 텍스트가 한 줄로 유지되도록 */
+  border: 1px solid #e0e0e0 !important; /* 툴팁 테두리 추가 (이미지상으로 연한 테두리가 보임) */
+}
+
+/* 툴팁 화살표(말꼬리) 스타일 조정 */
+.p-tooltip.p-tooltip-bottom .p-tooltip-arrow {
+  border-bottom-color: #ffffff !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+  border-top-color: transparent !important;
+  
+  top: -4px !important;
+  
+  /* 화살표 크기 조정 (선택 사항) */
+  width: 0.7rem !important;
+  height: 0.7rem !important;
+  
+  /* 화살표 그림자 추가 (선택 사항, 이미지상으로 그림자가 보임) */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+}
