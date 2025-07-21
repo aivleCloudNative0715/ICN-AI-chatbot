@@ -5,7 +5,7 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import Header from '@/components/common/Header';
 import AuthModal from '@/components/auth/AuthModal';
-import ChatSidebar from '@/components/chat/ChatSidebar'; // ChatSidebar 임포트
+import ChatSidebar from '@/components/chat/ChatSidebar'; // ChatSidebar 임포트 [cite: 4]
 import { useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -17,9 +17,13 @@ export default function RootLayout({
 }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 사이드바 상태를 layout으로 이동
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 사이드바 상태를 layout으로 이동 [cite: 4]
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login'); // authMode 상태 추가
 
-  const openAuthModal = () => setIsAuthModalOpen(true);
+  const openAuthModal = (mode: 'login' | 'register' = 'login') => { // mode를 인수로 받도록 수정
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
+  };
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
     // 실제 로그인/회원가입 성공 시 isLoggedIn 상태 업데이트 로직은
@@ -39,9 +43,9 @@ export default function RootLayout({
     <html lang="ko">
       <body className={`${inter.className} h-screen flex flex-col bg-blue-50`}>
         <Header
-          onLoginClick={openAuthModal}
-          onRegisterClick={openAuthModal}
-          onMenuClick={toggleSidebar} // Header에 사이드바 토글 함수 전달
+          onLoginClick={() => openAuthModal('login')} // 'login' 모드 전달
+          onRegisterClick={() => openAuthModal('register')} // 'register' 모드 전달
+          onMenuClick={toggleSidebar} // Header에 사이드바 토글 함수 전달 
           isLoggedIn={isLoggedIn}
           onLogoutClick={handleLogout}
         />
@@ -52,7 +56,7 @@ export default function RootLayout({
 
         {/* 사이드바 (조건부 렌더링) */}
         {isSidebarOpen && (
-          <ChatSidebar isLoggedIn={isLoggedIn} onClose={toggleSidebar} /> // 사이드바 닫기 함수 전달
+          <ChatSidebar isLoggedIn={isLoggedIn} onClose={toggleSidebar} /> // 사이드바 닫기 함수 전달 [cite: 6]
         )}
 
         {/* 인증 모달 */}
@@ -64,6 +68,7 @@ export default function RootLayout({
               // 실제로는 로그인 성공 API 응답에서 isLoggedIn을 true로 설정해야 함
               setIsLoggedIn(true); // 로그인/회원가입 성공 시 이 곳에서 상태 업데이트
             }}
+            initialMode={authMode} // AuthModal에 초기 모드 전달
           />
         )}
       </body>

@@ -18,9 +18,6 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
       header={
         <div className="flex items-center justify-between w-full">
           <span className="text-xl font-bold">{title}</span>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 focus:outline-none">
-            <XMarkIcon className="h-6 w-6 text-gray-700" />
-          </button>
         </div>
       }
       visible={isOpen}
