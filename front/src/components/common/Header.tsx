@@ -66,7 +66,7 @@ export default function Header({
             <Button
               label="로그인"
               className="
-                bg-secondary-light text-primary border-2 border-primary rounded-md px-3 py-1.5 text-sm
+                bg-secondary-light text-primary border border-primary rounded-md px-3 py-1.5 text-sm
                 hover:bg-primary hover:text-neutral-white hover:border-primary
                 focus:ring-2 focus:ring-primary focus:ring-offset-2
               "

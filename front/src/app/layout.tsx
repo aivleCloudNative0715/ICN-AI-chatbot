@@ -37,7 +37,7 @@ export default function RootLayout({
 
   return (
     <html lang="ko">
-      <body className={`${inter.className} min-h-screen flex flex-col bg-blue-50`}>
+      <body className={`${inter.className} h-screen flex flex-col bg-blue-50`}>
         <Header
           onLoginClick={openAuthModal}
           onRegisterClick={openAuthModal}
