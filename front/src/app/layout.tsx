@@ -5,8 +5,8 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import Header from '@/components/common/Header';
 import AuthModal from '@/components/auth/AuthModal';
-import ChatSidebar from '@/components/chat/ChatSidebar'; // ChatSidebar 임포트 [cite: 4]
-import { useState } from 'react';
+import ChatSidebar from '@/components/chat/ChatSidebar';
+import { useState, useEffect } from 'react'; // useEffect 추가
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,59 +16,80 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 사이드바 상태를 layout으로 이동 [cite: 4]
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login'); // authMode 상태 추가
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
-  const openAuthModal = (mode: 'login' | 'register' = 'login') => { // mode를 인수로 받도록 수정
+  // 실제 앱에서는 JWT 토큰 유효성 검사 등으로 초기 로그인 상태를 설정합니다.
+  useEffect(() => {
+    // 예시: localStorage에서 토큰 확인
+    const token = localStorage.getItem('jwt_token');
+    if (token) {
+      // TODO: 토큰 유효성 검사 API 호출
+      // 유효하다면 setIsLoggedIn(true)
+      setIsLoggedIn(true); // 임시로 토큰이 있으면 로그인 상태로 간주
+    }
+  }, []);
+
+
+  const openAuthModal = (mode: 'login' | 'register' = 'login') => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
+  
   const closeAuthModal = () => {
     setIsAuthModalOpen(false);
-    // 실제 로그인/회원가입 성공 시 isLoggedIn 상태 업데이트 로직은
-    // AuthModal 내부에서 처리하는 것이 더 적합할 수 있습니다.
-    // 여기서는 단순히 모달을 닫는 역할만.
   };
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true); // 로그인 성공 시 상태 업데이트
+    closeAuthModal(); // 모달 닫기
+  }
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  // 임시 로그아웃 핸들러
   const handleLogout = () => {
+    // TODO: 실제 API 호출 및 토큰 삭제 로직 (API-08-20030)
+    localStorage.removeItem('jwt_token'); // 예시: 로컬 스토리지에서 토큰 삭제
     setIsLoggedIn(false);
     alert('로그아웃되었습니다.');
-    // TODO: 실제 API 호출 및 토큰 삭제 로직 추가 (API-08-20030)
+    // 현재 페이지가 게시판이면 메인으로 리다이렉트하는 로직 추가 가능
+    // useRouter().push('/');
   };
 
   return (
     <html lang="ko">
       <body className={`${inter.className} h-screen flex flex-col bg-blue-50`}>
         <Header
-          onLoginClick={() => openAuthModal('login')} // 'login' 모드 전달
-          onRegisterClick={() => openAuthModal('register')} // 'register' 모드 전달
-          onMenuClick={toggleSidebar} // Header에 사이드바 토글 함수 전달 
+          onLoginClick={() => openAuthModal('login')}
+          onRegisterClick={() => openAuthModal('register')}
+          onMenuClick={toggleSidebar}
           isLoggedIn={isLoggedIn}
           onLogoutClick={handleLogout}
         />
 
-        <main className="flex-grow flex items-center justify-center pt-16 bg-blue-50">
+        {/* layout.tsx의 main은 이제 children이 BoardLayout을 포함할 수 있도록 변경 */}
+        {/* BoardLayout 내부에서 자체적인 flex-grow와 배경색을 가질 것이므로, 여기서는 기본 구성만 */}
+        <div className="flex-grow flex"> {/* flex-grow와 flex를 유지하여 자식 요소가 공간을 차지하도록 */}
           {children}
-        </main>
+        </div>
 
         {/* 사이드바 (조건부 렌더링) */}
         {isSidebarOpen && (
-          <ChatSidebar isLoggedIn={isLoggedIn} onClose={toggleSidebar} /> // 사이드바 닫기 함수 전달 [cite: 6]
+          <ChatSidebar isLoggedIn={isLoggedIn} onClose={toggleSidebar} />
         )}
 
         {/* 인증 모달 */}
         {isAuthModalOpen && (
           <AuthModal
+            // onClose={closeAuthModal}
             onClose={() => {
               closeAuthModal();
-              // 모달 닫힐 때 로그인 상태 강제 변경 (테스트용)
-              // 실제로는 로그인 성공 API 응답에서 isLoggedIn을 true로 설정해야 함
-              setIsLoggedIn(true); // 로그인/회원가입 성공 시 이 곳에서 상태 업데이트
+              setIsLoggedIn(true)
             }}
-            initialMode={authMode} // AuthModal에 초기 모드 전달
+            initialMode={authMode}
+            // AuthModal 내부에 onLoginSuccess, onRegisterSuccess prop을 전달하여 isLoggedIn 업데이트
+            // AuthModal 내에서 LoginForm/RegisterForm의 onLoginSuccess, onRegisterSuccess를 호출
           />
         )}
       </body>

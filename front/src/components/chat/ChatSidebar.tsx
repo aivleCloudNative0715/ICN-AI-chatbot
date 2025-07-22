@@ -6,6 +6,7 @@ import { Button } from 'primereact/button';
 import { ArrowPathIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { DocumentTextIcon } from '@heroicons/react/24/solid';
 import { Tooltip } from 'primereact/tooltip';
+import { useRouter } from 'next/navigation';// useRouter 임포트 
 
 interface ChatSidebarProps {
   isLoggedIn: boolean;
@@ -13,6 +14,7 @@ interface ChatSidebarProps {
 }
 
 export default function ChatSidebar({ isLoggedIn, onClose }: ChatSidebarProps) {
+  const router = useRouter();// useRouter 훅 초기화 
   // const boardLinkRef = useRef<HTMLDivElement>(null); // 이제 직접적인 ref 대신 ID를 사용할 것임
 
   // 대화 기록 초기화 핸들러 (API-09-25033)
@@ -32,13 +34,15 @@ export default function ChatSidebar({ isLoggedIn, onClose }: ChatSidebarProps) {
   // 툴팁 대상이 될 요소의 고유 ID를 정의
   const boardLinkId = "board-link-id";
 
-  // useEffect를 사용하여 툴팁이 마운트될 때 target이 존재하는지 확인할 수도 있지만,
-  // Tooltip target에 ID를 직접 넘기는 방식이 일반적으로 더 안정적입니다.
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     console.log('Tooltip target element:', document.getElementById(boardLinkId));
-  //   }
-  // }, [isLoggedIn]);
+  // 게시판으로 이동 핸들러
+  const handleNavigateToBoard = () => {
+   if (isLoggedIn) { // 로그인 상태일 때만 이동 
+      router.push('/board');// /board 경로로 이동 
+      if (onClose) {
+        onClose(); // 사이드바 닫기 (선택 사항)
+      }
+    }
+  };
 
   return (
     <div className="fixed top-0 left-0 h-full w- bg-blue-100 shadow-lg p-4 flex flex-col justify-between z-20 transition-transform duration-300 ease-in-out transform translate-x-0">
@@ -75,7 +79,8 @@ export default function ChatSidebar({ isLoggedIn, onClose }: ChatSidebarProps) {
           className={`flex items-center py-2 px-3 rounded-md transition-colors duration-200 ${
             isLoggedIn ? 'hover:bg-blue-200 cursor-pointer' : 'opacity-50 cursor-not-allowed'
           }`}
-          onClick={isLoggedIn ? () => alert('게시판 페이지로 이동!') : undefined}
+          // alert 대신 게시판 이동 함수 호출
+          onClick={handleNavigateToBoard}
         >
           <DocumentTextIcon className="h-6 w-6 mr-2 text-gray-700" />
           <span className="font-medium text-gray-700">문의/건의 페이지로 이동하기</span>
