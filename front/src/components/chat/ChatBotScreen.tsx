@@ -1,10 +1,11 @@
 // src/components/chat/ChatBotScreen.tsx
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import SearchInput from '@/components/common/SearchInput';
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'; // 화살표 아이콘
+import ChatBubble from '@/components/chat/ChatBubble'; // ChatBubble 컴포넌트 임포트
 
 interface ChatBotScreenProps {
   isLoggedIn: boolean; // 로그인 상태 prop
@@ -17,23 +18,60 @@ export default function ChatBotScreen({
   onLoginStatusChange,
   onSidebarToggle,
 }: ChatBotScreenProps) {
-  // TODO: 실제 채팅 메시지 목록 상태 관리 (나중에 구현)
-  const chatMessages: any[] = []; // 현재는 빈 배열로 초기화
+  // 채팅 메시지 목록 상태 관리
+  const [chatMessages, setChatMessages] = useState<
+    { id: number; sender: 'user' | 'bot'; content: string; type?: string }[]
+  >([]);
+  const [messageInputValue, setMessageInputValue] = useState(''); // 메시지 입력 필드 상태
+  const [flightNumberInputValue, setFlightNumberInputValue] = useState(''); // 편명 입력 필드 상태
+
+  const handleSendMessage = (message: string, type?: string) => {
+    if (message.trim()) {
+      const newUserMessage = {
+        id: chatMessages.length + 1,
+        sender: 'user' as const,
+        content: message.trim(),
+        type: type,
+      };
+      setChatMessages((prevMessages) => [...prevMessages, newUserMessage]);
+      setMessageInputValue(''); // 메시지 입력 필드 초기화
+      setFlightNumberInputValue(''); // 편명 입력 필드도 초기화 (선택 사항, 필요에 따라 유지 가능)
+
+      // TODO: 여기에 챗봇 API 호출 로직 추가 (API-09-25031)
+      // 챗봇 답변을 시뮬레이션
+      setTimeout(() => {
+        const botResponse = {
+          id: chatMessages.length + 2,
+          sender: 'bot' as const,
+          content: `"${message}"에 대한 챗봇의 답변입니다.`,
+        };
+        setChatMessages((prevMessages) => [...prevMessages, botResponse]);
+      }, 500);
+    }
+  };
+
+  const handleMessageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessageInputValue(e.target.value);
+  };
+
+  const handleMessageInputSend = () => {
+    handleSendMessage(messageInputValue);
+  };
+
+  const handleFlightNumberInputSend = () => {
+    handleSendMessage(flightNumberInputValue, 'flightNumber'); // 편명 입력 메시지 전송
+  };
 
   // 하단 SearchInput의 높이를 고려하여 padding-bottom을 설정 (예시: 80px 또는 p-20)
-  // 실제 SearchInput의 높이에 따라 조절이 필요합니다.
-  const paddingBottomClass = "pb-20"; // 대략적인 SearchInput 높이에 맞춰 여유 공간 확보
+  const paddingBottomClass = 'pb-20'; // 대략적인 SearchInput 높이에 맞춰 여유 공간 확보
 
   return (
-    // 전체 컨테이너를 relative로 설정하여 하단 absolute 요소의 기준점 제공
-    // items-center 제거: 하단 텍스트박스가 중앙으로 오지 않도록 (width=full 이므로 영향 적음)
     <div className={`relative flex flex-col flex-1 h-full bg-blue-50 ${paddingBottomClass}`}>
       {/* 챗봇 아이콘 및 인사말 (채팅 기록이 없을 때만 표시)*/}
       {chatMessages.length === 0 && (
-        // flex-grow 제거: 이 섹션이 모든 공간을 차지하지 않도록 하여 하단 요소가 밀리지 않게 함
-        <div className="flex flex-col items-center justify-center w-full flex-grow"> {/* flex-grow 유지하여 가운데 정렬 유지 */}
+        <div className="flex flex-col items-center justify-center w-full flex-grow">
           <Image
-            src="/airplane-icon.png" // UI/UX 문서의 로고와 동일한 이미지를 사용하려면 public/images/airport_logo.png 경로가 더 적합할 수 있습니다.
+            src="/airplane-icon.png"
             alt="Airplane Icon"
             width={150}
             height={150}
@@ -45,8 +83,7 @@ export default function ChatBotScreen({
           <p className="text-gray-600 mb-8 text-center">
             편명 입력 시 더 자세한 답변이 가능합니다.
           </p>
-
-          {/* 편명 입력 텍스트 박스*/}
+          {/* 편명 입력 텍스트 박스 - SearchInput을 사용하지 않고 직접 구현 */}
           <div className="relative flex items-center justify-center w-full max-w-sm px-4 py-3 border-b-2 border-gray-300 text-gray-700 placeholder-gray-400 focus-within:border-blue-500 transition-all duration-300">
             <span className="mr-2 text-gray-500">
               <PaperAirplaneIcon className="h-6 w-6" />
@@ -55,15 +92,39 @@ export default function ChatBotScreen({
               type="text"
               placeholder="편명 입력"
               className="flex-grow bg-transparent outline-none text-center"
+              value={flightNumberInputValue} // 별도의 상태 변수 사용
+              onChange={(e) => setFlightNumberInputValue(e.target.value)} // 별도의 핸들러
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleFlightNumberInputSend(); // 엔터 시 편명으로 전송
+                }
+              }}
             />
           </div>
         </div>
       )}
 
+      {/* 채팅 메시지 표시 영역 */}
+      {chatMessages.length > 0 && (
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {chatMessages.map((message) => (
+            <ChatBubble
+              key={message.id}
+              message={message.content}
+              isUser={message.sender === 'user'}
+            />
+          ))}
+        </div>
+      )}
+
       {/* 하단 텍스트 박스 (SearchInput 재사용) */}
-      {/* absolute 포지셔닝을 사용하여 화면 하단에 고정 */}
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-blue-50 shadow-md">
-        <SearchInput placeholder="무엇이든 물어보세요!" />
+        <SearchInput
+          placeholder="무엇이든 물어보세요!"
+          value={messageInputValue} // 메시지 입력 필드 상태 사용
+          onChange={handleMessageInputChange} // 메시지 입력 핸들러
+          onSend={handleMessageInputSend} // 메시지 전송 핸들러
+        />
       </div>
     </div>
   );
