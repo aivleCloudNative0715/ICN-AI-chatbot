@@ -10,9 +10,10 @@ import { Button } from 'primereact/button';
 interface AuthModalProps {
   onClose: () => void;
   initialMode?: 'login' | 'register';
+  onLoginSuccess?: () => void; // 추가: 로그인 성공 콜백
 }
 
-export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalProps) {
+export default function AuthModal({ onClose, initialMode = 'login', onLoginSuccess }: AuthModalProps) {
   const [isRegisterMode, setIsRegisterMode] = useState(initialMode === 'register');
 
   useEffect(() => {
@@ -24,9 +25,12 @@ export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalP
     setIsRegisterMode(false); // 로그인 폼으로 전환
   };
 
-  const handleLoginSuccess = () => {
-    alert('로그인 성공!');
-    onClose(); // 로그인 성공 시 모달 닫기
+  const handleLoginSuccessInternal = () => { // 이름을 handleLoginSuccessInternal로 변경하여 prop과 혼동 방지
+    // alert('로그인 성공!'); // 기존 alert는 제거하거나 onLoginSuccess 콜백 내에서 처리
+    if (onLoginSuccess) { // onLoginSuccess prop이 존재하면 호출
+      onLoginSuccess();
+    }
+    // onClose(); // 모달 닫기 로직은 onLoginSuccess 콜백 내에서 처리될 수 있음 (layout.tsx 참고)
   };
 
   const handleOpenLoginModalFromRegister = () => {
@@ -41,21 +45,17 @@ export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalP
           onOpenLoginModal={handleOpenLoginModalFromRegister}
         />
       ) : (
-        <LoginForm onLoginSuccess={handleLoginSuccess} />
+        <LoginForm onLoginSuccess={handleLoginSuccessInternal} />
       )}
 
       {/* "로그인으로 돌아가기" 섹션 */}
       {isRegisterMode && (
         <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end"> {/* 회색 줄과 오른쪽 정렬 */}
           <Button
-            // label prop 대신 children을 사용하여 텍스트 스타일을 유연하게 제어
-            // p-button-link 클래스는 PrimeReact의 기본 링크 스타일을 적용합니다.
-            // Tailwind 클래스로 폰트 크기, 색상, 정렬 등 조절
             className="p-button-link text-gray-500 text-xs" // p-button-link 유지, 폰트 크기 조정
             onClick={() => setIsRegisterMode(false)}
             pt={{
               root: {
-                // PrimeReact 버튼의 기본 패딩/여백을 제거하고 Tailwind로 제어
                 className: '!p-0'
               },
               label: {
@@ -74,7 +74,6 @@ export default function AuthModal({ onClose, initialMode = 'login' }: AuthModalP
           <span className="text-gray-600 text-xs">회원가입 후 더 편리하게 이용하실 수 있습니다.</span> {/* 폰트 크기 조정 */}
           <Button
             label="회원가입"
-            // 기존 className 제거하고 pt prop을 사용하여 스타일 적용
             onClick={() => setIsRegisterMode(true)}
             pt={{
               root: {
