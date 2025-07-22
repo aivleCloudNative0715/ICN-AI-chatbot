@@ -2,10 +2,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation'; // usePathname 임포트 추가
+import { useRouter, usePathname } from 'next/navigation';
 import BoardSidebar from '@/components/board/BoardSidebar';
 import FloatingActionButton from '@/components/common/FloatingActionButton';
 import BoardHeader from '@/components/board/BoardHeader';
+import { PostCategory, PostFilter } from '../../lib/types'; // Assuming you have this path correct
 
 interface BoardLayoutProps {
   children: React.ReactNode;
@@ -13,16 +14,22 @@ interface BoardLayoutProps {
 
 export default function BoardLayout({ children }: BoardLayoutProps) {
   const router = useRouter();
-  const pathname = usePathname(); // usePathname 훅 사용
+  const pathname = usePathname();
+
   // TODO: 실제 isLoggedIn 상태는 Context API 또는 전역 상태 관리 훅에서 가져와야 함
-  // 현재는 로그인이 되어있다고 가정함
   const [isLoggedIn, setIsLoggedIn] = useState(true); // 게시판 레이아웃에서도 로그인 상태 관리 필요
+
+  // State to manage the currently selected category and filter
+  const [currentCategory, setCurrentCategory] = useState<PostCategory>('inquiry');
+  const [currentFilter, setCurrentFilter] = useState<PostFilter>('all');
 
   useEffect(() => {
     const token = localStorage.getItem('jwt_token');
     if (token) {
       // TODO: 토큰 유효성 검사 API 호출
       setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false); // Set to false if no token
     }
   }, []);
 
@@ -47,7 +54,15 @@ export default function BoardLayout({ children }: BoardLayoutProps) {
     }
   };
 
-  const isNewPage = pathname === '/board/new'; // usePathname으로 가져온 pathname 사용
+  // Handler for when a category is selected in the sidebar
+  const handleCategorySelect = (category: PostCategory, filter: PostFilter) => {
+    setCurrentCategory(category);
+    setCurrentFilter(filter);
+  };
+
+  console.log(isLoggedIn)
+
+  const isNewPage = pathname === '/board/new';
 
   return (
     <div className="flex flex-col flex-1 h-screen overflow-hidden bg-board-primary">
@@ -57,19 +72,17 @@ export default function BoardLayout({ children }: BoardLayoutProps) {
         onLogout={handleLogout}
       />
 
-      <div className="flex flex-grow"> {/* 사이드바와 메인 콘텐츠를 위한 flex-grow */}
-        {/* 사이드바 */}
-        <BoardSidebar isLoggedIn={isLoggedIn} />
-
+      <div className="flex flex-grow">
         {/* 페이지 콘텐츠 */}
         <main className="flex-grow flex flex-col overflow-y-auto p-6">
           {children}
         </main>
 
-        {/* 새 문의/건의 추가 Floating Action Button */}
-        {!isNewPage && isLoggedIn && (
-          <FloatingActionButton onClick={handleNewInquiryClick} label="새 문의/건의" />
+        {!isNewPage && (
+          <FloatingActionButton onClick={handleNewInquiryClick} label="" />
         )}
+
+
       </div>
     </div>
   );

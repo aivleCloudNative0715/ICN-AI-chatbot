@@ -31,3 +31,17 @@ export interface InquiryListItem extends Inquiry {
   hasAnswer: boolean;
   answerContentPreview?: string; // 답변 내용 미리보기
 }
+
+export type PostCategory = 'inquiry' | 'suggestion';
+export type PostFilter = 'all' | 'my';
+
+export interface BroadPost {
+  post_id: string;
+  author_id: string;
+  title: string;
+  content: string;
+  created_at: string; // ISO string for timestamp
+  updated_at: string; // ISO string for timestamp
+  category: PostCategory;
+  is_deleted: boolean;
+}

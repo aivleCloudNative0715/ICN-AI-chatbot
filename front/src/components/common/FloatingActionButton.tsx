@@ -19,7 +19,7 @@ export default function FloatingActionButton({ onClick, label }: FloatingActionB
       onClick={onClick}
       pt={{
         root: {
-          className: 'w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white text-xl shadow-lg hover:bg-blue-700 transition-colors duration-200 !p-0'
+          className: 'w-14 h-14 bg-board-dark rounded-full flex items-center justify-center text-white text-xl shadow-lg hover:bg-blue-700 transition-colors duration-200 !p-0'
         },
         icon: {
           className: 'h-6 w-6 text-white'
