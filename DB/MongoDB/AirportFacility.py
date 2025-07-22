@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from key_manager import get_valid_api_key
 
 load_dotenv()  # .env 파일에서 환경변수 불러오기
 mongo_uri = os.getenv("MONGO_URI")
@@ -18,11 +19,21 @@ collection = db["AirportFacility"]
 
 def fetch_and_save_to_mongodb():
     url = 'http://apis.data.go.kr/B551177/FacilitiesInformation/getFacilitesInfo'
-    params ={'serviceKey' : '', 
+    params_base ={ 
             'numOfRows' : '10000', 
             'pageNo' : '1',
             'lang' : 'K', 
             'type' : 'json' }
+
+    # type='public' 키 요청
+    service_key = get_valid_api_key(url, params_base, key_type="public", auth_param_name="serviceKey")
+
+    if not service_key:
+        print("유효한 API 키를 찾지 못해 작업을 종료합니다.")
+        return
+
+    params = params_base.copy()
+    params['serviceKey'] = service_key
 
     current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{current_time_str}] API 요청 시작...")

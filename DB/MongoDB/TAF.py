@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from key_manager import get_valid_api_key
 
 load_dotenv()  # .env 파일에서 환경변수 불러오기
 mongo_uri = os.getenv("MONGO_URI")
@@ -17,16 +18,23 @@ db = client["AirBot"]
 collection = db["TAF"]
 
 def fetch_and_save_taf_data():
-
     url = 'https://apihub.kma.go.kr/api/typ02/openApi/AmmService/getTaf'
-    params = {
-        'authKey': '',  # 여기에 서비스키 삽입
+    params_base = {
         'pageNo': '1',
         'numOfRows': '30',
         'dataType': 'JSON',
         'icao': 'RKSI'
     }
 
+    # 🔹 type='public' 키 요청
+    authKey = get_valid_api_key(url, params_base, key_type="weather", auth_param_name="authKey")
+
+    if not authKey:
+        print("유효한 API 키를 찾지 못해 작업을 종료합니다.")
+        return
+
+    params = params_base.copy()
+    params['authKey'] = authKey
 
     current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{current_time_str}] TAF API 요청 시작...")
