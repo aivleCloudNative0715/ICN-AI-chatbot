@@ -12,18 +12,24 @@ interface BoardHeaderProps {
 
 export default function BoardHeader({ onGoToChat, onLogout }: BoardHeaderProps) {
   return (
-    <header className="flex justify-end p-4 bg-white border-b border-gray-200 shadow-sm">
+    <header className="flex justify-end gap-4 p-4 bg-board-primary">
       <Button
         label="채팅으로 돌아가기"
-        icon={<ChatBubbleLeftRightIcon className="h-5 w-5 mr-2" />}
-        className="p-button-text p-button-sm !text-gray-600 hover:!bg-gray-100"
+        className="
+          bg-board-primary text-baord-dark border-2 border-board-dark rounded-md px-3 py-1.5 text-sm
+          hover:bg-borad-dark hover:text-white hover:bg-board-dark
+          focus:ring-2 focus:ring-accent-yellow focus:ring-offset-2
+        "
         onClick={onGoToChat}
         pt={{ root: { className: '!min-w-fit !px-3 !py-1' } }}
       />
       <Button
         label="로그아웃"
-        icon={<ArrowLeftOnRectangleIcon className="h-5 w-5 mr-2" />}
-        className="p-button-text p-button-sm !text-gray-600 hover:!bg-gray-100 ml-4"
+        className="
+          bg-board-dark text-white border-2 border-board-dark rounded-md px-3 py-1.5 text-sm
+          hover:bg-board-primary hover:text-board-dark hover:border-board-dark hover:border-2
+          focus:ring-2 focus:ring-primary focus:ring-offset-2
+        "
         onClick={onLogout}
         pt={{ root: { className: '!min-w-fit !px-3 !py-1' } }}
       />

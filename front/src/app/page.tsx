@@ -50,7 +50,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative flex flex-col flex-1 w-full h-full"> {/* 전체 화면 차지 */}
+    <div className="flex flex-col flex-1 w-full h-full"> {/* 전체 화면 차지 */}
       {/* 챗봇용 헤더 */}
       <Header
         onLoginClick={() => openAuthModal('login')}

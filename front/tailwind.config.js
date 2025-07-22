@@ -19,6 +19,13 @@ module.exports = {
           dark: '#507098',    // 차분한 파랑/회색 (기존 507098)
         },
 
+        // 게시판 색상
+        'board': {
+          primary: '#DBF0F3',
+          light: '#C2E0E3',
+          dark: '#0C5D66'
+        },
+
         // 강조 노란색
         'accent-yellow': '#F2B705', // 강조 노란색
 

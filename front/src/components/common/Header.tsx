@@ -22,7 +22,7 @@ export default function Header({
   onLogoutClick,
 }: HeaderProps) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-secondary-light h-16">
+    <header className="flex top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-secondary-light h-16">
       <div className="flex items-center">
         <button
           onClick={onMenuClick}
@@ -39,7 +39,7 @@ export default function Header({
             label="로그아웃"
             className="
               bg-neutral-white text-primary border border-primary rounded-md px-3 py-1.5 text-sm
-              hover:bg-primary hover:text-neutral-white hover:border-primary /* 호버 시 반전 */
+              hover:bg-primary hover:text-neutral-white hover:border-primary
               focus:ring-2 focus:ring-primary focus:ring-offset-2
             "
             onClick={onLogoutClick}

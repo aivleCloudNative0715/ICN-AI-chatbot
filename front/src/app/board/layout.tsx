@@ -15,7 +15,8 @@ export default function BoardLayout({ children }: BoardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname(); // usePathname 훅 사용
   // TODO: 실제 isLoggedIn 상태는 Context API 또는 전역 상태 관리 훅에서 가져와야 함
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 게시판 레이아웃에서도 로그인 상태 관리 필요
+  // 현재는 로그인이 되어있다고 가정함
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // 게시판 레이아웃에서도 로그인 상태 관리 필요
 
   useEffect(() => {
     const token = localStorage.getItem('jwt_token');
@@ -49,7 +50,7 @@ export default function BoardLayout({ children }: BoardLayoutProps) {
   const isNewPage = pathname === '/board/new'; // usePathname으로 가져온 pathname 사용
 
   return (
-    <div className="flex flex-col flex-1 h-full bg-blue-50">
+    <div className="flex flex-col flex-1 h-screen overflow-hidden bg-board-primary">
       {/* 게시판 전용 헤더 */}
       <BoardHeader
         onGoToChat={handleGoToChat}
