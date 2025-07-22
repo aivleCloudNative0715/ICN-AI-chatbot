@@ -3845,7 +3845,7 @@ parking_location_recommendation,"제1터미널 단기 주차장 지하 2층에 �
 parking_location_recommendation,"제2터미널 장기 주차장 P4에 주차할 건데, 밤늦게 도착해도 주차하고 나서 차량용품점이나 편의시설이 가까운 곳을 추천해주세요."
 flight_info,KE123 어디서 타요?
 flight_info,아시아나 101편 지연됐나요?
-parking_query,주차장 어디가 여유 있어요?
+parking_availability_query,주차장 어디가 여유 있어요?
 facility_guide,면세점 어디 있어요?
 arrival_policy_info,입국할 때 반드시 입국 심사를 받아야 하나요
 arrival_policy_info,한국에 도착하면 여권 외에 제출해야 하는 서류가 있나요
