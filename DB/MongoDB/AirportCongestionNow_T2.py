@@ -66,9 +66,9 @@ def fetch_and_save_to_mongodb():
 
 # --- 주기적 실행 ---
 if __name__ == "__main__":
-    interval_seconds = 60 * 2  # 12시간
+    interval_seconds = 60 * 60 * 2  # 2시간
 
     while True:
         fetch_and_save_to_mongodb()
-        print(f"\n다음 업데이트까지 {interval_seconds}분 대기...\n")
+        print(f"\n다음 업데이트까지 {interval_seconds // 60}분 대기...\n")
         time.sleep(interval_seconds)
