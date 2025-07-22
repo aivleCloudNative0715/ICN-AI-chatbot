@@ -6,6 +6,7 @@ import Image from 'next/image';
 import SearchInput from '@/components/common/SearchInput';
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'; // 화살표 아이콘
 import ChatBubble from '@/components/chat/ChatBubble'; // ChatBubble 컴포넌트 임포트
+import RecommendedQuestions from '@/components/chat/RecommendedQuestions'; // RecommendedQuestions 컴포넌트 임포트
 
 interface ChatBotScreenProps {
   isLoggedIn: boolean; // 로그인 상태 prop
@@ -24,6 +25,7 @@ export default function ChatBotScreen({
   >([]);
   const [messageInputValue, setMessageInputValue] = useState(''); // 메시지 입력 필드 상태
   const [flightNumberInputValue, setFlightNumberInputValue] = useState(''); // 편명 입력 필드 상태
+  const [recommendedQuestions, setRecommendedQuestions] = useState<string[]>([]); // 추천 질문 상태 추가
 
   const handleSendMessage = (message: string, type?: string) => {
     if (message.trim()) {
@@ -36,6 +38,7 @@ export default function ChatBotScreen({
       setChatMessages((prevMessages) => [...prevMessages, newUserMessage]);
       setMessageInputValue(''); // 메시지 입력 필드 초기화
       setFlightNumberInputValue(''); // 편명 입력 필드도 초기화 (선택 사항, 필요에 따라 유지 가능)
+      setRecommendedQuestions([]); // 새 메시지 전송 시 추천 질문 초기화
 
       // TODO: 여기에 챗봇 API 호출 로직 추가 (API-09-25031)
       // 챗봇 답변을 시뮬레이션
@@ -46,6 +49,15 @@ export default function ChatBotScreen({
           content: `"${message}"에 대한 챗봇의 답변입니다.`,
         };
         setChatMessages((prevMessages) => [...prevMessages, botResponse]);
+
+        // 챗봇 답변 후 추천 질문 설정 (예시 로직)
+        if (message.includes('편명') || message.includes('항공')) {
+          setRecommendedQuestions(['출국 절차 안내', '입국 절차 안내', '수하물 규정']);
+        } else if (message.includes('수하물')) {
+          setRecommendedQuestions(['기내 수하물 규정', '위탁 수하물 규정', '초과 수하물 요금']);
+        } else {
+          setRecommendedQuestions(['다른 질문은 없으신가요?', '가장 인기 있는 질문은?']);
+        }
       }, 500);
     }
   };
@@ -60,6 +72,10 @@ export default function ChatBotScreen({
 
   const handleFlightNumberInputSend = () => {
     handleSendMessage(flightNumberInputValue, 'flightNumber'); // 편명 입력 메시지 전송
+  };
+
+  const handleRecommendedQuestionClick = (question: string) => {
+    handleSendMessage(question, 'Recommendation'); // 추천 질문 클릭 시 type을 'Recommendation'으로 설정
   };
 
   // 하단 SearchInput의 높이를 고려하여 padding-bottom을 설정 (예시: 80px 또는 p-20)
@@ -114,6 +130,10 @@ export default function ChatBotScreen({
               isUser={message.sender === 'user'}
             />
           ))}
+          {/* 추천 질문 표시 */}
+          {recommendedQuestions.length > 0 && (
+            <RecommendedQuestions questions={recommendedQuestions} onQuestionClick={handleRecommendedQuestionClick} />
+          )}
         </div>
       )}
 

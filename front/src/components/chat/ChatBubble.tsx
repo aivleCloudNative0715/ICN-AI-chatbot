@@ -1,4 +1,3 @@
-// src/components/chat/ChatBubble.tsx
 import React from 'react';
 import { Button } from 'primereact/button';
 import { PencilIcon, DocumentDuplicateIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
@@ -12,68 +11,51 @@ export default function ChatBubble({ message, isUser }: ChatBubbleProps) {
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`}>
       <div
-        className={`relative max-w-lg p-3 rounded-xl shadow-md ${
+        className={`flex flex-col max-w-lg p-3 rounded-xl ${
           isUser
-            ? 'bg-blue-200 text-gray-800 rounded-br-none'
-            : 'bg-white text-gray-800 rounded-bl-none'
+            ? 'bg-blue-200 text-gray-800 rounded-br-none items-end shadow-md'
+            : 'bg-blue-50 text-gray-800 rounded-bl-none'
         }`}
       >
-        <p className="text-sm sm:text-base">{message}</p>
-        <div className={`absolute ${isUser ? 'right-0 -bottom-6' : 'left-0 -bottom-6'} flex gap-1 text-xs text-gray-500`}>
-          {isUser ? (
-            // 사용자 말풍선 하단 버튼 (UI-09-25014)
-            <>
-              <Button
-                icon={<PencilIcon className="h-3 w-3" />}
-                label="편집"
-                className="p-button-text p-button-sm !text-gray-500 hover:!bg-gray-200"
-                pt={{
-                  root: { className: '!p-1 flex items-center !min-w-fit' },
-                  label: { className: '!text-xs' },
-                  icon: { className: '!mr-1' },
-                }}
-                onClick={() => console.log('편집 클릭')}
-              />
-              <Button
-                icon={<DocumentDuplicateIcon className="h-3 w-3" />}
-                label="복사"
-                className="p-button-text p-button-sm !text-gray-500 hover:!bg-gray-200"
-                pt={{
-                  root: { className: '!p-1 flex items-center !min-w-fit' },
-                  label: { className: '!text-xs' },
-                  icon: { className: '!mr-1' },
-                }}
-                onClick={() => navigator.clipboard.writeText(message)}
-              />
-            </>
-          ) : (
-            // 챗봇 말풍선 하단 버튼 (UI-09-25015)
-            <>
-              <Button
-                icon={<DocumentDuplicateIcon className="h-3 w-3" />}
-                label="답변 복사"
-                className="p-button-text p-button-sm !text-gray-500 hover:!bg-gray-200"
-                pt={{
-                  root: { className: '!p-1 flex items-center !min-w-fit' },
-                  label: { className: '!text-xs' },
-                  icon: { className: '!mr-1' },
-                }}
-                onClick={() => navigator.clipboard.writeText(message)}
-              />
-              <Button
-                icon={<ArrowPathIcon className="h-3 w-3" />}
-                label="재대답"
-                className="p-button-text p-button-sm !text-gray-500 hover:!bg-gray-200"
-                pt={{
-                  root: { className: '!p-1 flex items-center !min-w-fit' },
-                  label: { className: '!text-xs' },
-                  icon: { className: '!mr-1' },
-                }}
-                onClick={() => console.log('재대답 클릭')}
-              />
-            </>
-          )}
-        </div>
+        <p className="text-sm sm:text-base mb-2">{message}</p>
+
+        {isUser && (
+          <div className="flex gap-3 text-xs text-gray-500 mt-2">
+            <Button
+              icon={<PencilIcon className="h-4 w-4" />}
+              tooltip="편집"
+              tooltipOptions={{ position: 'top' }}
+              className="!text-gray-500 w-fit"
+              onClick={() => console.log('편집 클릭')}
+            />
+            <Button
+              icon={<DocumentDuplicateIcon className="h-4 w-5" />}
+              tooltip="복사"
+              tooltipOptions={{ position: 'top' }}
+              className="!text-gray-500 w-fit"
+              onClick={() => navigator.clipboard.writeText(message)}
+            />
+          </div>
+        )}
+
+        {!isUser && (
+          <div className="flex gap-3 text-xs text-gray-500 mt-2">
+            <Button
+              icon={<DocumentDuplicateIcon className="h-4 w-5" />}
+              tooltip="복사"
+              tooltipOptions={{ position: 'top' }}
+              className="!text-gray-500 w-fit"
+              onClick={() => navigator.clipboard.writeText(message)}
+            />
+            <Button
+              icon={<ArrowPathIcon className="h-4 w-5" />}
+              className="!text-gray-500 w-fit"
+              tooltipOptions={{ position: 'top' }}
+              tooltip="대답 재생성"
+              onClick={() => console.log('재대답 클릭')}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
