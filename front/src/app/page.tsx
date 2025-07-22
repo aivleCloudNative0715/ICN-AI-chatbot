@@ -61,7 +61,7 @@ export default function HomePage() {
       />
 
       {/* 메인 콘텐츠 영역 (챗봇 화면) */}
-      <div className="flex-grow flex">
+      <div className="flex-grow flex overflow-hidden">
         <ChatBotScreen
           isLoggedIn={isLoggedIn}
           onLoginStatusChange={setIsLoggedIn} // 로그인 상태 변경 직접 전달
