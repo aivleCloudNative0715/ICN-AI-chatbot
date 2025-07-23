@@ -1,16 +1,23 @@
-# KoBERT 및 Transformers
+# ⚙️ KoBERT 및 Transformers
 torch>=1.13.1
 transformers==4.40.1
 datasets==2.19.1
 
-# 형태소 분석기
+# 🧠 형태소 분석기
 konlpy==0.6.0
 
-# 전처리 및 분석
+# 🧹 전처리 및 분석
 numpy==1.26.4
 pandas==2.3.1
 scikit-learn==1.5.0
 tqdm==4.66.4
 
-# KoBERT용 tokenizer
+# 🔤 KoBERT용 Tokenizer
 sentencepiece==0.1.96
+
+# 📊 시각화
+matplotlib==3.8.4
+
+# 📓 Jupyter Notebook
+notebook==7.2.0
+ipywidgets==8.1.2

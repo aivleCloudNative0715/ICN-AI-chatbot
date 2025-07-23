@@ -99,5 +99,5 @@ python preprocess_intent_data.py
 스크립트를 직접 실행하면 설정된 `EPOCHS` 만큼 학습과 검증을 반복합니다.
 
 ```bash
-python kobert_intent_trainer.py
+python inference.py
 ```
