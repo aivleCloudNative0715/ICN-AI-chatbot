@@ -29,7 +29,7 @@ export default function BoardLayout({ children }: BoardLayoutProps) {
       // TODO: 토큰 유효성 검사 API 호출
       setIsLoggedIn(true);
     } else {
-      setIsLoggedIn(false); // Set to false if no token
+      // setIsLoggedIn(false); // Set to false if no token
     }
   }, []);
 
