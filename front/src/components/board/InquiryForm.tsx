@@ -102,72 +102,85 @@ export default function InquiryForm({ inquiryId, initialData }: InquiryFormProps
   };
 
   return (
-    <div className="flex-grow p-6 bg-blue-50">
-      <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+    <div className="flex-grow p-8 bg-board-primary min-h-screen">
+      <div className="bg-white p-10 rounded-md shadow-md max-w-xl mx-auto">
+        <h2 className="text-xl font-semibold text-board-dark mb-6 text-center">
           {isEditMode ? '문의/건의 수정' : '새 문의/건의 작성'}
         </h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="title" className="block text-gray-700 text-sm font-bold mb-2">
-              <span className="text-red-500">*</span> 제목
+        <form onSubmit={handleSubmit} className="space-y-6">
+          
+          {/* 제목 입력 */}
+          <div>
+            <label htmlFor="title" className="block text-sm font-medium text-board-dark mb-2">
+              <span className="text-red-500">*</span> 제목을 입력해주세요.
             </label>
-            <InputText
+            <input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="제목을 입력해주세요."
-              className={`w-full p-2 border rounded-md ${errors.title ? 'p-invalid' : ''}`}
+              className={`w-full px-2 py-2 text-gray-700 border-b-2 border-gray-300 bg-transparent focus:outline-none focus:border-board-dark transition-all ${
+                errors.title ? 'border-red-500' : ''
+              }`}
             />
-            {errors.title && <small className="p-error text-red-500">{errors.title}</small>}
+            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
           </div>
 
-          <div className="mb-4 relative">
-            <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">
-              <span className="text-red-500">*</span> 카테고리
-            </label>
-            <Dropdown
-              id="category"
-              value={category}
-              options={categories}
-              onChange={(e) => setCategory(e.value)}
-              placeholder="카테고리를 선택해주세요."
-              className={`w-full ${errors.category ? 'p-invalid' : ''}`}
-              optionLabel="label"
-              optionValue="value"
-            />
-            {errors.category && <small className="p-error text-red-500">{errors.category}</small>}
+          {/* 카테고리 */}
+          <div className="flex justify-end">
+            <div className="w-1/2">
+              <label htmlFor="category" className="block text-sm font-medium text-board-dark mb-2">
+                <span className="text-red-500">*</span> 카테고리를 선택해주세요.
+              </label>
+              <Dropdown
+                id="category"
+                value={category}
+                options={categories}
+                onChange={(e) => setCategory(e.value)}
+                placeholder="카테고리를 선택해주세요."
+                className={`w-full border border-board-dark bg-transparent focus:border-board-dark ${
+                  errors.category ? 'border-red-500' : ''
+                }`}
+                optionLabel="label"
+                optionValue="value"
+              />
+              {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+            </div>
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="content" className="block text-gray-700 text-sm font-bold mb-2">
+          {/* 내용 입력 */}
+          <div>
+            <label htmlFor="content" className="block text-sm font-medium text-board-dark mb-2">
               <span className="text-red-500">*</span> Contents
             </label>
-            <InputTextarea
+            <textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              rows={10}
-              cols={30}
+              rows={8}
               placeholder="내용을 입력해주세요."
-              className={`w-full p-2 border rounded-md ${errors.content ? 'p-invalid' : ''}`}
-              autoResize
+              className={`w-full px-2 py-2 border-2 border-gray-300 rounded-md bg-transparent focus:outline-none focus:border-board-dark transition-all ${
+                errors.content ? 'border-red-500' : ''
+              }`}
             />
-            {errors.content && <small className="p-error text-red-500">{errors.content}</small>}
+            {errors.content && <p className="text-red-500 text-sm mt-1">{errors.content}</p>}
           </div>
 
+          {/* 버튼 */}
           <div className="flex justify-center gap-4">
-            <Button
+            <button
               type="submit"
-              label="등록"
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            />
-            <Button
+              className="px-8 py-2 bg-board-dark text-white rounded hover:bg-board-light transition-colors"
+            >
+              등록
+            </button>
+            <button
               type="button"
-              label="취소"
-              className="px-6 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition-colors"
               onClick={handleCancel}
-            />
+              className="px-8 py-2 border border-board-dark text-board-dark rounded hover:bg-board-light transition-colors"
+            >
+              취소
+            </button>
           </div>
         </form>
       </div>
