@@ -31,7 +31,7 @@ def get_valid_api_key(url, params_base, key_type, auth_param_name, max_retries=5
                     data = response.json()
                     result_code = data.get("response", {}).get("header", {}).get("resultCode")
                     if result_code == "00":
-                        print("✅ 키 불러오기 성공 (JSON 정상)")
+                        print("키 불러오기 성공 (JSON 정상)")
                         return key
                     else:
                         print(f"[경고] 키 {i+1} 응답 코드: {result_code}")
