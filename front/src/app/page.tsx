@@ -14,12 +14,18 @@ export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('jwt_token');
+    const userRole = localStorage.getItem('user_role');
+
     if (token) {
       // TODO: 토큰 유효성 검사 API 호출
       setIsLoggedIn(true);
+      if (userRole === 'admin') { // Check if the stored role is admin
+        setIsAdmin(true);
+      }
     }
   }, []);
 
@@ -30,8 +36,16 @@ export default function HomePage() {
   
   const closeAuthModal = () => {
     // 창이 닫히면 로그인 되도록 임시 처리함 (나중에 지워야함)
+    // setIsLoggedIn(true);
+    // setIsAuthModalOpen(false);
+
+    // 창이 닫히면 관리자로 로그인 되도록 임시 처리함 (나중에 지워야함)
     setIsLoggedIn(true);
+    setIsAdmin(true); // Set isAdmin to true
+    localStorage.setItem('jwt_token', 'temp_admin_token'); // Simulate a token
+    localStorage.setItem('user_role', 'admin'); // Simulate admin role
     setIsAuthModalOpen(false);
+    router.push('/admin'); // Redirect to the admin main page 
   };
 
   const handleLoginSuccess = () => {
@@ -44,7 +58,9 @@ export default function HomePage() {
   const handleLogout = () => {
     // TODO: 실제 API 호출 및 토큰 삭제 로직 (API-08-20030)
     localStorage.removeItem('jwt_token');
+    localStorage.removeItem('user_role');
     setIsLoggedIn(false);
+    setIsAdmin(false);
     alert('로그아웃되었습니다.');
     // 현재 챗봇 페이지이므로 특별한 라우팅 필요 없음
   };

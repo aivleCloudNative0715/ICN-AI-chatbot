@@ -1,7 +1,6 @@
 // src/app/layout.tsx
 import './globals.css';
 import { Inter } from 'next/font/google';
-// Header, AuthModal, ChatSidebar 더 이상 직접 임포트하지 않음
 
 const inter = Inter({ subsets: ['latin'] });
 
