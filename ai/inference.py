@@ -22,12 +22,12 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # ✅ 토크나이저 및 라벨 인코더 로드
 tokenizer = BertTokenizer.from_pretrained("monologg/kobert")
-with open("label_encoder.pkl", "rb") as f:
+with open("best_models/intent-kobert-v1/label_encoder.pkl", "rb") as f:
     label_encoder = pickle.load(f)
 
 # ✅ 모델 로드
 model = KoBERTClassifier(num_labels=len(label_encoder.classes_))
-model.load_state_dict(torch.load("best_kobert_model.pt", map_location=device))
+model.load_state_dict(torch.load("best_models/intent-kobert-v1/best_kobert_model.pt", map_location=device))
 model.to(device)
 model.eval()
 

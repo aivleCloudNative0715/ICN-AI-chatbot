@@ -290,7 +290,6 @@ arrival_congestion_query,1층 입국장 내국인 줄은 빨리 빠지나요?
 arrival_congestion_query,2터미널 입국장 1층 대기 많나요?
 arrival_congestion_query,입국장 1층 혼잡도 실시간 정보 주세요
 arrival_congestion_query,입국장 1층 줄 서야 하나요?
-arrival_congestion_query,입국장 1층 줄 서야 하나요?
 arrival_congestion_query,입국 게이트 쪽 들어가는 거 막혔나요?
 arrival_congestion_query,입국 게이트 대기줄 한눈에 볼 수 있나요?
 arrival_congestion_query,입국장 입구에서 줄 서 있나요?
@@ -426,102 +425,29 @@ departure_congestion_prediction,오늘 오전 10시 1터미널 C 입국장 예�
 departure_congestion_prediction,내일 오후 5시 1터미널 D 입국장 괜찮을까요?
 departure_congestion_prediction,오늘 오후 1시 2터미널 A 입국장에 사람 많을 것 같아요?
 departure_congestion_prediction,내일 오전 11시 1터미널 입국장 전체적으로 얼마나 복잡할까요?
-departure_congestion_prediction,오늘 밤 10시 인천공항 입국장 사람 많겠죠?
-departure_congestion_prediction,내일 오후 4시 2터미널 입국장 전체적으로 몇 명이에요?
 departure_congestion_prediction,"오늘 오후 3시 1터미널 E,F 입국장 예상 혼잡도 어때요?"
 departure_congestion_prediction,"내일 오전 5시 1터미널 A,B 입국장 얼마나 한가할까요?"
 departure_congestion_prediction,오늘 오후 12시 2터미널 B 입국장에 사람 좀 있나요?
 departure_congestion_prediction,내일 오후 6시 1터미널 D 입국장 혼잡도 궁금해요.
-departure_congestion_prediction,오늘 오전 8시 인천공항 입국장 상황 좀 알려주세요.
-departure_congestion_prediction,내일 오후 7시 1터미널 입국장 총 예상 인원수는요?
 departure_congestion_prediction,오늘 오후 1시 1터미널 C 입국장에 얼마나 올까요?
-departure_congestion_prediction,내일 새벽 3시 2터미널 입국장 한산한가요?
 departure_congestion_prediction,"오늘 오후 2시 1터미널 A,B 입국장 몇 명 예상돼요?"
 departure_congestion_prediction,"내일 오전 8시 1터미널 E,F 입국장 괜찮을까요?"
-departure_congestion_prediction,오늘 오후 5시 2터미널 A 입국장에 사람 많을 것 같아요?
-departure_congestion_prediction,내일 오전 9시 1터미널 입국장 전체적으로 어떤가요?
-departure_congestion_prediction,오늘 밤 9시 인천공항 입국장은 얼마나 붐빌까요?
-departure_congestion_prediction,내일 오후 3시 2터미널 입국장 총 인원 수 알려주세요.
 departure_congestion_prediction,오늘 오전 11시 1터미널 D 입국장 혼잡도 좀요.
 departure_congestion_prediction,내일 오전 4시 1터미널 C 입국장 사람 거의 없겠죠?
 departure_congestion_prediction,오늘 오후 1시 2터미널 A 입국장에 얼마나 들어올까요?
-departure_congestion_prediction,"내일 밤 10시 1터미널 E,F 입국장 혼잡할까요?"
-departure_congestion_prediction,오늘 아침 6시 인천공항 입국장 전체 혼잡도는요?
-departure_congestion_prediction,내일 밤 11시 1터미널 전체 입국장 총 몇 명 예상돼요?
-departure_congestion_prediction,"오늘 오후 7시 1터미널 A,B 입국장에 사람 많아요?"
-departure_congestion_prediction,내일 새벽 4시 2터미널 입국장 한가하겠죠?
 departure_congestion_prediction,오늘 오전 8시 1터미널 C 입국장 예상 인원 좀 알려주세요.
-departure_congestion_prediction,내일 오후 2시 1터미널 D 입국장 괜찮을까요?
-departure_congestion_prediction,오늘 오후 3시 2터미널 B 입국장에 사람 얼마나 될까요?
-departure_congestion_prediction,내일 오전 10시 1터미널 입국장 전체 현황 어때요?
-departure_congestion_prediction,오늘 밤 12시 인천공항 입국장 많이 붐빌 것 같아요?
-departure_congestion_prediction,내일 오후 12시 2터미널 입국장 총 인원 궁금해요.
 departure_congestion_prediction,"오늘 오후 4시 1터미널 E,F 입국장 혼잡도 좀요."
-departure_congestion_prediction,"내일 오전 6시 1터미널 A,B 입국장 사람 좀 있나요?"
-departure_congestion_prediction,오늘 오전 9시 2터미널 B 입국장 얼마나 붐빌까요?
-departure_congestion_prediction,내일 밤 8시 1터미널 C 입국장 예상 인원 좀요.
-departure_congestion_prediction,오늘 오전 7시 인천공항 입국장 전체적인 혼잡도 어때요?
-departure_congestion_prediction,내일 밤 9시 1터미널 전체 입국장 상황 좀 알려주세요.
-departure_congestion_prediction,오늘 오후 2시 1터미널 D 입국장에 얼마나 올까요?
-departure_congestion_prediction,내일 새벽 1시 2터미널 입국장 정말 조용할까요?
 departure_congestion_prediction,"오늘 오전 10시 1터미널 A,B 입국장 예상 혼잡도 좀요."
 departure_congestion_prediction,"내일 오후 5시 1터미널 E,F 입국장 괜찮을까요?"
-departure_congestion_prediction,오늘 오후 1시 2터미널 A 입국장에 사람 많을 것 같아요?
-departure_congestion_prediction,내일 오전 11시 1터미널 입국장 전체적으로 얼마나 복잡할까요?
-departure_congestion_prediction,오늘 밤 10시 인천공항 입국장 사람 많겠죠?
-departure_congestion_prediction,내일 오후 4시 2터미널 입국장 전체적으로 몇 명이에요?
 departure_congestion_prediction,오늘 오후 3시 1터미널 C 입국장 예상 혼잡도 어때요?
-departure_congestion_prediction,내일 오전 5시 1터미널 D 입국장 얼마나 한가할까요?
-departure_congestion_prediction,오늘 오후 12시 2터미널 B 입국장에 사람 좀 있나요?
 departure_congestion_prediction,"내일 오후 6시 1터미널 A,B 입국장 혼잡도 궁금해요."
-departure_congestion_prediction,오늘 오전 8시 인천공항 입국장 상황 좀 알려주세요.
-departure_congestion_prediction,내일 오후 7시 1터미널 입국장 총 예상 인원수는요?
 departure_congestion_prediction,"오늘 오후 1시 1터미널 E,F 입국장에 얼마나 올까요?"
-departure_congestion_prediction,내일 새벽 3시 2터미널 입국장 한산한가요?
-departure_congestion_prediction,오늘 오후 2시 1터미널 C 입국장 몇 명 예상돼요?
 departure_congestion_prediction,"내일 오전 8시 1터미널 A,B 입국장 괜찮을까요?"
-departure_congestion_prediction,오늘 오후 5시 2터미널 A 입국장에 사람 많을 것 같아요?
-departure_congestion_prediction,내일 오전 9시 1터미널 입국장 전체적으로 어떤가요?
-departure_congestion_prediction,오늘 밤 9시 인천공항 입국장은 얼마나 붐빌까요?
-departure_congestion_prediction,내일 오후 3시 2터미널 입국장 총 인원 수 알려주세요.
-departure_congestion_prediction,오늘 오전 11시 1터미널 D 입국장 혼잡도 좀요.
-departure_congestion_prediction,내일 오전 4시 1터미널 C 입국장 사람 거의 없겠죠?
-departure_congestion_prediction,오늘 오후 1시 2터미널 B 입국장에 얼마나 들어올까요?
-departure_congestion_prediction,"내일 밤 10시 1터미널 E,F 입국장 혼잡할까요?"
-departure_congestion_prediction,오늘 아침 6시 인천공항 입국장 전체 혼잡도는요?
-departure_congestion_prediction,내일 밤 11시 1터미널 전체 입국장 총 몇 명 예상돼요?
-departure_congestion_prediction,"오늘 오후 7시 1터미널 A,B 입국장에 사람 많아요?"
-departure_congestion_prediction,내일 새벽 4시 2터미널 입국장 한가하겠죠?
-departure_congestion_prediction,오늘 오전 8시 1터미널 C 입국장 예상 인원 좀 알려주세요.
-departure_congestion_prediction,내일 오후 2시 1터미널 D 입국장 괜찮을까요?
-departure_congestion_prediction,오늘 오후 3시 2터미널 A 입국장에 사람 얼마나 될까요?
-departure_congestion_prediction,내일 오전 10시 1터미널 입국장 전체 현황 어때요?
-departure_congestion_prediction,오늘 밤 12시 인천공항 입국장 많이 붐빌 것 같아요?
-departure_congestion_prediction,내일 오후 12시 2터미널 입국장 총 인원 궁금해요.
-departure_congestion_prediction,"오늘 오후 4시 1터미널 E,F 입국장 혼잡도 좀요."
-departure_congestion_prediction,"내일 오전 6시 1터미널 A,B 입국장 사람 좀 있나요?"
-departure_congestion_prediction,오늘 오전 9시 2터미널 B 입국장 얼마나 붐빌까요?
-departure_congestion_prediction,내일 밤 8시 1터미널 C 입국장 예상 인원 좀요.
-departure_congestion_prediction,오늘 오전 7시 인천공항 입국장 전체적인 혼잡도 어때요?
-departure_congestion_prediction,내일 밤 9시 1터미널 전체 입국장 상황 좀 알려주세요.
-departure_congestion_prediction,오늘 오후 2시 1터미널 D 입국장에 얼마나 올까요?
-departure_congestion_prediction,내일 새벽 1시 2터미널 입국장 정말 조용할까요?
-departure_congestion_prediction,"오늘 오전 10시 1터미널 A,B 입국장 예상 혼잡도 좀요."
-departure_congestion_prediction,"내일 오후 5시 1터미널 E,F 입국장 괜찮을까요?"
-departure_congestion_prediction,오늘 오후 1시 2터미널 A 입국장에 사람 많을 것 같아요?
-departure_congestion_prediction,내일 오전 11시 1터미널 입국장 전체적으로 얼마나 복잡할까요?
-departure_congestion_prediction,오늘 밤 10시 인천공항 입국장 사람 많겠죠?
-departure_congestion_prediction,내일 오후 4시 2터미널 입국장 전체적으로 몇 명이에요?
-departure_congestion_prediction,오늘 오후 3시 1터미널 C 입국장 예상 혼잡도 어때요?
-departure_congestion_prediction,내일 오전 5시 1터미널 D 입국장 얼마나 한가할까요?
-departure_congestion_prediction,오늘 오후 12시 2터미널 B 입국장에 사람 좀 있나요?
-departure_congestion_prediction,"내일 오후 6시 1터미널 A,B 입국장 혼잡도 궁금해요."
 departure_congestion_prediction,"오늘 오후 2시 1터미널 A,B 입국장 얼마나 붐빌까요?"
 departure_congestion_prediction,내일 아침 7시 2터미널 입국장 혼잡도 좀 알려주세요.
 departure_congestion_prediction,"오늘 오후 3시 1터미널 E,F 입국장에 사람 엄청 많을까요?"
 departure_congestion_prediction,내일 저녁 5시 2터미널 B 입국장 상황 어때요? 좀 한가할까요?
 departure_congestion_prediction,오늘 오전 9시 인천공항 입국장 전체 다 복잡할까요?
-departure_congestion_prediction,내일 1터미널 입국장은 언제 제일 사람 많을 것 같아요?
 departure_congestion_prediction,오늘 오후 4시 1터미널 C 입국장에 얼마나 올까요?
 departure_congestion_prediction,내일 새벽 2시 2터미널 전체 입국장 엄청 조용하겠죠?
 departure_congestion_prediction,오늘 오전 8시 1터미널 D 입국장에 몇 명이나 있을까요?
@@ -547,7 +473,6 @@ departure_congestion_prediction,내일 밤 9시 2터미널 입국장 총 예상 
 departure_congestion_prediction,"오늘 오후 2시 1터미널 E,F 입국장 상황 좀 알려줘."
 departure_congestion_prediction,내일 오전 4시 1터미널 C 입국장 혼잡도 예상 좀 해주세요.
 departure_congestion_prediction,오늘 오전 9시 2터미널 B 입국장에 사람이 얼마나 될까요?
-departure_congestion_prediction,내일 오후 5시 1터미널 D 입국장 괜찮을까요?
 departure_congestion_prediction,오늘 오전 8시 인천공항 입국장 전반적으로 어때요?
 departure_congestion_prediction,내일 오후 6시 1터미널 전체 입국장 인원 수 좀 봐주세요.
 departure_congestion_prediction,오늘 오후 12시 1터미널 C 입국장에 사람 많나요?
@@ -677,7 +602,6 @@ departure_congestion_prediction,"오늘 오전 9시에 1터미널로 도착하�
 departure_congestion_prediction,"인천공항 1층, 오늘 언제쯤 가장 한산할까?"
 departure_congestion_prediction,"나 오늘 밤 9시에 2터미널 도착인데, 1층 입국장 B 구역 사람 많을까요?"
 departure_congestion_prediction,"내일 아침 8시에 1터미널로 도착하는데, 1층 입국장 전체가 많이 복잡해?"
-departure_congestion_prediction,지금 인천공항 1층 입국장 전체적으로 얼마나 붐벼요? 곧 착륙해요.
 departure_congestion_prediction,"오늘 오후 5시에 1터미널 D 입국장 1층으로 갈 건데, 예상 인원수 알려줘."
 departure_congestion_prediction,"내일 낮 1시에 2터미널 도착인데, 1층 입국장 A 구역은 얼마나 기다려야 할까요?"
 departure_congestion_prediction,"오늘 오전 10시에 인천공항 내리는데, 1층 C 입국장에 사람 좀 있을까?"
@@ -712,8 +636,6 @@ departure_congestion_prediction,"오늘 오전 10시에 1터미널 A,B 입국장
 departure_congestion_prediction,내일 오전 3시에 1터미널 C 입국장 1층으로 가면 바로 빠져나올 수 있겠죠?
 departure_congestion_prediction,"오늘 오후 12시에 2터미널 도착인데, 1층 입국장 B 구역에 사람 얼마나 있을까?"
 departure_congestion_prediction,내일 오후 10시에 1터미널 D 입국장 1층은 많이 붐빌까?
-departure_congestion_prediction,"오늘 아침 6시에 인천공항 내리면, 1층 입국장 상황이 궁금해요."
-departure_congestion_prediction,내일 밤 11시에 1터미널 1층 입국장 전체 얼마나 올까요?
 departure_congestion_prediction,"오늘 오후 7시에 도착인데, 1터미널 E,F 입국장 1층 사람 많을까요?"
 departure_congestion_prediction,내일 새벽 4시에 2터미널 1층 입국장은 정말 한산하겠네요?
 departure_congestion_prediction,"우리 엄마 오늘 오후 4시에 1터미널로 도착하시는데, 1층 입국장 A,B 많이 붐빌까요?"
@@ -927,45 +849,17 @@ arrival_congestion_prediction,애인 내일 새벽 2시 2터미널 3층 전체 �
 arrival_congestion_prediction,"남편 오늘 오전 9시 1터미널 3층 출국장 5,6 구역으로 가는데, 예상 인원 좀요."
 arrival_congestion_prediction,"친구 내일 오후 7시 1터미널 3층 출국장 3 구역에서 출국인데, 많이 기다려야 할까요?"
 arrival_congestion_prediction,삼촌 오늘 오후 5시 2터미널 3층 출국장 1 구역에서 출국인데 사람 좀 있나요?
-arrival_congestion_prediction,부모님 내일 오전 12시 1터미널 3층 전체 출국장 현황이 궁금해요.
 arrival_congestion_prediction,"지인 오늘 밤 10시 3층 출국인데, 인천공항 3층 출국장 많이 기다려야 해요?"
-arrival_congestion_prediction,여동생 내일 오후 4시 2터미널 3층 출국장 총 예상 인원이 얼마나 돼요?
-arrival_congestion_prediction,"친구 배웅 오늘 오후 2시 나가는데, 1터미널 3층 출국장 1,2 구역 지금 어떤가요?"
 arrival_congestion_prediction,할머니 내일 아침 6시 1터미널 3층 출국장 4 구역에서 출국인데 붐빌까 봐 걱정돼요.
 arrival_congestion_prediction,"아들 오늘 정오 12시 2터미널 3층 출국장 2 구역에서 출국인데, 예상 인원수가 어떻게 돼요?"
 arrival_congestion_prediction,"사촌 내일 밤 8시 1터미널 3층 출국장 5,6 구역에서 출국인데 많이 분주할까요?"
 arrival_congestion_prediction,"우리 가족 오늘 아침 8시 출국인데, 인천공항 3층 출국장 모든 곳이 바쁜가요?"
 arrival_congestion_prediction,언니 내일 밤 9시 1터미널 3층 전체 출국장에서 출국인데 얼마나 붐빌까요?
 arrival_congestion_prediction,"친구 오늘 오후 6시 1터미널 3층 출국장 3 구역에서 출발인데, 사람 몇 명이에요?"
-arrival_congestion_prediction,형 내일 새벽 3시 2터미널 3층 출국장에서 출국하면 한산하겠죠?
 arrival_congestion_prediction,"고모 오늘 오전 7시 1터미널 3층 출국장 5,6 구역에서 출국인데 예상 인원 좀 알려주세요."
-arrival_congestion_prediction,"친구 배웅 내일 오후 5시 나가는데, 1터미널 3층 출국장 1,2 구역은 평소랑 비슷할까요?"
-arrival_congestion_prediction,"언니 오늘 오후 4시 2터미널 3층 출국장 1 구역으로 가는데, 사람 많이 몰리나요?"
 arrival_congestion_prediction,부모님 내일 오후 1시 1터미널 3층 전체 출국장에서 출국인데 얼마나 혼잡할까요?
 arrival_congestion_prediction,"남편 오늘 밤 11시 3층 출국인데, 인천공항 3층 출국장에 사람 많을까요?"
-arrival_congestion_prediction,친구 내일 밤 10시 2터미널 3층 출국장 총 예상 인원이 궁금해요.
-arrival_congestion_prediction,"조카 오늘 오후 3시 1터미널 3층 출국장 4 구역으로 가는데, 상황 좀 알려줘."
-arrival_congestion_prediction,"동생 내일 오전 5시 1터미널 3층 출국장 3 구역으로 가는데, 혼잡도 예상 좀 해주세요."
-arrival_congestion_prediction,"할아버지 오늘 오전 10시 2터미널 3층 출국장 2 구역에서 출국하시는데, 사람이 얼마나 될까요?"
-arrival_congestion_prediction,"친구 내일 오후 6시 1터미널 3층 출국장 5,6 구역에서 출국인데 괜찮을까요?"
-arrival_congestion_prediction,"부모님 오늘 오전 9시 3층 출국인데, 인천공항 3층 출국장 전반적으로 어때요?"
 arrival_congestion_prediction,가족 내일 오후 7시 1터미널 3층 전체 출국장에서 출국인데 인원 수 좀 봐주세요.
-arrival_congestion_prediction,"친구 오늘 오후 1시 1터미널 3층 출국장 4 구역에서 출국인데, 사람 많나요?"
-arrival_congestion_prediction,애인 내일 새벽 2시 2터미널 3층 출국장으로 오는데 한가한 편인가요?
-arrival_congestion_prediction,"친구 배웅 오늘 오후 2시 나가는데, 1터미널 3층 출국장 1,2 구역 예상 승객수 알려줘."
-arrival_congestion_prediction,엄마 내일 오전 8시 1터미널 3층 출국장 3 구역으로 가는데 복잡할까요?
-arrival_congestion_prediction,"언니 오늘 오후 5시 2터미널 3층 출국장 2 구역으로 나오는데, 사람 많을까요?"
-arrival_congestion_prediction,아빠 내일 오전 9시 1터미널 3층 출국장 전체적으로 어때요?
-arrival_congestion_prediction,"부모님 오늘 밤 9시 3층 출국인데, 인천공항 3층 출국장 많이 북적일까요?"
-arrival_congestion_prediction,친구 내일 오후 3시 2터미널 3층 출국장 총 인원 얼마나 될까요?
-arrival_congestion_prediction,"가족 오늘 오전 11시 1터미널 3층 출국장 5,6 구역에서 출국인데 예상 혼잡도 어때요?"
-arrival_congestion_prediction,친구 내일 오전 4시 1터미널 3층 출국장 4 구역으로 가는데 사람 거의 없겠죠?
-arrival_congestion_prediction,조카 오늘 오후 1시 2터미널 3층 출국장 1 구역으로 나오는데 얼마나 올 것 같아요?
-arrival_congestion_prediction,형 내일 밤 10시 1터미널 3층 출국장 3 구역으로 오는데 혼잡할까요?
-arrival_congestion_prediction,"부모님 오늘 아침 6시 3층 출국인데, 인천공항 3층 출국장 전체적으로 어떤가요?"
-arrival_congestion_prediction,가족 내일 밤 11시 1터미널 3층 출국장 전체 얼마나 올까요?
-arrival_congestion_prediction,"친구 오늘 오후 7시 1터미널 3층 출국장 1,2 구역으로 오는데 사람 많아요?"
-arrival_congestion_prediction,애인 내일 새벽 4시 2터미널 3층 출국장으로 오는데 정말 한산하겠네요?
 arrival_congestion_prediction,"오늘 오전 7시 1터미널 3층 출국장 1,2 구역에 사람 많이 몰릴까요?"
 arrival_congestion_prediction,"내일 아침 8시, 2터미널 3층 출국장 1 구역은 얼마나 붐빌지 알려줘요."
 arrival_congestion_prediction,오늘 오후 1시 1터미널 3층 출국장 3 구역에서 엄청 기다려야 할까요?
@@ -1020,29 +914,20 @@ arrival_congestion_prediction,"우리 언니, 오늘 오후 3시쯤 1터미널 3
 arrival_congestion_prediction,친구가 내일 아침 9시 2터미널 3층 출국장 1 구역에서 비행기 타는데 사람 많을까요?
 arrival_congestion_prediction,오늘 오후 1시 우리 아기 1터미널 3층 출국장 3 구역에서 출국인데 사람 엄청 많을까요?
 arrival_congestion_prediction,동생이 내일 저녁 6시 2터미널 3층 출국장 2 구역에서 출국 예정인데 좀 한가할까요?
-arrival_congestion_prediction,"우리 부모님, 오늘 오전 10시 인천공항 3층 출국장 전체 다 복잡할까요?"
 arrival_congestion_prediction,"내일 1터미널 3층 출국장 합계, 우리 조카 데리고 언제쯤 배웅 나가는 게 제일 편할까요?"
-arrival_congestion_prediction,오늘 오후 4시쯤 우리 언니 1터미널 3층 출국장 4 구역에서 출국인데 수속 오래 걸릴까요?
 arrival_congestion_prediction,애인이 내일 새벽 2시 2터미널 3층 전체 출국장에서 출국인데 엄청 조용하겠죠?
-arrival_congestion_prediction,"남편 오늘 오전 9시 1터미널 3층 출국장 5,6 구역으로 가는데, 예상 인원 좀요."
 arrival_congestion_prediction,"친구가 내일 오후 7시 1터미널 3층 출국장 3 구역에서 출국인데, 많이 기다려야 할까요?"
-arrival_congestion_prediction,삼촌 오늘 오후 5시 2터미널 3층 출국장 1 구역에서 출국인데 사람 좀 있나요?
 arrival_congestion_prediction,부모님이 내일 오전 12시 1터미널 3층 전체 출국장 현황이 궁금해요.
-arrival_congestion_prediction,"지인 오늘 밤 10시 3층 출국인데, 인천공항 3층 출국장 많이 기다려야 해요?"
 arrival_congestion_prediction,여동생이 내일 오후 4시 2터미널 3층 출국장 총 예상 인원이 얼마나 돼요?
-arrival_congestion_prediction,"친구 배웅 오늘 오후 2시 나가는데, 1터미널 3층 출국장 1,2 구역 지금 어떤가요?"
 arrival_congestion_prediction,할머니가 내일 아침 6시 1터미널 3층 출국장 4 구역에서 출국인데 붐빌까 봐 걱정돼요.
 arrival_congestion_prediction,"아들이 오늘 정오 12시 2터미널 3층 출국장 2 구역에서 출국인데, 예상 인원수가 어떻게 돼요?"
 arrival_congestion_prediction,"사촌이 내일 밤 8시 1터미널 3층 출국장 5,6 구역에서 출국인데 많이 분주할까요?"
-arrival_congestion_prediction,"우리 가족 오늘 아침 8시 출국인데, 인천공항 3층 출국장 모든 곳이 바쁜가요?"
 arrival_congestion_prediction,언니가 내일 밤 9시 1터미널 3층 전체 출국장에서 출국인데 얼마나 붐빌까요?
 arrival_congestion_prediction,"친구가 오늘 오후 6시 1터미널 3층 출국장 3 구역에서 출발인데, 사람 몇 명이에요?"
 arrival_congestion_prediction,형이 내일 새벽 3시 2터미널 3층 출국장에서 출국하면 한산하겠죠?
 arrival_congestion_prediction,"고모가 오늘 오전 7시 1터미널 3층 출국장 5,6 구역에서 출국인데 예상 인원 좀 알려주세요."
-arrival_congestion_prediction,"친구 배웅 내일 오후 5시 나가는데, 1터미널 3층 출국장 1,2 구역은 평소랑 비슷할까요?"
 arrival_congestion_prediction,"언니가 오늘 오후 4시 2터미널 3층 출국장 1 구역으로 가는데, 사람 많이 몰리나요?"
 arrival_congestion_prediction,부모님이 내일 오후 1시 1터미널 3층 전체 출국장에서 출국인데 얼마나 혼잡할까요?
-arrival_congestion_prediction,"남편 오늘 밤 11시 3층 출국인데, 인천공항 3층 출국장에 사람 많을까요?"
 arrival_congestion_prediction,친구가 내일 밤 10시 2터미널 3층 출국장 총 예상 인원이 궁금해요.
 arrival_congestion_prediction,"조카가 오늘 오후 3시 1터미널 3층 출국장 4 구역으로 가는데, 상황 좀 알려줘."
 arrival_congestion_prediction,"동생이 내일 오전 5시 1터미널 3층 출국장 3 구역으로 가는데, 혼잡도 예상 좀 해주세요."
@@ -1052,18 +937,15 @@ arrival_congestion_prediction,"부모님이 오늘 오전 9시 3층 출국인데
 arrival_congestion_prediction,가족들이 내일 오후 7시 1터미널 3층 전체 출국장에서 출국인데 인원 수 좀 봐주세요.
 arrival_congestion_prediction,"친구가 오늘 오후 1시 1터미널 3층 출국장 4 구역에서 출국인데, 사람 많나요?"
 arrival_congestion_prediction,애인이 내일 새벽 2시 2터미널 3층 출국장으로 오는데 한가한 편인가요?
-arrival_congestion_prediction,"친구 배웅 오늘 오후 2시 나가는데, 1터미널 3층 출국장 1,2 구역 예상 승객수 알려줘."
 arrival_congestion_prediction,엄마가 내일 오전 8시 1터미널 3층 출국장 3 구역으로 가는데 복잡할까요?
 arrival_congestion_prediction,"언니가 오늘 오후 5시 2터미널 3층 출국장 2 구역으로 나오는데, 사람 많을까요?"
 arrival_congestion_prediction,아빠가 내일 오전 9시 1터미널 3층 출국장 전체적으로 어때요?
 arrival_congestion_prediction,"부모님이 오늘 밤 9시 3층 출국인데, 인천공항 3층 출국장 많이 북적일까요?"
 arrival_congestion_prediction,친구가 내일 오후 3시 2터미널 3층 출국장 총 인원 얼마나 될까요?
-arrival_congestion_prediction,"가족 오늘 오전 11시 1터미널 3층 출국장 5,6 구역에서 출국인데 예상 혼잡도 어때요?"
 arrival_congestion_prediction,친구가 내일 오전 4시 1터미널 3층 출국장 4 구역으로 가는데 사람 거의 없겠죠?
 arrival_congestion_prediction,조카가 오늘 오후 1시 2터미널 3층 출국장 1 구역으로 나오는데 얼마나 올 것 같아요?
 arrival_congestion_prediction,형이 내일 밤 10시 1터미널 3층 출국장 3 구역으로 오는데 혼잡할까요?
 arrival_congestion_prediction,"부모님이 오늘 아침 6시 3층 출국인데, 인천공항 3층 출국장 전체적으로 어떤가요?"
-arrival_congestion_prediction,가족 내일 밤 11시 1터미널 3층 출국장 전체 얼마나 올까요?
 arrival_congestion_prediction,"친구가 오늘 오후 7시 1터미널 3층 출국장 1,2 구역으로 오는데 사람 많아요?"
 arrival_congestion_prediction,애인이 내일 새벽 4시 2터미널 3층 출국장으로 오는데 정말 한산하겠네요?
 arrival_congestion_prediction,"오후 3시에 출국할 건데 1터미널 3층 출국장 1,2 구역 오늘 사람 많을까요?"
@@ -1131,7 +1013,6 @@ arrival_congestion_prediction,부모님이 내일 오전 12시 1터미널 3층 �
 arrival_congestion_prediction,"지인 오늘 밤 10시 3층 출국인데, 인천공항 3층 출국장 많이 기다려야 하나요?"
 arrival_congestion_prediction,여동생이 내일 오후 4시 2터미널 3층 출국장 총 몇 명이나 나갈까?
 arrival_congestion_prediction,"친구 배웅 오늘 오후 2시 나가는데, 1터미널 3층 출국장 1,2 구역 지금 어때요?"
-arrival_congestion_prediction,할머니가 내일 아침 6시 1터미널 3층 출국장 4 구역에서 출국인데 붐빌까 봐 걱정돼요.
 arrival_congestion_prediction,아들이 오늘 정오 12시 2터미널 3층 출국장 2 구역에서 출국인데 예상 인원수가 어떻게 돼요?
 arrival_congestion_prediction,"사촌이 내일 밤 8시 1터미널 3층 출국장 5,6 구역에서 출국인데 엄청 붐빌까요?"
 arrival_congestion_prediction,"우리 가족 오늘 아침 8시 출국인데, 인천공항 3층 모든 출국장 상황 좀 알려주세요."
@@ -1139,837 +1020,796 @@ arrival_congestion_prediction,언니가 내일 밤 9시 1터미널 3층 전체 �
 arrival_congestion_prediction,친구가 오늘 오후 6시 1터미널 3층 출국장 3 구역에서 출발하는데 사람 몇 명쯤 예상돼요?
 arrival_congestion_prediction,형이 내일 새벽 3시 2터미널 3층 출국장에서 출국인데 한산하겠죠?
 arrival_congestion_prediction,"고모가 오늘 오전 7시 1터미널 3층 출국장 5,6 구역에서 출국인데 예측 인원 좀 알려주세요."
-arrival_congestion_prediction,"친구 배웅 내일 오후 5시 나가는데, 1터미널 3층 출국장 1,2 구역은 평소랑 비슷할까요?"
 arrival_congestion_prediction,언니가 오늘 오후 4시 2터미널 3층 출국장 1 구역으로 가는데 사람 많이 몰리나요?
-arrival_congestion_prediction,부모님이 내일 오후 1시 1터미널 3층 전체 출국장에서 출국인데 얼마나 혼잡할까요?
-arrival_congestion_prediction,"남편 오늘 밤 11시 3층 출국인데, 인천공항 3층 출국장에 사람 많을까요?"
-arrival_congestion_prediction,친구가 내일 밤 10시 2터미널 3층 출국장 총 예상 인원이 궁금해요.
-arrival_congestion_prediction,"조카가 오늘 오후 3시 1터미널 3층 출국장 4 구역으로 가는데, 상황 좀 알려줘."
-arrival_congestion_prediction,"동생이 내일 오전 5시 1터미널 3층 출국장 3 구역으로 가는데, 혼잡도 예상 좀 해주세요."
-arrival_congestion_prediction,"할아버지가 오늘 오전 10시 2터미널 3층 출국장 2 구역에서 출국하시는데, 사람이 얼마나 될까요?"
-arrival_congestion_prediction,"친구가 내일 오후 6시 1터미널 3층 출국장 5,6 구역에서 출국인데 괜찮을까요?"
-arrival_congestion_prediction,"부모님이 오늘 오전 9시 3층 출국인데, 인천공항 3층 출국장 전반적으로 어때요?"
-arrival_congestion_prediction,가족들이 내일 오후 7시 1터미널 3층 전체 출국장에서 출국인데 인원 수 좀 봐주세요.
-arrival_congestion_prediction,"친구가 오늘 오후 1시 1터미널 3층 출국장 4 구역에서 출국인데, 사람 많나요?"
-arrival_congestion_prediction,애인이 내일 새벽 2시 2터미널 3층 출국장으로 오는데 한가한 편인가요?
-arrival_congestion_prediction,"친구 배웅 오늘 오후 2시 나가는데, 1터미널 3층 출국장 1,2 구역 예상 승객수 알려줘."
-arrival_congestion_prediction,엄마가 내일 오전 8시 1터미널 3층 출국장 3 구역으로 가는데 복잡할까요?
-arrival_congestion_prediction,"언니가 오늘 오후 5시 2터미널 3층 출국장 2 구역으로 나오는데, 사람 많을까요?"
-arrival_congestion_prediction,아빠가 내일 오전 9시 1터미널 3층 출국장 전체적으로 어때요?
-arrival_congestion_prediction,"부모님이 오늘 밤 9시 3층 출국인데, 인천공항 3층 출국장 많이 북적일까요?"
-arrival_congestion_prediction,친구가 내일 오후 3시 2터미널 3층 출국장 총 인원 얼마나 될까요?
-arrival_congestion_prediction,"가족 오늘 오전 11시 1터미널 3층 출국장 5,6 구역에서 출국인데 예상 혼잡도 어때요?"
-arrival_congestion_prediction,친구가 내일 오전 4시 1터미널 3층 출국장 4 구역으로 가는데 사람 거의 없겠죠?
-arrival_congestion_prediction,조카가 오늘 오후 1시 2터미널 3층 출국장 1 구역으로 나오는데 얼마나 올 것 같아요?
-arrival_congestion_prediction,형이 내일 밤 10시 1터미널 3층 출국장 3 구역으로 오는데 혼잡할까요?
-arrival_congestion_prediction,"부모님이 오늘 아침 6시 3층 출국인데, 인천공항 3층 출국장 전체적으로 어떤가요?"
-arrival_congestion_prediction,가족 내일 밤 11시 1터미널 3층 출국장 전체 얼마나 올까요?
-arrival_congestion_prediction,"친구가 오늘 오후 7시 1터미널 3층 출국장 1,2 구역으로 오는데 사람 많아요?"
-arrival_congestion_prediction,애인이 내일 새벽 4시 2터미널 3층 출국장으로 오는데 정말 한산하겠네요?
-airport_weather_current,지금 공항 날씨 어때요?
-airport_weather_current,인천공항 현재 기온 알려줘.
-airport_weather_current,지금 인천공항에 비 와요?
-airport_weather_current,공항 습도 몇 퍼센트예요?
-airport_weather_current,오늘 공항 바람 많이 불어요?
-airport_weather_current,인천공항 시정이 어떤가요?
-airport_weather_current,내일 공항 날씨는 어떨까요?
-airport_weather_current,인천공항 TAF 전문 보여주세요.
-airport_weather_current,새벽에 공항에 안개 낄까요?
-airport_weather_current,오후에 공항에 비올 확률은요?
-airport_weather_current,지금 인천공항 강수량 얼마예요?
-airport_weather_current,공항 기온 몇 도예요?
-airport_weather_current,"바람 세기 좀 알려줘, 인천공항."
-airport_weather_current,인천공항 현재 시정 괜찮아요?
-airport_weather_current,내일 오전에 공항 날씨 예보 좀.
-airport_weather_current,공항 기상 전문 오늘 거 다 줘.
-airport_weather_current,이따 공항에 눈 올 수도 있나요?
-airport_weather_current,지금 공항에 비 많이 오나?
-airport_weather_current,인천공항 지금 몇 도야?
-airport_weather_current,"공항 습한 편인가요, 현재?"
-airport_weather_current,"바람 방향 좀 알려줘, 공항."
-airport_weather_current,공항 날씨는 어떤지 궁금해요.
-airport_weather_current,내일 공항에 뇌우 예보 있나요?
-airport_weather_current,인천공항 ATMOS 데이터 보여줘.
-airport_weather_current,지금 공항 시정 좋아요?
-airport_weather_current,공항 기상 정보 업데이트 된 거 있어요?
-airport_weather_current,오늘 공항에 소나기 올까요?
-airport_weather_current,인천공항에 바람 속도 좀.
-airport_weather_current,현재 공항에 강수량 기록은요?
-airport_weather_current,내일 인천공항 날씨 요약해줘.
-airport_weather_current,공항 TAF 읽는 법 알려주세요.
-airport_weather_current,지금 공항 기온이 몇 도지?
-airport_weather_current,인천공항 습도 상태는 어떤가요?
-airport_weather_current,공항에 지금 바람은 어떤가요?
-airport_weather_current,오늘 공항 시정이 안 좋을까요?
-airport_weather_current,내일 공항에 바람이 세게 불까?
-airport_weather_current,"인천공항 날씨, 최신 정보로."
-airport_weather_current,공항 기상 예보 좀 자세히 알려줘.
-airport_weather_current,지금 공항에 강한 비 와요?
-airport_weather_current,인천공항 기온이 몇 도인지 확인해주세요.
-airport_weather_current,엄마 공항 갔는데 비 맞는 거 아니겠지?
-airport_weather_current,나 우산 없는데 왜 이렇게 하늘이 까맣지? 
-airport_weather_current,"아들 비행기 타러 공항 가는데, 혹시 날씨 안 좋아서 지연될까?"
-airport_weather_current,"친구 공항에서 지금 출발했대, 거기 날씨 괜찮아?"
-airport_weather_current,"부모님 마중 나가야 하는데, 공항 날씨 추운가요?"
-airport_weather_current,"애인 오늘 공항 도착인데, 옷 따뜻하게 입고 가야 할까?"
-airport_weather_current,"내일 아침 일찍 공항 가야 하는데, 새벽 날씨 어때요?"
-airport_weather_current,"아이랑 공항 놀러 가려고 하는데, 오늘 바람 많이 불까?"
-airport_weather_current,"비행기 곧 착륙한다는데, 공항 시야는 괜찮은가요?"
-airport_weather_current,"짐 부칠 때 비 안 오게, 공항 날씨 좀 미리 알려줘."
-airport_weather_current,오늘 밤 공항에 눈 예보 있나요? 길이 미끄러울까 봐.
-airport_weather_current,"엄마 공항에서 대기 중인데, 거기 날씨 어떠냐고 물어봐달래."
-airport_weather_current,"공항에 도착했는데 너무 추워요, 기온이 몇 도죠?"
-airport_weather_current,"친구 데리러 공항 가야 하는데, 지금 비 많이 와?"
-airport_weather_current,공항 습도가 높으면 많이 꿉꿉한가요?
-airport_weather_current,바람 많이 불면 비행기 흔들리나요? 
-airport_weather_current,공항 시정 안 좋으면 비행기 못 뜨나요?
-airport_weather_current,"내일 공항 가는 길, 안개 심할까 걱정돼요."
-airport_weather_current,"아침에 공항에 도착할 건데, 날씨 너무 춥지 않겠죠?"
-airport_weather_current,이따 저녁에 공항 날씨 괜찮을까요? 퇴근하고 가야 해서.
-airport_weather_current,"지금 공항에 우박 떨어지는 소리 들리는데, 진짜인가요?"
-airport_weather_current,내일 공항에 태풍 영향 있을까요?
-airport_weather_current,"공항 활주로에 물 고여있을 정도로 비가 오나요, 지금?"
-airport_weather_current,지금 공항에 번개 쳐요? 무서운데.
-airport_weather_current,공항 주변 날씨가 왜 이렇게 흐려요?
-airport_weather_current,"내일 공항 가는데, 옷차림 어떻게 해야 할지 감이 안 와요."
-airport_weather_current,"공항 TAF 전문 보니까 바람이 좀 세다는데, 맞나요?"
-airport_weather_current,"오늘 공항에 비 예보 있었는데, 얼마나 왔어요?"
-airport_weather_current,공항 습도가 너무 낮아서 건조하진 않겠죠?
-airport_weather_current,지금 공항 바람이 좀 심한 것 같아요.
-airport_weather_current,"공항 시정이 너무 좋아서 잘 보이네요, 몇 킬로미터에요?"
-airport_weather_current,내일 공항에 미세먼지 심할까요?
-airport_weather_current,이번 주말 공항 날씨는 전반적으로 어떨지 알려주세요.
-airport_weather_current,공항 ATMOS 데이터에 기온 변화가 심한가요?
-airport_weather_current,"밤늦게 공항 도착인데, 기상 상태 괜찮을까요?"
-airport_weather_current,공항에 지금 안개 꼈나요?
-airport_weather_current,비행기 탑승 전에 공항 날씨 한 번 더 확인하고 싶어요.
-airport_weather_current,인천공항 오늘 강수량 예보 좀.
-airport_weather_current,내일 새벽에 공항에 바람이 많이 불지 않았으면 좋겠는데.
-airport_weather_current,지금 공항 기온이 너무 내려간 것 같아요.
-airport_weather_current,공항 현재 날씨는 어떤가요?
-airport_weather_current,인천공항 지금 몇 시 관측 기온인가요?
-airport_weather_current,공항에 비가 오고 있나요?
-airport_weather_current,습도가 공항에 영향을 주나요?
-airport_weather_current,오늘 공항 평균 풍속 좀 알려주세요.
-airport_weather_current,공항 현재 시정거리는 몇 미터죠?
-airport_weather_current,내일 공항 기상 예보는 어떤가요?
-airport_weather_current,TAF 전문에서 중요한 부분만 설명해주세요.
-airport_weather_current,새벽 공항에 저시정 예보 있나요?
-airport_weather_current,오후 공항에 강수 예보 있어요?
-airport_weather_current,지금 공항에 내린 비는 얼마나 되나요?
-airport_weather_current,공항 최고 기온이 몇 도까지 올라갈까요?
-airport_weather_current,인천공항 10분 평균 풍속 데이터 좀.
-airport_weather_current,공항 시정이 비행에 문제없나요?
-airport_weather_current,내일 오전 공항 날씨 요약해주세요.
-airport_weather_current,공항 TAF에서 바람 정보만 뽑아줄 수 있나요?
-airport_weather_current,이따 공항에 우박 예보 있나요?
-airport_weather_current,지금 공항에 비구름이 보이나요?
-airport_weather_current,인천공항 최저 기온이 언제쯤일까요?
-airport_weather_current,공항 습도가 몇 %인지 실시간으로 알려주세요.
-airport_weather_current,지금 인천공항 날씨 현황 좀 부탁해요.
-airport_weather_current,오늘 공항 기온이 궁금해요.
-airport_weather_current,인천공항 지금 비 오고 있나요?
-airport_weather_current,공항 현재 습도는요?
-airport_weather_current,오늘 인천공항 바람은 어떤가요?
-airport_weather_current,공항 시정 상태 좀 알려주세요.
-airport_weather_current,내일 공항 기상 예보 좀 볼 수 있을까요?
-airport_weather_current,인천공항 TAF 전문 다 보내주세요.
-airport_weather_current,공항에 새벽 안개 소식 있나요?
-airport_weather_current,오후에 공항에 비 내릴 확률이요?
-airport_weather_current,지금 인천공항 강수량 체크해주세요.
-airport_weather_current,공항 현재 기온 몇 도죠?
-airport_weather_current,"바람 세기 좀 알려줘, 인천공항 현재."
-airport_weather_current,인천공항 시정 괜찮은지 확인 부탁해요.
-airport_weather_current,내일 오전에 공항 날씨 좀 자세히.
-airport_weather_current,공항 기상 전문 오늘자 전부 다요.
-airport_weather_current,이따 공항에 눈 올 예정 있나요?
-airport_weather_current,지금 공항에 비가 많이 오는지 궁금해요.
-airport_weather_current,인천공항 지금 몇 도인지 알려주세요.
-airport_weather_current,공항 지금 습한 편인가요?
-airport_weather_current,"바람 방향 좀 알려주세요, 공항."
-airport_weather_current,공항 날씨는 지금 어떤지 궁금해요.
-airport_weather_current,내일 공항에 뇌우 예보 있는지 확인해주세요.
-airport_weather_current,인천공항 ATMOS 데이터 좀 보여줄래요?
-airport_weather_current,지금 공항 시정 괜찮아요?
-airport_weather_current,공항 기상 정보 최신 업데이트 있어요?
-airport_weather_current,오늘 공항에 소나기 예보 있나요?
-airport_weather_current,인천공항에 바람 속도 좀 알려줘요.
-airport_weather_current,현재 공항에 강수량 기록이요?
-airport_weather_current,내일 인천공항 날씨 간단히 요약해줘요.
-airport_weather_current,공항 TAF 어떻게 읽는 거예요?
-airport_weather_current,지금 공항 기온이 몇 도죠?
-airport_weather_current,인천공항 습도 상태는 어떤지 알려주세요.
-airport_weather_current,공항에 지금 바람은 어떤 상태인가요?
-airport_weather_current,오늘 공항 시정이 안 좋을 수도 있나요?
-airport_weather_current,내일 공항에 바람이 세게 불 예정인가요?
-airport_weather_current,"인천공항 날씨, 제일 최신 정보로 부탁해요."
-airport_weather_current,공항 기상 예보 좀 더 자세히 알려줘요.
-airport_weather_current,지금 공항에 강한 비가 오는지 확인해주세요.
-airport_weather_current,인천공항 기온이 몇 도인지 알려줄 수 있나요?
-airport_weather_current,오늘 인천공항은 어떤 기온을 보이나요?
-airport_weather_current,"바람은 얼마나 세게 불어요, 공항에?"
-airport_weather_current,인천공항 지금 비가 내리나요?
-airport_weather_current,"습도 때문에 공기가 꿉꿉한가요, 공항?"
-airport_weather_current,"시정은 몇 미터 정도 되나요, 인천공항?"
-airport_weather_current,내일 인천공항에 비 예보 있나요?
-airport_weather_current,TAF 전문에서 오늘 날씨만 보여줘요.
-airport_weather_current,ATMOS 데이터로 지금 공항 상태 알려줘.
-airport_weather_current,"공항 날씨, 바람이 세서 걱정돼요."
-airport_weather_current,지금 인천공항에 안개가 심한가요?
-airport_weather_current,오늘 공항에 강수량이 얼마나 기록됐나요?
-airport_weather_current,기온이 오늘 공항에서 많이 떨어질까요?
-airport_weather_current,"공항 습도가 너무 높은데요, 괜찮은 건가요?"
-airport_weather_current,인천공항 시정이 좋으면 항공편에 영향 없나요?
-airport_weather_current,내일 공항에 눈 올 확률 좀 알려주세요.
-airport_weather_current,"공항 날씨, 태풍 영향은 언제쯤부터인가요?"
-airport_weather_current,지금 인천공항에 뇌우가 발생했어요?
-airport_weather_current,강수량 정보로 공항 비가 얼마나 오는지 알 수 있나요?
-airport_weather_current,인천공항 기온이 너무 낮아서 걱정돼요.
-airport_weather_current,공항 바람이 비행에 문제 될 정도인가요?
-airport_weather_current,시정이 공항에서 많이 나빠질 예정인가요?
-airport_weather_current,내일 공항에 아침 안개 예보 있어요?
-airport_weather_current,오늘 공항 날씨가 왜 이렇게 좋죠?
-airport_weather_current,ATMOS 데이터 중 풍속만 볼 수 있나요?
-airport_weather_current,공항에 비 예보가 없어졌나요?
-airport_weather_current,지금 인천공항에 구름 많아요?
-airport_weather_current,공항 습도가 높으면 체감 온도는 어떤가요?
-airport_weather_current,바람이 공항 활주로에 어떤 영향을 주나요?
-airport_weather_current,인천공항 시정이 갑자기 나빠질 수 있나요?
-airport_weather_current,내일 공항에 비가 오면 몇 시쯤일까요?
-airport_weather_current,TAF 전문에서 최저 기온 정보만 알려줘요.
-airport_weather_current,ATMOS 데이터가 실시간으로 반영되나요?
-airport_weather_current,공항 날씨 예보에 갑작스런 변화 있나요?
-airport_weather_current,"인천공항 현재 날씨, 한눈에 볼 수 있는 건가요?"
-airport_weather_current,공항에 강수량이 계속 늘고 있나요?
-airport_weather_current,지금 인천공항 기온은 정상인가요?
-airport_weather_current,공항 습도가 높으면 결로 현상 생기나요?
-airport_weather_current,인천공항 바람이 계속 불고 있나요?
-airport_weather_current,시정이 공항에서 얼마나 중요한가요?
-airport_weather_current,내일 공항에 서리가 내릴까요?
-airport_weather_current,우리 가족 오늘 공항 가는데 날씨 어떨까요?
-airport_weather_current,아들 마중 나가는데 공항 비 안 오겠지?
-airport_weather_current,친구 데리러 가는데 공항 날씨 괜찮은지 확인해줘.
-airport_weather_current,"부모님 지금 공항에서 출국하셨는데, 바람 많이 부나요?"
-airport_weather_current,"내일 남편 공항 도착인데, 너무 추울까 봐 걱정돼요."
-airport_weather_current,애인 비행기 내릴 때 공항 시정 괜찮을까요?
-airport_weather_current,"아기랑 공항에 놀러 갈 건데, 날씨가 좋았으면 좋겠어요."
-airport_weather_current,"지인 공항 마중 가는데, 혹시 비 오면 우산 챙겨야 하나요?"
-airport_weather_current,"이모 공항 도착이신데, 거기 기온이 몇 도인지 알려줘."
-airport_weather_current,"삼촌 공항에서 출발하셨는데, 바람이 세서 걱정돼요."
-airport_weather_current,"친구 공항에서 지금 출발했다는데, 혹시 비 오나요?"
-airport_weather_current,"내일 부모님 공항 마중 나가는데, 날씨 예보 좀."
-airport_weather_current,"우리 아이 공항에서 비행기 기다리는데, 너무 춥지 않을까?"
-airport_weather_current,"남편 공항 도착 시간인데, 거기 시야 괜찮은지 알려줘요."
-airport_weather_current,"애인 공항에서 나와서 이동하는데, 바람 많이 불면 불편할까?"
-airport_weather_current,"오늘 저녁 우리 가족 공항 마중인데, 날씨 어때요?"
-airport_weather_current,아들 공항 도착해서 나올 때 비 올까 봐 걱정돼요.
-airport_weather_current,"친구 공항에서 출국했는데, 지금 강수량 얼마나 돼요?"
-airport_weather_current,"부모님 공항 가는 길인데, 안개 낀다고 들었는데 맞나요?"
-airport_weather_current,"내일 아침 일찍 공항 가는데, 날씨가 너무 쌀쌀할까?"
-airport_weather_current,공항에 지금 기온 몇 도인가요? 
-airport_weather_current,오늘 인천공항에 바람 얼마나 부는지 궁금해요.
-airport_weather_current,인천공항에 현재 시정은 어떤가요?
-airport_weather_current,공항에 비가 오면 강수량은 얼마인가요?
-airport_weather_current,습도가 지금 공항에 어떤 영향을 주는지 알려주세요.
-airport_weather_current,내일 공항 날씨 예보는 어떻게 되나요?
-airport_weather_current,TAF 전문에서 바람 정보만 알려줄 수 있나요?
-airport_weather_current,ATMOS 데이터 중 기온 정보만 볼 수 있나요?
-airport_weather_current,"공항 날씨가 갑자기 추워졌어요, 왜 그런가요?"
-airport_weather_current,인천공항에 안개 꼈다는 소식 들었는데 맞나요?
-airport_weather_current,오늘 공항에 강수량 기록은요? 
-airport_weather_current,기온이 오늘 공항에서 최고 몇 도까지 올라갈까요?
-airport_weather_current,공항 습도가 너무 낮아서 건조한가요?
-airport_weather_current,인천공항 시정이 너무 좋아서 잘 보이네요.
-airport_weather_current,내일 공항에 서리 내릴 가능성 있나요?
-airport_weather_current,"공항 날씨, 태풍이 접근 중인가요?"
-airport_weather_current,지금 인천공항에 뇌우가 발생했나요?
-airport_weather_current,강수량 정보로 공항 비가 얼마나 왔는지 알 수 있나요?
-airport_weather_current,인천공항 기온이 너무 낮아서 감기 걸릴까 걱정돼요.
-airport_weather_current,공항 바람이 강해서 비행기 이착륙에 문제 없나요?
-airport_weather_current,시정이 공항에서 너무 안 좋으면 어떻게 되나요?
-airport_weather_current,내일 공항에 아침에 안개가 심할까요?
-airport_weather_current,"오늘 공항 날씨가 너무 좋아요, 여행 가기 딱 좋네요."
-airport_weather_current,ATMOS 데이터 중 습도만 볼 수 있나요?
-airport_weather_current,공항에 비 예보가 변동됐나요?
-airport_weather_current,지금 인천공항에 구름이 잔뜩 꼈나요?
-airport_weather_current,공항 습도가 높으면 불쾌지수도 올라가나요?
-airport_weather_current,바람이 공항 주변에 어떤 영향을 미치나요?
-airport_weather_current,인천공항 시정이 갑자기 좋아질 수 있나요?
-airport_weather_current,내일 공항에 비가 오면 언제 그칠까요?
-airport_weather_current,TAF 전문에서 운고 정보만 알려줘요.
-airport_weather_current,ATMOS 데이터가 갱신되는 주기는 어떻게 되나요?
-airport_weather_current,공항 날씨 예보에 특이사항 있나요?
-airport_weather_current,"인천공항 현재 날씨, 상세하게 알려주세요."
-airport_weather_current,공항에 강수량이 급격히 늘고 있나요?
-airport_weather_current,지금 인천공항 기온은 평균적인가요?
-airport_weather_current,공항 습도가 너무 낮으면 정전기 생기나요?
-airport_weather_current,인천공항 바람이 일정하게 불고 있나요?
-airport_weather_current,시정이 공항에서 비행에 필수적인가요?
-airport_weather_current,내일 공항에 눈이 많이 올까요?
-airport_weather_current,지금 인천공항에 비 오나요?
-airport_weather_current,내일 공항 가는 길 날씨 괜찮을지 궁금해요. 
-airport_weather_current,"아침에 공항에 도착할 건데, 날씨 너무 춥지 않겠죠? "
-airport_weather_current,"부모님 비행기 곧 착륙한다는데, 공항 시야는 괜찮나요? "
-airport_weather_current,"우리 아이 공항 놀러 가려고 하는데, 오늘 바람 많이 불까요? "
-airport_weather_current,"이모 공항에서 지금 출발했다는데, 혹시 거기 날씨 어때요? "
-airport_weather_current,오늘 밤 공항에 눈 예보 있나요? 아빠 차 몰고 가야 해서요. 
-airport_weather_current,"친구 공항에서 대기 중인데, 거기 날씨 어떠냐고 물어봐달래요. "
-airport_weather_current,"공항에 도착했는데 너무 추워요, 현재 기온이 몇 도죠? "
-airport_weather_current,"남편 데리러 공항 가야 하는데, 지금 비 많이 와요? "
-airport_weather_current,공항 습도가 너무 높으면 짐 꿉꿉해지나요? 
-airport_weather_current,바람 많이 불면 비행기 흔들려서 울렁거릴까 봐 걱정돼요. 
-airport_weather_current,공항 시정 안 좋으면 비행기 못 뜨는 거 맞아요? 
-airport_weather_current,"내일 공항 가는 길, 안개 심할까 봐 걱정돼요. "
-airport_weather_current,"아침에 공항에 도착할 건데, 날씨 너무 춥지 않겠죠? "
-airport_weather_current,이따 저녁에 공항 날씨 괜찮을까요? 퇴근하고 애인 마중 가야 해서요. 
-airport_weather_current,"지금 공항에 우박 떨어지는 소리 들리는데, 진짜인가요? "
-airport_weather_current,내일 공항에 태풍 영향 있을까 봐 불안해요. 
-airport_weather_current,"공항 활주로에 물 고여있을 정도로 비가 오나요, 지금? "
-airport_weather_current,지금 공항에 번개 쳐요? 무서운데요. 
-airport_weather_current,공항 주변 날씨가 왜 이렇게 흐려요? 
-airport_weather_current,"내일 공항 가는데, 옷차림 어떻게 해야 할지 감이 안 와요. "
-airport_weather_current,"공항 TAF 전문 보니까 바람이 좀 세다는데, 맞나요? "
-airport_weather_current,"오늘 공항에 비 예보 있었는데, 얼마나 왔어요? "
-airport_weather_current,공항 습도가 너무 낮아서 건조하진 않겠죠? 
-airport_weather_current,지금 공항 바람이 좀 심한 것 같아요. 
-airport_weather_current,"공항 시정이 너무 좋아서 잘 보이네요, 몇 킬로미터에요? "
-airport_weather_current,내일 공항에 미세먼지 심할까요? 
-airport_weather_current,이번 주말 공항 날씨는 전반적으로 어떨지 알려주세요. 
-airport_weather_current,공항 ATMOS 데이터에 기온 변화가 심한가요? 
-airport_weather_current,"밤늦게 공항 도착인데, 기상 상태 괜찮을까요? "
-airport_weather_current,공항에 지금 안개 꼈나요? 
-airport_weather_current,비행기 탑승 전에 공항 날씨 한 번 더 확인하고 싶어요. 
-airport_weather_current,인천공항 오늘 강수량 예보 좀. 
-airport_weather_current,내일 새벽에 공항에 바람이 많이 불지 않았으면 좋겠는데. 
-airport_weather_current,지금 공항 기온이 너무 내려간 것 같아요. 
-airport_weather_current,"엄마 공항에서 대기 중인데, 너무 덥지는 않대요? "
-airport_weather_current,"아빠 비행기 곧 이륙한다는데, 공항 날씨 괜찮은 건가? "
-airport_weather_current,"친구 공항에서 밤늦게 도착인데, 날씨 너무 춥지 않을까? "
-airport_weather_current,"내일 부모님 공항 마중 갈 건데, 날씨 예보 좀 자세히 알려줘요. "
-airport_weather_current,인천공항 오늘 날씨 정보 궁금해요.
-airport_weather_current,지금 공항의 기온은 몇 도죠?
-airport_weather_current,공항에 지금 비가 내리는지 확인 부탁해요.
-airport_weather_current,인천공항 현재 습도는 몇 %인가요?
-airport_weather_current,오늘 공항의 풍속은 어떤가요?
-airport_weather_current,공항 시정거리가 몇 미터인지 알려주세요.
-airport_weather_current,내일 인천공항 기상 예보는요?
-airport_weather_current,TAF 전문에서 유효 기간 좀 알려줄 수 있어요?
-airport_weather_current,공항에 새벽에 안개가 끼는 걸까요?
-airport_weather_current,오후에 공항에 강수 예보가 있는지 궁금해요.
-airport_weather_current,지금 인천공항 강수량은 얼마나 측정됐나요?
-airport_weather_current,공항 기온이 오늘 최고로 몇 도까지 올라갈지?
-airport_weather_current,인천공항 10분 평균 풍속은 어떻게 되나요?
-airport_weather_current,공항 시정이 항공기 운항에 지장 없나요?
-airport_weather_current,내일 오전 인천공항 날씨 간략하게 요약해줘요.
-airport_weather_current,공항 TAF 전문에서 시정 정보만 뽑아줄 수 있어요?
-airport_weather_current,이따 공항에 우박이 올 가능성 있나요?
-airport_weather_current,지금 공항에 소나기가 오고 있나요?
-airport_weather_current,인천공항 최저 기온은 언제쯤 예상되나요?
-airport_weather_current,공항 습도가 실시간으로 어떻게 변하나요?
-airport_weather_current,인천공항 현재 기상 상태는?
-airport_weather_current,오늘 공항 기온 몇 도예요?
-airport_weather_current,공항에 비 오나요 지금?
-airport_weather_current,습도 어때 공항은?
-airport_weather_current,"바람 세기 좀 알려줘, 인천공항."
-airport_weather_current,시정 괜찮아 공항?
-airport_weather_current,내일 공항 날씨 어떨지 궁금.
-airport_weather_current,인천공항 TAF 전문 싹 다 줘요.
-airport_weather_current,새벽에 공항에 안개 낄 것 같아?
-airport_weather_current,오후에 공항에 비 올 확률은?
-airport_weather_current,지금 인천공항 비 얼마나 왔어?
-airport_weather_current,공항 온도 몇 도야?
-airport_weather_current,공항에 바람 얼마나 부는지 좀.
-airport_weather_current,인천공항 시야 괜찮은가요?
-airport_weather_current,내일 오전에 공항 날씨 어떠려나.
-airport_weather_current,공항 기상 전문 오늘 거 다 봐줘.
-airport_weather_current,이따 공항에 눈 올지도 몰라요?
-airport_weather_current,지금 공항에 비 엄청 오는 중이야?
-airport_weather_current,인천공항 현재 온도 몇 도인지 알려줘.
-airport_weather_current,공항 습도 높은 편인가요?
-airport_weather_current,바람 부는 방향 알려줘 공항.
-airport_weather_current,공항 날씨 지금 어떤지 알려줘.
-airport_weather_current,내일 공항에 천둥번개 예보 있어?
-airport_weather_current,인천공항 ATMOS 데이터 좀.
-airport_weather_current,지금 공항 시정 괜찮은가?
-airport_weather_current,공항 기상 정보 새로운 거 떴어?
-airport_weather_current,오늘 공항에 소나기 예보 있니?
-airport_weather_current,인천공항 바람 속도 좀 봐줘.
-airport_weather_current,현재 공항에 비 얼마나 왔는지.
-airport_weather_current,내일 인천공항 날씨는 어때? 요약해서.
-airport_weather_current,공항 TAF 해석 좀.
-airport_weather_current,지금 공항 기온 몇 도쯤이야?
-airport_weather_current,인천공항 습도 어때?
-airport_weather_current,공항에 지금 바람 불어?
-airport_weather_current,오늘 공항 시정 나빠질까?
-airport_weather_current,내일 공항 바람 세게 불까봐 걱정돼.
-airport_weather_current,"인천공항 날씨, 최신으로."
-airport_weather_current,공항 기상 예보 좀 더 자세하게.
-airport_weather_current,지금 공항에 폭우 내리나요?
-airport_weather_current,인천공항 온도 몇 도인지.
-airport_weather_current,우리 아빠 공항 가셨는데 비 맞는 거 아니겠지?
-airport_weather_current,나 우산 없는데 공항 왜 이렇게 하늘이 어두워?
-airport_weather_current,아들 비행기 타러 공항 갔는데 날씨 안 좋아서 딜레이 될까?
-airport_weather_current,"친구 공항에서 방금 출발했대, 거기 날씨는 어때?"
-airport_weather_current,"엄마 마중 나가야 하는데, 공항 날씨 춥지는 않나요?"
-airport_weather_current,"애인 오늘 공항 도착인데, 옷 따뜻하게 챙겨야 하나?"
-airport_weather_current,"내일 아침 일찍 공항 가는데, 새벽 날씨 별로 안 좋으려나?"
-airport_weather_current,"아이랑 공항 놀러 갈 건데, 오늘 바람 엄청 불면 어떡하지?"
-airport_weather_current,"비행기 곧 내린다는데, 공항 시야는 괜찮은가요?"
-airport_weather_current,"짐 부칠 때 비 안 오게, 공항 날씨 미리 알 수 있을까?"
-airport_weather_current,오늘 밤 공항에 눈 예보 있어요? 운전해야 해서.
-airport_weather_current,"엄마 공항에서 대기 중이신데, 거기 날씨 어떤지 물어봐달래요."
-airport_weather_current,"공항 도착했는데 너무 추워서, 현재 기온이 궁금해요."
-airport_weather_current,"친구 데리러 공항 가야 하는데, 지금 비가 많이 오나?"
-airport_weather_current,공항 습도 높으면 좀 눅눅한가요?
-airport_weather_current,바람 많이 불면 비행기 심하게 흔들려요? (공항)
-airport_weather_current,공항 시정 나쁘면 비행기 못 뜰 수도 있다고?
-airport_weather_current,"내일 공항 가는 길, 안개 때문에 시야 안 좋을까 봐 걱정."
-airport_weather_current,"아침에 공항에 도착할 건데, 날씨 너무 춥지 않았으면 좋겠어요."
-airport_weather_current,이따 저녁에 공항 날씨 괜찮으려나? 퇴근하고 가야 해서.
-airport_weather_current,지금 공항에 우박 내리는 소리 들리는데 진짜야?
-airport_weather_current,내일 공항에 태풍 온다는 소리 있던데 사실이야?
-airport_weather_current,"공항 활주로에 물 고일 정도로 비가 오나요, 지금?"
-airport_weather_current,지금 공항에 번개 쳐요? 무섭다.
-airport_weather_current,공항 주변 날씨가 왜 이렇게 흐릿흐릿해?
-airport_weather_current,"내일 공항 가는데, 옷 어떻게 입어야 할지 모르겠어요."
-airport_weather_current,"공항 TAF 보니까 바람이 좀 세다는데, 진짜예요?"
-airport_weather_current,"오늘 공항에 비 예보 있었는데, 얼마나 내렸어요?"
-airport_weather_current,공항 습도가 너무 낮아서 피부 건조해지진 않겠죠?
-airport_weather_current,지금 공항 바람이 좀 센 것 같아요.
-airport_weather_current,"공항 시정이 너무 좋아서 멀리까지 다 보여요, 몇 km죠?"
-airport_weather_current,내일 공항에 미세먼지 많으려나?
-airport_weather_current,이번 주말 공항 날씨 전반적으로 어떤가요?
-airport_weather_current,공항 ATMOS 데이터 보니까 기온이 오락가락하네요.
-airport_weather_current,"밤늦게 공항 도착인데, 기상 괜찮을지 모르겠네."
-airport_weather_current,공항에 지금 안개 꼈어?
-airport_weather_current,비행기 타기 전에 공항 날씨 또 확인하고 싶어요.
-airport_weather_current,인천공항 오늘 비 예보 양 좀.
-airport_weather_current,내일 새벽 공항에 바람 많이 안 불었으면 좋겠는데.
-airport_weather_current,지금 공항 기온 너무 떨어진 것 같아.
-airport_weather_current,오늘 공항 날씨 어때요? 기온이랑 바람 다요.
-airport_weather_current,인천공항 지금 시정 괜찮아요? 비행기 뜨는 데 지장 없죠?
-airport_weather_current,현재 공항에 강수량이 얼마나 기록됐는지 알려주세요.
-airport_weather_current,내일 오전 공항에 안개 예보가 있는지 궁금해요.
-airport_weather_current,TAF 전문에서 오늘 오후 날씨 예보만 뽑아서 보여줄 수 있나요?
 airport_weather_current,"ATMOS 데이터 보니까 공항 습도가 좀 높은 것 같은데, 맞나요?"
-airport_weather_current,공항 날씨 예보에 강한 바람 소식은 없나요?
-airport_weather_current,"인천공항 현재 기온이 몇 도이고, 이슬점은 어떤가요?"
-airport_weather_current,지금 공항에 비가 오면 강수량은 얼마나 될지 예상해줄 수 있나요?
-airport_weather_current,내일 공항에 눈이 오면 얼마나 올지 TAF에 나와있나요?
-airport_weather_current,공항 시정이 안 좋으면 항공편 결항될 수도 있나요?
-airport_weather_current,인천공항 10분 평균 풍속이 평소보다 센가요?
-airport_weather_current,오늘 공항 날씨가 갑자기 변할 가능성 있나요?
+airport_weather_current,ATMOS 데이터 중 기온 정보만 볼 수 있나요?
+airport_weather_current,ATMOS 데이터 중 습도만 볼 수 있나요?
+airport_weather_current,ATMOS 데이터 중 풍속만 볼 수 있나요?
+airport_weather_current,ATMOS 데이터가 갱신되는 주기는 어떻게 되나요?
+airport_weather_current,ATMOS 데이터가 실시간으로 반영되나요?
+airport_weather_current,ATMOS 데이터로 지금 공항 상태 알려줘.
 airport_weather_current,ATMOS 데이터에서 시간대별 기온 변화를 볼 수 있나요?
-airport_weather_current,공항에 지금 안개나 연무가 끼어있나요?
-airport_weather_current,인천공항 TAF 전문에 뇌우 예보가 있나요?
-airport_weather_current,지금 공항에 비가 약하게 오는지 세게 오는지 알려주세요.
-airport_weather_current,내일 공항에 최저 기온이 몇 도까지 내려갈까요?
+airport_weather_current,TAF 전문에서 바람 정보만 알려줄 수 있나요?
+airport_weather_current,TAF 전문에서 오늘 날씨만 보여줘요.
+airport_weather_current,TAF 전문에서 오늘 오후 날씨 예보만 뽑아서 보여줄 수 있나요?
+airport_weather_current,TAF 전문에서 운고 정보만 알려줘요.
+airport_weather_current,TAF 전문에서 유효 기간 좀 알려줄 수 있어요?
+airport_weather_current,TAF 전문에서 중요한 부분만 설명해주세요.
+airport_weather_current,TAF 전문에서 최저 기온 정보만 알려줘요.
+airport_weather_current,강수량 정보로 공항 비가 얼마나 오는지 알 수 있나요?
+airport_weather_current,공항 ATMOS 데이터 보니까 기온이 오락가락하네요.
+airport_weather_current,공항 ATMOS 데이터에 기온 변화가 심한가요?
+airport_weather_current,"공항 TAF 보니까 바람이 좀 세다는데, 진짜예요?"
+airport_weather_current,공항 TAF 어떻게 읽는 거예요?
+airport_weather_current,공항 TAF 읽는 법 알려주세요.
+airport_weather_current,"공항 TAF 전문 보니까 바람이 좀 세다는데, 맞나요?"
+airport_weather_current,공항 TAF 전문에서 시정 정보만 뽑아줄 수 있어요?
+airport_weather_current,공항 TAF 해석 좀.
+airport_weather_current,공항 TAF에서 바람 정보만 뽑아줄 수 있나요?
+airport_weather_current,공항 기상 예보 좀 더 자세하게.
+airport_weather_current,공항 기상 예보 좀 더 자세히 알려줘요.
+airport_weather_current,공항 기상 예보 좀 자세히 알려줘.
+airport_weather_current,공항 기상 전문 오늘 거 다 줘.
+airport_weather_current,공항 기상 전문 오늘자 전부 다요.
+airport_weather_current,공항 기상 정보 새로운 거 떴어?
+airport_weather_current,공항 기상 정보 업데이트 된 거 있어요?
+airport_weather_current,공항 기상 정보 최신 업데이트 있어요?
+airport_weather_current,공항 기온 몇 도예요?
+airport_weather_current,공항 기온이 오늘 최고로 몇 도까지 올라갈지?
+airport_weather_current,공항 날씨 예보에 갑작스런 변화 있나요?
+airport_weather_current,공항 날씨 예보에 강한 바람 소식은 없나요?
+airport_weather_current,공항 날씨 예보에 특이사항 있나요?
+airport_weather_current,공항 날씨 지금 어떤지 알려줘.
+airport_weather_current,"공항 날씨, 바람이 세서 걱정돼요."
+airport_weather_current,"공항 날씨, 태풍 영향은 언제쯤부터인가요?"
+airport_weather_current,"공항 날씨, 태풍이 접근 중인가요?"
+airport_weather_current,"공항 날씨가 갑자기 추워졌어요, 왜 그런가요?"
+airport_weather_current,공항 날씨는 어떤지 궁금해요.
+airport_weather_current,공항 날씨는 지금 어떤지 궁금해요.
+airport_weather_current,"공항 도착했는데 너무 추워서, 현재 기온이 궁금해요."
+airport_weather_current,공항 바람이 강해서 비행기 이착륙에 문제 없나요?
+airport_weather_current,공항 바람이 비행에 문제 될 정도인가요?
+airport_weather_current,공항 습도 높으면 좀 눅눅한가요?
+airport_weather_current,공항 습도 높은 편인가요?
+airport_weather_current,공항 습도 몇 퍼센트예요?
+airport_weather_current,공항 습도가 너무 낮아서 건조하진 않겠죠?
+airport_weather_current,공항 습도가 너무 낮아서 건조한가요?
+airport_weather_current,공항 습도가 너무 낮아서 피부 건조해지진 않겠죠?
 airport_weather_current,공항 습도가 너무 낮으면 건조주의보 내려지나요?
+airport_weather_current,공항 습도가 너무 낮으면 정전기 생기나요?
+airport_weather_current,공항 습도가 너무 높으면 짐 꿉꿉해지나요? 
+airport_weather_current,"공항 습도가 너무 높은데요, 괜찮은 건가요?"
+airport_weather_current,공항 습도가 높으면 결로 현상 생기나요?
+airport_weather_current,공항 습도가 높으면 많이 꿉꿉한가요?
+airport_weather_current,공항 습도가 높으면 불쾌지수도 올라가나요?
+airport_weather_current,공항 습도가 높으면 체감 온도는 어떤가요?
+airport_weather_current,공항 습도가 몇 %인지 실시간으로 알려주세요.
+airport_weather_current,공항 습도가 실시간으로 어떻게 변하나요?
+airport_weather_current,"공항 습한 편인가요, 현재?"
+airport_weather_current,공항 시정 나쁘면 비행기 못 뜰 수도 있다고?
+airport_weather_current,공항 시정 상태 좀 알려주세요.
+airport_weather_current,공항 시정 안 좋으면 비행기 못 뜨나요?
+airport_weather_current,공항 시정 안 좋으면 비행기 못 뜨는 거 맞아요? 
+airport_weather_current,공항 시정거리가 몇 미터인지 알려주세요.
+airport_weather_current,"공항 시정이 너무 좋아서 멀리까지 다 보여요, 몇 km죠?"
+airport_weather_current,"공항 시정이 너무 좋아서 잘 보이네요, 몇 킬로미터에요?"
+airport_weather_current,공항 시정이 비행에 문제없나요?
+airport_weather_current,공항 시정이 안 좋으면 항공편 결항될 수도 있나요?
+airport_weather_current,공항 시정이 항공기 운항에 지장 없나요?
+airport_weather_current,공항 온도 몇 도야?
+airport_weather_current,공항 주변 날씨가 왜 이렇게 흐려요?
+airport_weather_current,공항 주변 날씨가 왜 이렇게 흐릿흐릿해?
+airport_weather_current,공항 지금 습한 편인가요?
+airport_weather_current,공항 최고 기온이 몇 도까지 올라갈까요?
+airport_weather_current,공항 현재 기온 몇 도죠?
+airport_weather_current,공항 현재 날씨는 어떤가요?
+airport_weather_current,공항 현재 습도는요?
+airport_weather_current,공항 현재 시정거리는 몇 미터죠?
+airport_weather_current,"공항 활주로에 물 고여있을 정도로 비가 오나요, 지금?"
+airport_weather_current,"공항 활주로에 물 고일 정도로 비가 오나요, 지금?"
+airport_weather_current,공항에 강수량이 계속 늘고 있나요?
+airport_weather_current,공항에 강수량이 급격히 늘고 있나요?
+airport_weather_current,"공항에 도착했는데 너무 추워요, 기온이 몇 도죠?"
+airport_weather_current,"공항에 도착했는데 너무 추워요, 현재 기온이 몇 도죠? "
+airport_weather_current,공항에 바람 얼마나 부는지 좀.
+airport_weather_current,공항에 비 예보가 변동됐나요?
+airport_weather_current,공항에 비 예보가 없어졌나요?
+airport_weather_current,공항에 비 오나요 지금?
+airport_weather_current,공항에 비가 오고 있나요?
+airport_weather_current,공항에 비가 오면 강수량은 얼마인가요?
+airport_weather_current,공항에 새벽 안개 소식 있나요?
+airport_weather_current,공항에 새벽에 안개가 끼는 걸까요?
+airport_weather_current,공항에 지금 기온 몇 도인가요? 
+airport_weather_current,공항에 지금 바람 불어?
+airport_weather_current,공항에 지금 바람은 어떤 상태인가요?
+airport_weather_current,공항에 지금 바람은 어떤가요?
+airport_weather_current,공항에 지금 비가 내리는지 확인 부탁해요.
+airport_weather_current,공항에 지금 안개 꼈나요?
+airport_weather_current,공항에 지금 안개 꼈나요? 
+airport_weather_current,공항에 지금 안개 꼈어?
+airport_weather_current,공항에 지금 안개나 연무가 끼어있나요?
+airport_weather_current,기온이 오늘 공항에서 많이 떨어질까요?
+airport_weather_current,기온이 오늘 공항에서 최고 몇 도까지 올라갈까요?
+airport_weather_current,나 우산 없는데 공항 왜 이렇게 하늘이 어두워?
+airport_weather_current,나 우산 없는데 왜 이렇게 하늘이 까맣지? 
+airport_weather_current,"남편 공항 도착 시간인데, 거기 시야 괜찮은지 알려줘요."
+airport_weather_current,"남편 데리러 공항 가야 하는데, 지금 비 많이 와요? "
+airport_weather_current,내일 공항 가는 길 날씨 괜찮을지 궁금해요. 
+airport_weather_current,"내일 공항 가는 길, 안개 때문에 시야 안 좋을까 봐 걱정."
+airport_weather_current,"내일 공항 가는 길, 안개 심할까 걱정돼요."
+airport_weather_current,"내일 공항 가는 길, 안개 심할까 봐 걱정돼요. "
+airport_weather_current,"내일 공항 가는데, 옷 어떻게 입어야 할지 모르겠어요."
+airport_weather_current,"내일 공항 가는데, 옷차림 어떻게 해야 할지 감이 안 와요."
+airport_weather_current,"내일 공항 가는데, 옷차림 어떻게 해야 할지 감이 안 와요. "
+airport_weather_current,내일 공항 기상 예보 좀 볼 수 있을까요?
+airport_weather_current,내일 공항 기상 예보는 어떤가요?
+airport_weather_current,내일 공항 날씨 어떨지 궁금.
+airport_weather_current,내일 공항 날씨 예보는 어떻게 되나요?
+airport_weather_current,내일 공항 날씨는 어떨까요?
+airport_weather_current,내일 공항 바람 세게 불까봐 걱정돼.
+airport_weather_current,내일 공항에 뇌우 예보 있나요?
+airport_weather_current,내일 공항에 뇌우 예보 있는지 확인해주세요.
+airport_weather_current,내일 공항에 눈 올 확률 좀 알려주세요.
+airport_weather_current,내일 공항에 눈이 많이 올까요?
+airport_weather_current,내일 공항에 눈이 오면 얼마나 올지 TAF에 나와있나요?
+airport_weather_current,내일 공항에 미세먼지 많으려나?
+airport_weather_current,내일 공항에 미세먼지 심할까요?
+airport_weather_current,내일 공항에 미세먼지 심할까요? 
+airport_weather_current,내일 공항에 바람이 세게 불 예정인가요?
+airport_weather_current,내일 공항에 바람이 세게 불까?
+airport_weather_current,내일 공항에 비가 오면 몇 시쯤일까요?
+airport_weather_current,내일 공항에 비가 오면 언제 그칠까요?
+airport_weather_current,내일 공항에 서리 내릴 가능성 있나요?
+airport_weather_current,내일 공항에 서리가 내릴까요?
+airport_weather_current,내일 공항에 아침 안개 예보 있어요?
+airport_weather_current,내일 공항에 아침에 안개가 심할까요?
+airport_weather_current,내일 공항에 천둥번개 예보 있어?
+airport_weather_current,내일 공항에 최저 기온이 몇 도까지 내려갈까요?
+airport_weather_current,내일 공항에 태풍 영향 있을까 봐 불안해요. 
+airport_weather_current,내일 공항에 태풍 영향 있을까요?
+airport_weather_current,내일 공항에 태풍 온다는 소리 있던데 사실이야?
+airport_weather_current,"내일 남편 공항 도착인데, 너무 추울까 봐 걱정돼요."
+airport_weather_current,"내일 부모님 공항 마중 갈 건데, 날씨 예보 좀 자세히 알려줘요. "
+airport_weather_current,"내일 부모님 공항 마중 나가는데, 날씨 예보 좀."
+airport_weather_current,내일 새벽 공항에 바람 많이 안 불었으면 좋겠는데.
+airport_weather_current,내일 새벽에 공항에 바람이 많이 불지 않았으면 좋겠는데.
+airport_weather_current,내일 새벽에 공항에 바람이 많이 불지 않았으면 좋겠는데. 
+airport_weather_current,"내일 아침 일찍 공항 가는데, 날씨가 너무 쌀쌀할까?"
+airport_weather_current,"내일 아침 일찍 공항 가는데, 새벽 날씨 별로 안 좋으려나?"
+airport_weather_current,"내일 아침 일찍 공항 가야 하는데, 새벽 날씨 어때요?"
+airport_weather_current,내일 오전 공항 날씨 요약해주세요.
+airport_weather_current,내일 오전 공항에 안개 예보가 있는지 궁금해요.
+airport_weather_current,내일 오전 인천공항 날씨 간략하게 요약해줘요.
+airport_weather_current,내일 오전에 공항 날씨 어떠려나.
+airport_weather_current,내일 오전에 공항 날씨 예보 좀.
+airport_weather_current,내일 오전에 공항 날씨 좀 자세히.
+airport_weather_current,내일 인천공항 기상 예보는요?
+airport_weather_current,내일 인천공항 날씨 간단히 요약해줘요.
+airport_weather_current,내일 인천공항 날씨 요약해줘.
+airport_weather_current,내일 인천공항 날씨는 어때? 요약해서.
+airport_weather_current,내일 인천공항에 비 예보 있나요?
+airport_weather_current,바람 많이 불면 비행기 심하게 흔들려요? (공항)
+airport_weather_current,바람 많이 불면 비행기 흔들려서 울렁거릴까 봐 걱정돼요. 
+airport_weather_current,바람 많이 불면 비행기 흔들리나요? 
+airport_weather_current,"바람 방향 좀 알려주세요, 공항."
+airport_weather_current,"바람 방향 좀 알려줘, 공항."
+airport_weather_current,바람 부는 방향 알려줘 공항.
+airport_weather_current,"바람 세기 좀 알려줘, 인천공항 현재."
+airport_weather_current,"바람 세기 좀 알려줘, 인천공항."
+airport_weather_current,"바람은 얼마나 세게 불어요, 공항에?"
+airport_weather_current,바람이 공항 주변에 어떤 영향을 미치나요?
+airport_weather_current,바람이 공항 활주로에 어떤 영향을 주나요?
+airport_weather_current,"밤늦게 공항 도착인데, 기상 괜찮을지 모르겠네."
+airport_weather_current,"밤늦게 공항 도착인데, 기상 상태 괜찮을까요?"
+airport_weather_current,"밤늦게 공항 도착인데, 기상 상태 괜찮을까요? "
+airport_weather_current,"부모님 공항 가는 길인데, 안개 낀다고 들었는데 맞나요?"
+airport_weather_current,"부모님 마중 나가야 하는데, 공항 날씨 추운가요?"
+airport_weather_current,"부모님 비행기 곧 착륙한다는데, 공항 시야는 괜찮나요? "
+airport_weather_current,"부모님 지금 공항에서 출국하셨는데, 바람 많이 부나요?"
+airport_weather_current,"비행기 곧 내린다는데, 공항 시야는 괜찮은가요?"
+airport_weather_current,"비행기 곧 착륙한다는데, 공항 시야는 괜찮은가요?"
+airport_weather_current,비행기 타기 전에 공항 날씨 또 확인하고 싶어요.
+airport_weather_current,비행기 탑승 전에 공항 날씨 한 번 더 확인하고 싶어요.
+airport_weather_current,비행기 탑승 전에 공항 날씨 한 번 더 확인하고 싶어요. 
+airport_weather_current,"삼촌 공항에서 출발하셨는데, 바람이 세서 걱정돼요."
+airport_weather_current,새벽 공항에 저시정 예보 있나요?
+airport_weather_current,새벽에 공항에 안개 낄 것 같아?
+airport_weather_current,새벽에 공항에 안개 낄까요?
+airport_weather_current,"습도 때문에 공기가 꿉꿉한가요, 공항?"
+airport_weather_current,습도 어때 공항은?
+airport_weather_current,습도가 공항에 영향을 주나요?
+airport_weather_current,습도가 지금 공항에 어떤 영향을 주는지 알려주세요.
+airport_weather_current,시정 괜찮아 공항?
+airport_weather_current,"시정은 몇 미터 정도 되나요, 인천공항?"
+airport_weather_current,시정이 공항에서 너무 안 좋으면 어떻게 되나요?
+airport_weather_current,시정이 공항에서 많이 나빠질 예정인가요?
+airport_weather_current,시정이 공항에서 비행에 필수적인가요?
+airport_weather_current,시정이 공항에서 얼마나 중요한가요?
+airport_weather_current,"아기랑 공항에 놀러 갈 건데, 날씨가 좋았으면 좋겠어요."
+airport_weather_current,아들 공항 도착해서 나올 때 비 올까 봐 걱정돼요.
+airport_weather_current,아들 마중 나가는데 공항 비 안 오겠지?
+airport_weather_current,"아들 비행기 타러 공항 가는데, 혹시 날씨 안 좋아서 지연될까?"
+airport_weather_current,아들 비행기 타러 공항 갔는데 날씨 안 좋아서 딜레이 될까?
+airport_weather_current,"아빠 비행기 곧 이륙한다는데, 공항 날씨 괜찮은 건가? "
+airport_weather_current,"아이랑 공항 놀러 가려고 하는데, 오늘 바람 많이 불까?"
+airport_weather_current,"아이랑 공항 놀러 갈 건데, 오늘 바람 엄청 불면 어떡하지?"
+airport_weather_current,"아침에 공항에 도착할 건데, 날씨 너무 춥지 않겠죠?"
+airport_weather_current,"아침에 공항에 도착할 건데, 날씨 너무 춥지 않겠죠? "
+airport_weather_current,"아침에 공항에 도착할 건데, 날씨 너무 춥지 않았으면 좋겠어요."
+airport_weather_current,"애인 공항에서 나와서 이동하는데, 바람 많이 불면 불편할까?"
+airport_weather_current,애인 비행기 내릴 때 공항 시정 괜찮을까요?
+airport_weather_current,"애인 오늘 공항 도착인데, 옷 따뜻하게 입고 가야 할까?"
+airport_weather_current,"애인 오늘 공항 도착인데, 옷 따뜻하게 챙겨야 하나?"
+airport_weather_current,엄마 공항 갔는데 비 맞는 거 아니겠지?
+airport_weather_current,"엄마 공항에서 대기 중이신데, 거기 날씨 어떤지 물어봐달래요."
+airport_weather_current,"엄마 공항에서 대기 중인데, 거기 날씨 어떠냐고 물어봐달래."
+airport_weather_current,"엄마 공항에서 대기 중인데, 너무 덥지는 않대요? "
+airport_weather_current,"엄마 마중 나가야 하는데, 공항 날씨 춥지는 않나요?"
+airport_weather_current,오늘 공항 기온 몇 도예요?
+airport_weather_current,오늘 공항 기온이 궁금해요.
+airport_weather_current,오늘 공항 날씨 어때요? 기온이랑 바람 다요.
+airport_weather_current,오늘 공항 날씨가 갑자기 변할 가능성 있나요?
+airport_weather_current,"오늘 공항 날씨가 너무 좋아요, 여행 가기 딱 좋네요."
+airport_weather_current,오늘 공항 날씨가 왜 이렇게 좋죠?
+airport_weather_current,오늘 공항 바람 많이 불어요?
+airport_weather_current,오늘 공항 시정 나빠질까?
+airport_weather_current,오늘 공항 시정이 안 좋을 수도 있나요?
+airport_weather_current,오늘 공항 시정이 안 좋을까요?
+airport_weather_current,오늘 공항 평균 풍속 좀 알려주세요.
+airport_weather_current,오늘 공항에 강수량 기록은요? 
+airport_weather_current,오늘 공항에 강수량이 얼마나 기록됐나요?
+airport_weather_current,"오늘 공항에 비 예보 있었는데, 얼마나 내렸어요?"
+airport_weather_current,"오늘 공항에 비 예보 있었는데, 얼마나 왔어요?"
+airport_weather_current,"오늘 공항에 비 예보 있었는데, 얼마나 왔어요? "
+airport_weather_current,오늘 공항에 소나기 예보 있나요?
+airport_weather_current,오늘 공항에 소나기 예보 있니?
+airport_weather_current,오늘 공항에 소나기 올까요?
+airport_weather_current,오늘 공항의 풍속은 어떤가요?
+airport_weather_current,오늘 밤 공항에 눈 예보 있나요? 길이 미끄러울까 봐.
+airport_weather_current,오늘 밤 공항에 눈 예보 있나요? 아빠 차 몰고 가야 해서요. 
+airport_weather_current,오늘 밤 공항에 눈 예보 있어요? 운전해야 해서.
+airport_weather_current,오늘 인천공항 바람은 어떤가요?
+airport_weather_current,오늘 인천공항에 바람 얼마나 부는지 궁금해요.
+airport_weather_current,오늘 인천공항은 어떤 기온을 보이나요?
+airport_weather_current,"오늘 저녁 우리 가족 공항 마중인데, 날씨 어때요?"
+airport_weather_current,오후 공항에 강수 예보 있어요?
+airport_weather_current,오후에 공항에 강수 예보가 있는지 궁금해요.
+airport_weather_current,오후에 공항에 비 내릴 확률이요?
+airport_weather_current,오후에 공항에 비 올 확률은?
+airport_weather_current,오후에 공항에 비올 확률은요?
+airport_weather_current,우리 가족 오늘 공항 가는데 날씨 어떨까요?
+airport_weather_current,우리 아빠 공항 가셨는데 비 맞는 거 아니겠지?
+airport_weather_current,"우리 아이 공항 놀러 가려고 하는데, 오늘 바람 많이 불까요? "
+airport_weather_current,"우리 아이 공항에서 비행기 기다리는데, 너무 춥지 않을까?"
+airport_weather_current,이따 공항에 눈 올 수도 있나요?
+airport_weather_current,이따 공항에 눈 올 예정 있나요?
+airport_weather_current,이따 공항에 눈 올지도 몰라요?
+airport_weather_current,이따 공항에 우박 예보 있나요?
+airport_weather_current,이따 공항에 우박이 올 가능성 있나요?
+airport_weather_current,이따 저녁에 공항 날씨 괜찮으려나? 퇴근하고 가야 해서.
+airport_weather_current,이따 저녁에 공항 날씨 괜찮을까요? 퇴근하고 가야 해서.
+airport_weather_current,이따 저녁에 공항 날씨 괜찮을까요? 퇴근하고 애인 마중 가야 해서요. 
+airport_weather_current,"이모 공항 도착이신데, 거기 기온이 몇 도인지 알려줘."
+airport_weather_current,"이모 공항에서 지금 출발했다는데, 혹시 거기 날씨 어때요? "
+airport_weather_current,이번 주말 공항 날씨 전반적으로 어떤가요?
+airport_weather_current,이번 주말 공항 날씨는 전반적으로 어떨지 알려주세요.
+airport_weather_current,이번 주말 공항 날씨는 전반적으로 어떨지 알려주세요. 
+airport_weather_current,인천공항 10분 평균 풍속 데이터 좀.
+airport_weather_current,인천공항 10분 평균 풍속은 어떻게 되나요?
+airport_weather_current,인천공항 10분 평균 풍속이 평소보다 센가요?
+airport_weather_current,인천공항 ATMOS 데이터 보여줘.
+airport_weather_current,인천공항 ATMOS 데이터 좀 보여줄래요?
+airport_weather_current,인천공항 ATMOS 데이터 좀.
+airport_weather_current,인천공항 TAF 전문 다 보내주세요.
+airport_weather_current,인천공항 TAF 전문 보여주세요.
+airport_weather_current,인천공항 TAF 전문 싹 다 줘요.
+airport_weather_current,인천공항 TAF 전문에 뇌우 예보가 있나요?
+airport_weather_current,인천공항 기온이 너무 낮아서 감기 걸릴까 걱정돼요.
+airport_weather_current,인천공항 기온이 너무 낮아서 걱정돼요.
+airport_weather_current,인천공항 기온이 몇 도인지 알려줄 수 있나요?
+airport_weather_current,인천공항 기온이 몇 도인지 확인해주세요.
+airport_weather_current,"인천공항 날씨, 제일 최신 정보로 부탁해요."
+airport_weather_current,"인천공항 날씨, 최신 정보로."
+airport_weather_current,"인천공항 날씨, 최신으로."
+airport_weather_current,인천공항 바람 속도 좀 봐줘.
+airport_weather_current,인천공항 바람이 계속 불고 있나요?
 airport_weather_current,인천공항 바람이 비행기 착륙에 영향을 미칠 정도인가요?
-facility_guide,화장실 어디예요?
-facility_guide,면세점은 어디에 있어요?
-facility_guide,수유실 위치 좀 알려주세요.
-facility_guide,카페 찾는데 어디쯤에 있죠?
-facility_guide,약국 어디에 있어요?
-facility_guide,음식점은 어디 가면 볼 수 있나요?
-facility_guide,환전소는 어디예요?
-facility_guide,은행 위치는요?
-facility_guide,택배 보낼 수 있는 곳이 공항에 있나요?
-facility_guide,환승호텔은 어디에 있나요?
-facility_guide,ATM기 어디쯤에 있을까요?
-facility_guide,아이들 놀 만한 곳이 공항에 있나요?
-facility_guide,흡연실은 어디에 있어요?
-facility_guide,기도실 위치 좀 알려줘.
-facility_guide,환승장은 어디로 가야 해요?
-facility_guide,편의점은 어디에 있어요?
-facility_guide,셔틀버스 타는 곳 어디예요?
-facility_guide,유아휴게실 찾아요.
-facility_guide,로밍센터 위치 어디인가요?
-facility_guide,병무청은 공항 어디에 위치하고 있나요?
-facility_guide,의료관광 안내센터 어디에 있어요?
-facility_guide,검역장은 어디로 가면 되나요?
-facility_guide,해외감염병신고센터 위치는요?
-facility_guide,여권민원실 어디예요?
+airport_weather_current,인천공항 바람이 일정하게 불고 있나요?
+airport_weather_current,인천공항 습도 상태는 어떤가요?
+airport_weather_current,인천공항 습도 상태는 어떤지 알려주세요.
+airport_weather_current,인천공항 습도 어때?
+airport_weather_current,인천공항 시야 괜찮은가요?
+airport_weather_current,인천공항 시정 괜찮은지 확인 부탁해요.
+airport_weather_current,인천공항 시정이 갑자기 나빠질 수 있나요?
+airport_weather_current,인천공항 시정이 갑자기 좋아질 수 있나요?
+airport_weather_current,인천공항 시정이 너무 좋아서 잘 보이네요.
+airport_weather_current,인천공항 시정이 어떤가요?
+airport_weather_current,인천공항 시정이 좋으면 항공편에 영향 없나요?
+airport_weather_current,인천공항 오늘 강수량 예보 좀.
+airport_weather_current,인천공항 오늘 강수량 예보 좀. 
+airport_weather_current,인천공항 오늘 날씨 정보 궁금해요.
+airport_weather_current,인천공항 오늘 비 예보 양 좀.
+airport_weather_current,인천공항 온도 몇 도인지.
+airport_weather_current,인천공항 지금 몇 도야?
+airport_weather_current,인천공항 지금 몇 도인지 알려주세요.
+airport_weather_current,인천공항 지금 몇 시 관측 기온인가요?
+airport_weather_current,인천공항 지금 비 오고 있나요?
+airport_weather_current,인천공항 지금 비가 내리나요?
+airport_weather_current,인천공항 지금 시정 괜찮아요? 비행기 뜨는 데 지장 없죠?
+airport_weather_current,인천공항 최저 기온은 언제쯤 예상되나요?
+airport_weather_current,인천공항 최저 기온이 언제쯤일까요?
+airport_weather_current,인천공항 현재 기상 상태는?
+airport_weather_current,인천공항 현재 기온 알려줘.
+airport_weather_current,"인천공항 현재 기온이 몇 도이고, 이슬점은 어떤가요?"
+airport_weather_current,"인천공항 현재 날씨, 상세하게 알려주세요."
+airport_weather_current,"인천공항 현재 날씨, 한눈에 볼 수 있는 건가요?"
+airport_weather_current,인천공항 현재 습도는 몇 %인가요?
+airport_weather_current,인천공항 현재 시정 괜찮아요?
+airport_weather_current,인천공항 현재 온도 몇 도인지 알려줘.
+airport_weather_current,인천공항에 바람 속도 좀 알려줘요.
+airport_weather_current,인천공항에 바람 속도 좀.
+airport_weather_current,인천공항에 안개 꼈다는 소식 들었는데 맞나요?
+airport_weather_current,인천공항에 현재 시정은 어떤가요?
+airport_weather_current,지금 공항 기온 너무 떨어진 것 같아.
+airport_weather_current,지금 공항 기온 몇 도쯤이야?
+airport_weather_current,지금 공항 기온이 너무 내려간 것 같아요.
+airport_weather_current,지금 공항 기온이 너무 내려간 것 같아요. 
+airport_weather_current,지금 공항 기온이 몇 도죠?
+airport_weather_current,지금 공항 기온이 몇 도지?
+airport_weather_current,지금 공항 날씨 어때요?
+airport_weather_current,지금 공항 바람이 좀 센 것 같아요.
+airport_weather_current,지금 공항 바람이 좀 심한 것 같아요.
+airport_weather_current,지금 공항 바람이 좀 심한 것 같아요. 
+airport_weather_current,지금 공항 시정 괜찮아요?
+airport_weather_current,지금 공항 시정 괜찮은가?
+airport_weather_current,지금 공항 시정 좋아요?
+airport_weather_current,지금 공항에 강한 비 와요?
+airport_weather_current,지금 공항에 강한 비가 오는지 확인해주세요.
+airport_weather_current,지금 공항에 내린 비는 얼마나 되나요?
+airport_weather_current,지금 공항에 번개 쳐요? 무서운데.
+airport_weather_current,지금 공항에 번개 쳐요? 무서운데요. 
+airport_weather_current,지금 공항에 번개 쳐요? 무섭다.
+airport_weather_current,지금 공항에 비 많이 오나?
+airport_weather_current,지금 공항에 비 엄청 오는 중이야?
+airport_weather_current,지금 공항에 비가 많이 오는지 궁금해요.
+airport_weather_current,지금 공항에 비가 약하게 오는지 세게 오는지 알려주세요.
+airport_weather_current,지금 공항에 비가 오면 강수량은 얼마나 될지 예상해줄 수 있나요?
+airport_weather_current,지금 공항에 비구름이 보이나요?
+airport_weather_current,지금 공항에 소나기가 오고 있나요?
+airport_weather_current,지금 공항에 우박 내리는 소리 들리는데 진짜야?
+airport_weather_current,"지금 공항에 우박 떨어지는 소리 들리는데, 진짜인가요?"
+airport_weather_current,"지금 공항에 우박 떨어지는 소리 들리는데, 진짜인가요? "
+airport_weather_current,지금 공항에 폭우 내리나요?
+airport_weather_current,지금 공항의 기온은 몇 도죠?
+airport_weather_current,지금 인천공항 강수량 얼마예요?
+airport_weather_current,지금 인천공항 강수량 체크해주세요.
+airport_weather_current,지금 인천공항 강수량은 얼마나 측정됐나요?
+airport_weather_current,지금 인천공항 기온은 정상인가요?
+airport_weather_current,지금 인천공항 기온은 평균적인가요?
+airport_weather_current,지금 인천공항 날씨 현황 좀 부탁해요.
+airport_weather_current,지금 인천공항 비 얼마나 왔어?
+airport_weather_current,지금 인천공항에 구름 많아요?
+airport_weather_current,지금 인천공항에 구름이 잔뜩 꼈나요?
+airport_weather_current,지금 인천공항에 뇌우가 발생했나요?
+airport_weather_current,지금 인천공항에 뇌우가 발생했어요?
+airport_weather_current,지금 인천공항에 비 오나요?
+airport_weather_current,지금 인천공항에 비 와요?
+airport_weather_current,지금 인천공항에 안개가 심한가요?
+airport_weather_current,"지인 공항 마중 가는데, 혹시 비 오면 우산 챙겨야 하나요?"
+airport_weather_current,"짐 부칠 때 비 안 오게, 공항 날씨 미리 알 수 있을까?"
+airport_weather_current,"짐 부칠 때 비 안 오게, 공항 날씨 좀 미리 알려줘."
+airport_weather_current,"친구 공항에서 대기 중인데, 거기 날씨 어떠냐고 물어봐달래요. "
+airport_weather_current,"친구 공항에서 밤늦게 도착인데, 날씨 너무 춥지 않을까? "
+airport_weather_current,"친구 공항에서 방금 출발했대, 거기 날씨는 어때?"
+airport_weather_current,"친구 공항에서 지금 출발했다는데, 혹시 비 오나요?"
+airport_weather_current,"친구 공항에서 지금 출발했대, 거기 날씨 괜찮아?"
+airport_weather_current,"친구 공항에서 출국했는데, 지금 강수량 얼마나 돼요?"
+airport_weather_current,친구 데리러 가는데 공항 날씨 괜찮은지 확인해줘.
+airport_weather_current,"친구 데리러 공항 가야 하는데, 지금 비 많이 와?"
+airport_weather_current,"친구 데리러 공항 가야 하는데, 지금 비가 많이 오나?"
+airport_weather_current,현재 공항에 강수량 기록은요?
+airport_weather_current,현재 공항에 강수량 기록이요?
+airport_weather_current,현재 공항에 강수량이 얼마나 기록됐는지 알려주세요.
+airport_weather_current,현재 공항에 비 얼마나 왔는지.
 facility_guide,AED (자동심장충격기) 어디에 있어요?
-facility_guide,면세점 위치 좀 알려줘. 출국장 안에 있나요?
-facility_guide,수유실은 몇 층에 있어요? 아기가 갑자기 배고파해서요.
-facility_guide,공항 안에 약국이 있나요? 급하게 약 살 일이 생겼어요.
-facility_guide,식당가 어디예요? 밥 먹고 싶은데.
-facility_guide,환전소 전화번호 아세요? 미리 문의하고 싶어서요.
-facility_guide,은행은 공항 어느 쪽에 있나요?
-facility_guide,택배 부치려면 어디로 가야 해요? 짐이 너무 많아서요.
-facility_guide,환승호텔 위치는요? 환승객인데 하룻밤 묵어야 할 것 같아요.
-facility_guide,ATM 수수료가 비싼가요? 아무 데서나 뽑아도 괜찮을까요?
-facility_guide,어린이 놀이시설은 어디에 위치해 있어요? 아이가 지루해하네요.
-facility_guide,흡연실은 입국장에도 있나요? 입국해서 바로 피우고 싶어서요.
-facility_guide,기도실은 종교시설인가요? 어디쯤에 있는지 알려주세요.
-facility_guide,환승장으로 가는 길 좀 안내해 주세요. 다음 비행기로 갈아타야 해서요.
-facility_guide,편의점 위치 좀 알려주세요. 간단하게 뭐 좀 사고 싶어요.
-facility_guide,셔틀버스 타는 곳이 어디예요? 다른 터미널로 이동해야 하는데.
-facility_guide,"해외 친구에게 줄 선물 사러 면세점 가고 싶은데, 어디에 있죠?"
-facility_guide,면세점 말고 기념품 살 만한 다른 샵이 공항에 있나요? 있다면 위치가 어디예요?
-facility_guide,엄마가 공항이 처음이세요. 안내 데스크 위치 좀 간략하게 설명해줄래요?
-facility_guide,기도실은 어디에 위치해 있는지 알려줄 수 있나요?
-facility_guide,"비행기 시간까지 좀 남았는데, 아이들이 너무 힘이 넘치네요. 잠시 아이들이 놀 수 있는 시설이 공항 내에 있을까요? 있다면 어디예요?"
-facility_guide,공항 내 은행 전화번호 좀 알려주세요. 궁금한 게 있어서요.
-facility_guide,배가 고픈데 밥집 좀 알려주세요. 식사할 수 있는 곳이 어디에 있죠?
-facility_guide,"실수로 금지물품을 가방에 넣고 왔네요. 이걸 집에 택배로 보내야 하는데, 공항에 택배 서비스 가능한 곳이 있나요? 어디에 있어요?"
-facility_guide,"환승 대기 중인데, 좀 편하게 쉴 수 있는 호텔이 공항 내에 있나요? 위치를 알고 싶어요."
-facility_guide,"갑자기 돈을 뽑아야 하는데, ATM기가 공항 어디에 설치되어 있는지 알려주세요."
-facility_guide,"아기 기저귀 갈아야 하는데, 유아휴게실이 공항 어디에 있는지 알려줄 수 있나요?"
-facility_guide,"담배 한 대 피우고 싶은데, 흡연실은 공항 어디에 위치해 있나요?"
-facility_guide,"여행 가서 혹시 아플까 봐 상비약 좀 사가고 싶은데, 공항에 약국이 어디에 있죠?"
-facility_guide,"로밍 신청해야 하는데, 로밍센터가 공항 어디쯤에 있는지 알려줄 수 있나요?"
-facility_guide,"해외에서 입국했는데, 혹시 감염병 관련해서 신고할 곳이 있나요? 해외감염병신고센터 위치를 알고 싶어요."
-facility_guide,"여권 만료돼서 급한데, 여권민원실이 공항 어디에 위치해 있는지 알려주세요."
-facility_guide,"배가 너무 아픈데, 혹시 공항에 약국이나 의료 시설이 있나요? 있다면 어디인가요?"
-facility_guide,비행기 시간 늦을 것 같아서 셔틀버스 타는 곳을 아는 대로 알려주세요. 어디로 가야 하나요?
-facility_guide,"편의점에서 간단하게 뭐 좀 사 먹고 싶은데, 공항 내 편의점은 어디에 있어요?"
-facility_guide,"환전하려고 하는데, 환전소가 공항 어디에 위치해 있는지 알려주세요."
-facility_guide,화장실이 급해요! 제일 가까운 화장실 위치 알려주세요.
-facility_guide,"면세점에서 쇼핑하고 싶은데, 면세점이 출국장 몇 층에 있나요?"
-facility_guide,수유실은 면세 구역 안에도 있나요? 아기가 면세 구역에서 울기 시작했어요.
-facility_guide,"카페인 수혈이 시급한데, 근처 카페 어디에 있는지 알려줄 수 있나요?"
-facility_guide,"급체했는데, 공항 내 약국에서 약을 살 수 있나요? 약국 위치를 알려주세요."
-facility_guide,혼자 밥 먹기 좋은 음식점 없을까요? 식사할 만한 곳이 어디에 있어요?
-facility_guide,달러 말고 유로도 환전 가능한가요? 환전소 위치를 알려주세요.
-facility_guide,공항 안에 신한은행 지점이 있나요? 있다면 어디에 있어요?
-facility_guide,택배 보낼 수 있는 곳은 어디에 있는지 알려주세요. 짐이 많아서요.
-facility_guide,환승호텔 위치는요? 공항 터미널에서 얼마나 떨어져 있나요?
-facility_guide,"ATM에서 돈 뽑아야 하는데, 어디에 설치되어 있는지 알려주세요."
-facility_guide,어린이 놀이시설이 공항 내에 있나요? 위치를 알고 싶어요.
-facility_guide,흡연실은 출국장 게이트 근처에도 있나요?
-facility_guide,기도실은 어디에 위치해 있어요? 조용하게 기도하고 싶어요.
-facility_guide,환승장에서 면세점까지 얼마나 걸려요? 면세점은 어디에 있나요?
-facility_guide,편의점에 간단한 식사류도 파나요? 위치 좀 알려주세요.
-facility_guide,셔틀버스 타는 곳 어디예요? 국내선 터미널로 가야 해서요.
-facility_guide,"유아휴게실 찾고 있는데, 어디에 있는지 알려줄 수 있나요?"
-facility_guide,로밍센터에서 바로 로밍 가능한가요? 로밍센터는 어디에 있죠?
-facility_guide,병무청이 공항에 왜 있나요? 정확히 어떤 업무를 하는 곳인지 궁금해요.
-facility_guide,의료관광 안내센터에서 어떤 정보를 얻을 수 있나요? 위치도 알려주세요.
-facility_guide,검역장은 어디로 가면 되나요? 입국해서 검역을 받아야 해서요.
-facility_guide,해외감염병신고센터는 어떤 곳인가요? 어디에 위치해 있어요?
-facility_guide,여권민원실에서 여권 업무를 볼 수 있나요? 위치를 알려주세요.
-facility_guide,AED(자동심장충격기)는 공항 내 어느 곳에 비치되어 있나요?
-facility_guide,면세 구역 안에 화장실이 많나요? 어디에 주로 있나요?
-facility_guide,수유실 이용 시간이 정해져 있나요? 아니면 24시간 가능한가요?
-facility_guide,공항 약국 위치 알려주세요. 급하게 필요한 약이 있어서요.
-facility_guide,음식점 중에서 한식 파는 곳 어디예요? 위치 좀 알려주세요.
-facility_guide,환전소 주말에도 영업하나요? 그리고 위치도 알려주세요.
-facility_guide,은행에 ATM 외에 창구도 있나요? 창구 위치를 알고 싶어요.
-facility_guide,택배 보낼 때 어디서 보내야 하나요? 택배 접수처 위치를 알려주세요.
-facility_guide,환승호텔에서 체크인하려면 어디로 가면 되나요?
-facility_guide,ATM에서 외화 인출도 가능한가요? 가능한 ATM 위치는요?
-facility_guide,어린이 놀이시설에 연령 제한이 있나요? 어디에 위치해 있어요?
-facility_guide,흡연실은 어디에 있는지 정확한 위치 좀 알려줘.
-facility_guide,기도실 위치는요? 조용히 기도할 공간을 찾아요.
-facility_guide,환승장에서 면세점까지 얼마나 걸리나요? 면세점 위치를 알려주세요.
-facility_guide,편의점 24시간 영업인가요? 어디에 있나요?
-facility_guide,셔틀버스 정류장 번호가 뭔가요? 그리고 어디에 위치해 있나요?
-facility_guide,유아휴게실에서 아기용품도 구매할 수 있나요? 아니면 기저귀 가는 곳인가요? 위치는 어디예요?
-facility_guide,로밍센터에서 통신사 상관없이 서비스 받나요? 그리고 위치는 어디예요?
-facility_guide,병무청은 입국장 쪽에 있나요? 어떤 업무를 처리하는 곳인가요?
-facility_guide,의료관광 안내센터에서 어떤 종류의 의료 상담을 받을 수 있나요? 위치도 궁금해요.
-facility_guide,검역장에서 뭘 검사하나요? 입국 시 필수적으로 거쳐야 하는 곳인가요?
-facility_guide,해외감염병신고센터는 무슨 일을 하는 곳이에요? 어디에 있나요?
-facility_guide,여권민원실에서 긴급 여권 발급도 되나요? 위치를 알려주세요.
-facility_guide,"약국에서 처방전 없이 살 수 있는 약은 뭐가 있고, 약국은 어디에 있나요?"
-facility_guide,AED는 공항 내에 여러 개 비치되어 있나요? 어디에 가면 찾을 수 있죠?
-facility_guide,화장실 중 깨끗하고 넓은 곳으로 추천해주세요. 어디에 있죠?
-facility_guide,면세점에 전자제품도 파나요? 어느 면세점에 가면 볼 수 있나요?
-facility_guide,수유실에 분유 타는 곳도 있나요? 유아휴게실과 같은 곳인가요?
-facility_guide,카페에서 충전할 수 있는 곳 있나요? 위치를 알려주세요.
-facility_guide,약국에 두통약도 파나요? 공항 내 약국 위치가 궁금해요.
-facility_guide,음식점 중에서 일식 하는 곳이 있나요? 위치를 알고 싶어요.
-facility_guide,환전소에서 위안화도 환전되나요? 환전소 위치는요?
-facility_guide,은행에서 해외 송금도 가능한가요? 공항 내 은행 위치를 알려주세요.
-facility_guide,택배 보낼 때 포장도 해주나요? 택배 서비스 지점은 어디에 있어요?
-facility_guide,환승호텔 시설은 어떤가요? 위치와 함께 설명해 주세요.
-facility_guide,ATM에서 한 번에 얼마까지 인출돼요? 공항 내 ATM 위치를 알려주세요.
-facility_guide,"어린이 놀이시설 이용 시 주의사항은 뭐고, 시설은 어디에 있나요?"
-facility_guide,흡연실 안에 환기 잘 되나요? 흡연실 위치를 알려주세요.
-facility_guide,기도실에 들어가면 안내해 주나요? 기도실은 어디에 있어요?
-facility_guide,환승장에서 쇼핑할 시간 충분할까요? 면세점은 어디에 위치해 있나요?
-facility_guide,편의점에서 삼각김밥도 파나요? 편의점 위치를 알려주세요.
-facility_guide,셔틀버스 운행 시간표 좀 알려주세요. 셔틀버스 타는 곳도요.
-facility_guide,유아휴게실에 아기 침대도 있나요? 유아휴게실은 어디에 있어요?
-facility_guide,로밍센터에서 e-sim 개통도 해주나요? 로밍센터 위치는 어디예요?
-facility_guide,"병무청에 문의할 사항이 있는데, 공항 병무청 전화번호 아세요?"
-facility_guide,의료관광 안내센터 상담 시간은요? 그리고 어디에 있어요?
-facility_guide,검역장에서 어떤 물품을 주로 검사하나요? 검역장 위치는요?
-facility_guide,해외감염병신고센터는 몇 시까지 운영해요? 위치도 알려주세요.
-facility_guide,여권민원실에서 여권 재발급도 되나요? 여권민원실 위치는요?
-facility_guide,약국에 멀미약 파나요? 약국 위치 알려주세요.
-facility_guide,AED는 공항 내 어디에 비치되어 있나요? 사용법도 간단히 알려줄 수 있나요?
-facility_guide,화장실에 세면도구도 비치되어 있나요? 화장실 위치 알려주세요.
-facility_guide,면세점에서 기념품 살 만한 곳 추천해주세요. 어느 면세점에 가면 되나요?
-facility_guide,수유실 위치 좀 상세하게 알려줘요. 아기 기저귀 갈아야 해요.
-facility_guide,카페 말고 베이커리도 공항에 있나요? 어디에 있어요?
-facility_guide,약국에서 반창고 같은 거 살 수 있죠? 약국 위치는요?
-facility_guide,음식점 중에 뷔페식당도 있나요? 위치를 알려주세요.
-facility_guide,환전소에서 소액도 환전되나요? 환전소 위치는요?
-facility_guide,은행에서 공과금 납부도 가능한가요? 은행은 공항 어디에 있어요?
-facility_guide,택배 보낼 때 파손 위험 물품은 어떻게 해야 해요? 택배 접수처 위치는요?
-facility_guide,환승호텔에 수영장도 있나요? 환승호텔 위치를 알려주세요.
-facility_guide,ATM에서 카드 사용 가능한가요? ATM기 위치는요?
-facility_guide,어린이 놀이시설에 화장실도 같이 있나요? 놀이시설 위치는요?
-facility_guide,흡연실은 야외인가요 실내인가요? 위치도 알려주세요.
-facility_guide,기도실에 들어가기 전에 예약해야 하나요? 기도실은 어디에 있어요?
-facility_guide,환승장에서 유모차 대여도 되나요? 유모차 대여하는 곳 위치도 알려주세요.
-facility_guide,편의점에 휴대폰 충전기 팔아요? 편의점은 어디에 있어요?
-facility_guide,셔틀버스 운행 시간표 좀 알려주세요. 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 아기 세정제도 비치되어 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 데이터 로밍 바로 가능해요? 로밍센터는 어디에 있어요?
-facility_guide,병무청은 공항 어디에 있어요? 어떤 업무를 보나요?
-facility_guide,의료관광 안내센터에서 통역 서비스도 제공하나요? 센터는 어디에 있어요?
-facility_guide,검역장에서 반려동물 검역도 하나요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 신고하려면 어떻게 해요? 위치도 알려주세요.
-facility_guide,여권민원실에 사진 찍는 곳도 있나요? 여권민원실 위치는요?
-facility_guide,약국에 해열제 있어요? 약국 위치 알려주세요.
-facility_guide,AED(자동심장충격기)는 공항 내 어디에 비치되어 있나요?
-facility_guide,화장실이 너무 많아서 어디 가야 할지 모르겠어요. 제일 가까운 곳 알려주세요.
-facility_guide,면세점에 명품 가방도 파나요? 어느 면세점에 가면 되나요?
-facility_guide,수유실에 정수기 있나요? 수유실 위치 알려주세요.
-facility_guide,카페에서 샌드위치도 파나요? 카페 위치 알려주세요.
-facility_guide,약국에 소독약도 팔아요? 약국 위치 알려주세요.
-facility_guide,음식점 중에서 양식 파는 곳 있나요? 위치를 알려주세요.
-facility_guide,환전소에서 잔돈도 환전해주나요? 환전소 위치는요?
-facility_guide,은행에서 외화 통장 개설 가능한가요? 은행 위치 알려주세요.
-facility_guide,택배 보낼 때 운송장 작성 어떻게 해요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 피트니스 센터도 있나요? 환승호텔 위치는요?
-facility_guide,ATM에서 잔액 조회만 되나요? ATM 위치 알려주세요.
-facility_guide,어린이 놀이시설에 안전요원 있나요? 시설 위치는요?
-facility_guide,흡연실 안에 공기청정기 있나요? 흡연실 위치 알려주세요.
-facility_guide,기도실 개방 시간은요? 기도실은 어디에 있어요?
-facility_guide,환승장에서 흡연실까지 얼마나 걸려요? 흡연실 위치는요?
-facility_guide,편의점에서 음료수 종류 뭐뭐 있어요? 편의점 위치는요?
-facility_guide,셔틀버스 노선 안내 좀 해주세요. 셔틀버스 정류장 위치도요.
-facility_guide,유아휴게실에 아기 이유식 데울 수 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 국제전화 카드도 파나요? 로밍센터 위치는요?
-facility_guide,병무청에서 출국 허가 관련 상담받을 수 있나요? 병무청은 어디에 있어요?
-facility_guide,의료관광 안내센터에서 진료 예약도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 특정 국가에서 온 사람들만 검사하나요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 신고하면 바로 처리되나요? 센터 위치는요?
-facility_guide,여권민원실에 사람 많나요? 여권민원실은 어디에 있어요?
-facility_guide,약국에 감기약 종류 뭐뭐 있어요? 약국 위치는요?
-facility_guide,AED 사용법 교육도 해주나요? AED 비치 장소는요?
-facility_guide,화장실에 장애인 편의시설 있나요? 화장실 위치는요?
-facility_guide,면세점에 한국 전통 기념품 파나요? 면세점 위치는요?
-facility_guide,수유실이 너무 북적거리진 않나요? 수유실 위치는요?
-facility_guide,카페에서 디저트도 팔죠? 카페 위치는요?
-facility_guide,약국에 인공눈물도 팔아요? 약국 위치는요?
-facility_guide,음식점 중에서 중식 하는 곳 있나요? 위치를 알려주세요.
-facility_guide,환전소에서 여행자 수표도 취급하나요? 환전소 위치는요?
-facility_guide,은행에서 자동이체 신청 가능한가요? 은행 위치는요?
-facility_guide,택배 보낼 때 물품 보관도 되나요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 뷔페 식당도 있나요? 환승호텔 위치는요?
-facility_guide,ATM에서 입금도 되나요? ATM 위치는요?
-facility_guide,어린이 놀이시설에 CCTV 설치되어 있나요? 시설 위치는요?
-facility_guide,흡연실 위치가 입국장 게이트랑 가까운가요? 흡연실은 어디에 있어요?
-facility_guide,기도실에 샤워 시설도 있나요? 기도실은 어디에 있어요?
-facility_guide,환승장에서 짐 찾을 수 있나요? 짐 찾는 곳 위치는요?
-facility_guide,편의점에 컵라면 팔아요? 편의점 위치는요?
-facility_guide,셔틀버스 국내선 터미널에도 가나요? 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 전자레인지 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 휴대폰 충전도 되나요? 로밍센터 위치는요?
-facility_guide,병무청에서 군입대 연기 상담도 해주나요? 병무청 위치는요?
-facility_guide,의료관광 안내센터에서 병원 추천도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 건강 설문지 작성해야 하나요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 방문하지 않고 신고 가능한가요? 센터 전화번호는요?
-facility_guide,여권민원실에서 여권 번호 변경도 가능한가요? 여권민원실 위치는요?
-facility_guide,약국에 파스 종류 뭐뭐 있어요? 약국 위치는요?
-facility_guide,AED 사용 시 주의할 점은요? AED 비치 장소는요?
-facility_guide,화장실에 핸드드라이어 있나요? 화장실 위치는요?
-facility_guide,면세점에 술 종류 뭐뭐 있어요? 면세점 위치는요?
-facility_guide,수유실은 언제든지 이용 가능한가요? 수유실 위치는요?
-facility_guide,카페에서 병 음료도 파나요? 카페 위치는요?
-facility_guide,약국에 진통제 종류 뭐뭐 있어요? 약국 위치는요?
-facility_guide,음식점 중에서 패스트푸드점도 있나요? 위치를 알려주세요.
-facility_guide,환전소에서 외국 동전도 환전되나요? 환전소 위치는요?
-facility_guide,은행에서 해외에서 발행된 카드 사용 가능한가요? 은행 위치는요?
-facility_guide,택배 보낼 때 상자도 제공해주나요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 레스토랑도 있나요? 환승호텔 위치는요?
-facility_guide,ATM에서 영수증 꼭 받아야 하나요? ATM 위치는요?
-facility_guide,어린이 놀이시설에 신발 벗고 들어가나요? 시설 위치는요?
-facility_guide,흡연실이 답답하진 않나요? 흡연실 위치는요?
-facility_guide,기도실 위치가 출국장 면세 구역인가요?
-facility_guide,환승장에서 흡연실까지 멀어요? 흡연실 위치는요?
-facility_guide,편의점에 빵 종류 뭐뭐 있어요? 편의점 위치는요?
-facility_guide,셔틀버스 막차 시간은 몇 시예요? 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 아기 침대 소독 자주 하나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 데이터 사용량 확인도 되나요? 로밍센터 위치는요?
-facility_guide,병무청에서 해외여행 허가 관련 상담도 해주나요? 병무청 위치는요?
-facility_guide,의료관광 안내센터에서 피부과 상담도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 농산물 반입 금지 품목은요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 신고하면 격리되나요? 센터 위치는요?
-facility_guide,여권민원실에 주차 가능한가요? 여권민원실 위치는요?
-facility_guide,약국에 연고 종류 뭐뭐 있어요? 약국 위치는요?
-facility_guide,AED는 몇 분 간격으로 작동하나요? AED 비치 장소는요?
-facility_guide,화장실에 휴지는 충분한가요? 화장실 위치는요?
-facility_guide,면세점에서 담배 살 수 있나요? 면세점 위치는요?
-facility_guide,수유실에 온수기 있나요? 수유실 위치는요?
-facility_guide,카페에서 아이스크림도 파나요? 카페 위치는요?
-facility_guide,약국에 반창고 세트 팔아요? 약국 위치는요?
-facility_guide,음식점 중에서 한식당 말고 다른 곳 추천해주세요. 위치는요?
-facility_guide,환전소에서 환율 우대 받을 수 있나요? 환전소 위치는요?
-facility_guide,은행에서 동전 교환도 가능한가요? 은행 위치는요?
-facility_guide,택배 보낼 때 보험 가입도 되나요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 조식 포함인가요? 환승호텔 위치는요?
-facility_guide,ATM에서 소액권 인출도 가능한가요? ATM 위치는요?
-facility_guide,어린이 놀이시설에 유모차 보관소 있나요? 시설 위치는요?
-facility_guide,흡연실에 환풍 시설 잘 되어 있나요? 흡연실 위치는요?
-facility_guide,기도실에 들어가려면 신발 벗어야 하나요? 기도실 위치는요?
-facility_guide,환승장에서 다음 터미널까지 얼마나 걸려요? 환승장 위치는요?
-facility_guide,편의점에 즉석식품 팔아요? 편의점 위치는요?
-facility_guide,셔틀버스 탈 때 캐리어 실을 수 있나요? 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 공기청정기 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 해외에서 전화 거는 법 알려주나요? 로밍센터 위치는요?
-facility_guide,병무청에서 유학생 관련 상담도 해주나요? 병무청 위치는요?
-facility_guide,의료관광 안내센터에서 성형외과 상담도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 식물 반입 금지 품목은요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 신고하면 바로 조치해주나요? 센터 위치는요?
-facility_guide,여권민원실 운영 시간은요? 여권민원실 위치는요?
-facility_guide,약국에 소화제 종류 뭐뭐 있어요? 약국 위치는요?
-facility_guide,AED는 어린아이에게도 사용 가능한가요? AED 비치 장소는요?
-facility_guide,화장실 변기 깨끗한가요? 화장실 위치는요?
-facility_guide,면세점에서 화장품 외에 향수도 파나요? 면세점 위치는요?
-facility_guide,수유실 이용 시 제한 시간 있나요? 수유실 위치는요?
-facility_guide,카페에서 주스 종류 뭐뭐 있어요? 카페 위치는요?
-facility_guide,약국에 근육통약 팔아요? 약국 위치는요?
-facility_guide,음식점 중에서 중식당 말고 다른 곳 추천해주세요. 위치는요?
-facility_guide,환전소에서 환율 변동 알림 서비스 있나요? 환전소 위치는요?
-facility_guide,은행에서 공항 서비스 이용 가능한가요? 은행 위치는요?
-facility_guide,택배 보낼 때 주소 잘못 적으면 어떻게 해요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 룸서비스도 되나요? 환승호텔 위치는요?
-facility_guide,ATM에서 카드 없어도 출금 가능한가요? ATM 위치는요?
-facility_guide,어린이 놀이시설에 보호 장비 착용해야 하나요? 시설 위치는요?
-facility_guide,흡연실에 창문 있나요? 흡연실 위치는요?
-facility_guide,기도실에 개인 짐 보관할 수 있나요? 기도실 위치는요?
-facility_guide,환승장에서 출국장까지 얼마나 걸려요? 환승장 위치는요?
-facility_guide,편의점에 도시락 팔아요? 편의점 위치는요?
-facility_guide,셔틀버스 유모차 실을 수 있나요? 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 아기 체중계도 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 국제전화 거는 법 안내해주나요? 로밍센터 위치는요?
-facility_guide,병무청에서 유학 관련 상담도 가능한가요? 병무청 위치는요?
-facility_guide,의료관광 안내센터에서 치과 상담도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 육류 반입 금지 품목은요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 가면 바로 검사받나요? 센터 위치는요?
-facility_guide,여권민원실에 대기 시간 긴가요? 여권민원실 위치는요?
-facility_guide,약국에 상처 치료제 팔아요? 약국 위치는요?
-facility_guide,AED 사용 시 심폐소생술도 병행해야 하나요? AED 비치 장소는요?
-facility_guide,화장실에 거울 많나요? 화장실 위치는요?
-facility_guide,면세점에서 선글라스도 파나요? 면세점 위치는요?
-facility_guide,수유실에 소독기 있나요? 수유실 위치는요?
-facility_guide,카페에서 텀블러 할인 되나요? 카페 위치는요?
-facility_guide,약국에 알레르기 약 팔아요? 약국 위치는요?
-facility_guide,음식점 중에서 일식당 말고 다른 곳 추천해주세요. 위치는요?
-facility_guide,환전소에서 외화 송금도 가능한가요? 환전소 위치는요?
-facility_guide,은행에서 해외여행자 보험 가입도 가능한가요? 은행 위치는요?
-facility_guide,택배 보낼 때 영수증 주나요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 사우나도 있나요? 환승호텔 위치는요?
-facility_guide,ATM에서 계좌 이체도 되나요? ATM 위치는요?
-facility_guide,어린이 놀이시설에 보호자 대기실 있나요? 시설 위치는요?
-facility_guide,흡연실이 게이트랑 가까운가요? 흡연실 위치는요?
-facility_guide,기도실에 개인 물품 두고 나올 수 있나요? 기도실 위치는요?
-facility_guide,환승장에서 면세점까지 가는 길 복잡해요? 면세점 위치는요?
-facility_guide,편의점에 생수 팔아요? 편의점 위치는요?
-facility_guide,셔틀버스에 휠체어 이용 가능 공간 있나요? 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 유모차 소독 서비스 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 외국 유심 구매도 가능한가요? 로밍센터 위치는요?
-facility_guide,병무청에서 귀국 신고도 받나요? 병무청 위치는요?
-facility_guide,의료관광 안내센터에서 한의원 상담도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 씨앗 반입 금지 품목은요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 신고하면 기록에 남나요? 센터 위치는요?
-facility_guide,여권민원실에 영문 이름 변경도 되나요? 여권민원실 위치는요?
-facility_guide,약국에 멀미약 종류 뭐뭐 있어요? 약국 위치는요?
 facility_guide,AED 배터리 교체 주기는요? AED 비치 장소는요?
-facility_guide,화장실에 비누 있어요? 화장실 위치는요?
-facility_guide,면세점에서 주류 종류 뭐뭐 있어요? 면세점 위치는요?
-facility_guide,수유실에 세면대 있나요? 수유실 위치는요?
-facility_guide,카페에서 스무디도 파나요? 카페 위치는요?
-facility_guide,약국에 근육이완제 팔아요? 약국 위치는요?
-facility_guide,음식점 중에서 아시안식당도 있나요? 위치를 알려주세요.
-facility_guide,환전소에서 여행자 보험 가입도 되나요? 환전소 위치는요?
-facility_guide,은행에서 공항에 있는 지점은 어디인가요?
-facility_guide,택배 보낼 때 물품 가격 신고해야 하나요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 마사지 서비스도 있나요? 환승호텔 위치는요?
-facility_guide,ATM에서 비밀번호 변경도 되나요? ATM 위치는요?
-facility_guide,어린이 놀이시설에 정수기 있나요? 시설 위치는요?
-facility_guide,흡연실에 난방/냉방 되나요? 흡연실 위치는요?
-facility_guide,기도실에 개인 사물함 있나요? 기도실 위치는요?
-facility_guide,환승장에서 라운지까지 얼마나 걸려요? 라운지 위치는요?
-facility_guide,편의점에 과자 종류 뭐뭐 있어요? 편의점 위치는요?
-facility_guide,셔틀버스 막히면 얼마나 더 걸리나요? 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 아기 목욕 시킬 수 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 해외에서 데이터 사용 시 주의할 점 알려주나요? 로밍센터 위치는요?
-facility_guide,병무청에서 유학생 귀국 절차 상담도 해주나요? 병무청 위치는요?
-facility_guide,의료관광 안내센터에서 안과 상담도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 특정 지역 출발 승객만 검사하나요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 신고하면 검사 결과 알려주나요? 센터 위치는요?
-facility_guide,여권민원실에서 여권 분실 신고도 가능한가요? 여권민원실 위치는요?
-facility_guide,약국에 소화제 외에 다른 배탈약 팔아요? 약국 위치는요?
-facility_guide,AED 사용 후 어떻게 해야 하나요? AED 비치 장소는요?
-facility_guide,화장실에 방향제 있나요? 화장실 위치는요?
-facility_guide,면세점에서 시계도 파나요? 면세점 위치는요?
-facility_guide,수유실에 소파 있나요? 수유실 위치는요?
-facility_guide,카페에서 컵라면도 파나요? 카페 위치는요?
-facility_guide,약국에 밴드 종류 뭐뭐 있어요? 약국 위치는요?
-facility_guide,음식점 중에서 분식점도 있나요? 위치를 알려주세요.
-facility_guide,환전소에서 캐나다 달러도 환전되나요? 환전소 위치는요?
-facility_guide,은행에서 해외카드 출금 수수료는요? 은행 위치는요?
-facility_guide,택배 보낼 때 서류도 함께 보낼 수 있나요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 회의실도 있나요? 환승호텔 위치는요?
-facility_guide,ATM에서 계좌 잔액 확인만 되나요? ATM 위치는요?
-facility_guide,어린이 놀이시설에 수유실도 있나요? 시설 위치는요?
-facility_guide,흡연실이 너무 작지는 않나요? 흡연실 위치는요?
-facility_guide,기도실에 남녀 구분되어 있나요? 기도실 위치는요?
-facility_guide,환승장에서 택시 승강장까지 얼마나 걸려요? 택시 승강장 위치는요?
-facility_guide,편의점에 샌드위치 팔아요? 편의점 위치는요?
-facility_guide,셔틀버스 운행 중단될 때도 있나요? 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 아기 체온계 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 데이터 무제한 요금제도 있나요? 로밍센터 위치는요?
-facility_guide,병무청에서 국외 여행 허가 연장 상담도 해주나요? 병무청 위치는요?
-facility_guide,의료관광 안내센터에서 피부관리 상담도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 검역견도 있나요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 신고하면 비용 드나요? 센터 위치는요?
-facility_guide,여권민원실에서 여권 사진 촬영 가능한가요? 여권민원실 위치는요?
-facility_guide,약국에 파스 외에 다른 통증 완화제 팔아요? 약국 위치는요?
 facility_guide,AED 비치 장소는 안내판으로 표시되어 있나요? AED 위치는요?
-facility_guide,화장실에 세면대가 높지 않나요? 화장실 위치는요?
-facility_guide,면세점에서 선글라스 외에 안경도 파나요? 면세점 위치는요?
-facility_guide,수유실에 소독액 비치되어 있나요? 수유실 위치는요?
-facility_guide,카페에서 티 종류 뭐뭐 있어요? 카페 위치는요?
-facility_guide,약국에 붕대 종류 뭐뭐 있어요? 약국 위치는요?
-facility_guide,음식점 중에서 프랜차이즈 식당도 있나요? 위치를 알려주세요.
-facility_guide,환전소에서 일본 엔화도 환전되나요? 환전소 위치는요?
-facility_guide,은행에서 통장 재발급 가능한가요? 은행 위치는요?
-facility_guide,택배 보낼 때 배송 조회 가능한가요? 택배 서비스 지점 위치는요?
-facility_guide,환승호텔에 비즈니스 센터도 있나요? 환승호텔 위치는요?
-facility_guide,ATM에서 환전도 되나요? ATM 위치는요?
-facility_guide,어린이 놀이시설에 유모차 대여하는 곳이 있나요? 시설 위치는요?
-facility_guide,흡연실이 출국장 밖에 있나요? 흡연실 위치는요?
-facility_guide,기도실에 개인 물품 보관함 있나요? 기도실 위치는요?
-facility_guide,환승장에서 식당까지 멀어요? 식당 위치는요?
-facility_guide,편의점에 즉석밥 팔아요? 편의점 위치는요?
-facility_guide,셔틀버스 탈 때 좌석이 편한가요? 셔틀버스 정류장 위치는요?
-facility_guide,유아휴게실에 수유 쿠션 있나요? 유아휴게실 위치는요?
-facility_guide,로밍센터에서 선불 유심도 파나요? 로밍센터 위치는요?
-facility_guide,병무청에서 입영 연기 상담도 해주나요? 병무청 위치는요?
-facility_guide,의료관광 안내센터에서 건강검진 상담도 해주나요? 센터 위치는요?
-facility_guide,검역장에서 마약 단속도 하나요? 검역장 위치는요?
-facility_guide,해외감염병신고센터에 신고하면 개인 정보 보호되나요? 센터 위치는요?
-facility_guide,여권민원실에서 여권 갱신 신청 방법 알려주세요. 여권민원실 위치는요?
-facility_guide,약국에 감기약 외에 다른 증상 완화제 팔아요? 약국 위치는요?
+facility_guide,AED 사용 시 심폐소생술도 병행해야 하나요? AED 비치 장소는요?
+facility_guide,AED 사용 시 주의할 점은요? AED 비치 장소는요?
+facility_guide,AED 사용 후 어떻게 해야 하나요? AED 비치 장소는요?
+facility_guide,AED 사용법 교육도 해주나요? AED 비치 장소는요?
+facility_guide,AED(자동심장충격기)는 공항 내 어느 곳에 비치되어 있나요?
+facility_guide,AED(자동심장충격기)는 공항 내 어디에 비치되어 있나요?
+facility_guide,AED는 공항 내 어디에 비치되어 있나요? 사용법도 간단히 알려줄 수 있나요?
+facility_guide,AED는 공항 내에 여러 개 비치되어 있나요? 어디에 가면 찾을 수 있죠?
 facility_guide,AED는 몇 군데에 비치되어 있나요? AED 위치는요?
-facility_guide,화장실에 휴지통 많나요? 화장실 위치는요?
+facility_guide,AED는 몇 분 간격으로 작동하나요? AED 비치 장소는요?
+facility_guide,AED는 어린아이에게도 사용 가능한가요? AED 비치 장소는요?
+facility_guide,ATM 수수료가 비싼가요? 아무 데서나 뽑아도 괜찮을까요?
+facility_guide,ATM기 어디쯤에 있을까요?
+facility_guide,ATM에서 계좌 이체도 되나요? ATM 위치는요?
+facility_guide,ATM에서 계좌 잔액 확인만 되나요? ATM 위치는요?
+facility_guide,"ATM에서 돈 뽑아야 하는데, 어디에 설치되어 있는지 알려주세요."
+facility_guide,ATM에서 비밀번호 변경도 되나요? ATM 위치는요?
+facility_guide,ATM에서 소액권 인출도 가능한가요? ATM 위치는요?
+facility_guide,ATM에서 영수증 꼭 받아야 하나요? ATM 위치는요?
+facility_guide,ATM에서 외화 인출도 가능한가요? 가능한 ATM 위치는요?
+facility_guide,ATM에서 입금도 되나요? ATM 위치는요?
+facility_guide,ATM에서 잔액 조회만 되나요? ATM 위치 알려주세요.
+facility_guide,ATM에서 카드 사용 가능한가요? ATM기 위치는요?
+facility_guide,ATM에서 카드 없어도 출금 가능한가요? ATM 위치는요?
+facility_guide,ATM에서 한 번에 얼마까지 인출돼요? 공항 내 ATM 위치를 알려주세요.
+facility_guide,ATM에서 환전도 되나요? ATM 위치는요?
+facility_guide,"갑자기 돈을 뽑아야 하는데, ATM기가 공항 어디에 설치되어 있는지 알려주세요."
+facility_guide,검역장에서 건강 설문지 작성해야 하나요? 검역장 위치는요?
+facility_guide,검역장에서 검역견도 있나요? 검역장 위치는요?
+facility_guide,검역장에서 농산물 반입 금지 품목은요? 검역장 위치는요?
+facility_guide,검역장에서 마약 단속도 하나요? 검역장 위치는요?
+facility_guide,검역장에서 뭘 검사하나요? 입국 시 필수적으로 거쳐야 하는 곳인가요?
+facility_guide,검역장에서 반려동물 검역도 하나요? 검역장 위치는요?
+facility_guide,검역장에서 식물 반입 금지 품목은요? 검역장 위치는요?
+facility_guide,검역장에서 씨앗 반입 금지 품목은요? 검역장 위치는요?
+facility_guide,검역장에서 어떤 물품을 주로 검사하나요? 검역장 위치는요?
+facility_guide,검역장에서 육류 반입 금지 품목은요? 검역장 위치는요?
+facility_guide,검역장에서 특정 국가에서 온 사람들만 검사하나요? 검역장 위치는요?
+facility_guide,검역장에서 특정 지역 출발 승객만 검사하나요? 검역장 위치는요?
+facility_guide,검역장은 어디로 가면 되나요?
+facility_guide,검역장은 어디로 가면 되나요? 입국해서 검역을 받아야 해서요.
+facility_guide,공항 내 은행 전화번호 좀 알려주세요. 궁금한 게 있어서요.
+facility_guide,공항 안에 신한은행 지점이 있나요? 있다면 어디에 있어요?
+facility_guide,공항 안에 약국이 있나요? 급하게 약 살 일이 생겼어요.
+facility_guide,공항 약국 위치 알려주세요. 급하게 필요한 약이 있어서요.
+facility_guide,"급체했는데, 공항 내 약국에서 약을 살 수 있나요? 약국 위치를 알려주세요."
+facility_guide,기도실 개방 시간은요? 기도실은 어디에 있어요?
+facility_guide,기도실 위치 좀 알려줘.
+facility_guide,기도실 위치가 출국장 면세 구역인가요?
+facility_guide,기도실 위치는요? 조용히 기도할 공간을 찾아요.
+facility_guide,기도실에 개인 물품 두고 나올 수 있나요? 기도실 위치는요?
+facility_guide,기도실에 개인 물품 보관함 있나요? 기도실 위치는요?
+facility_guide,기도실에 개인 사물함 있나요? 기도실 위치는요?
+facility_guide,기도실에 개인 짐 보관할 수 있나요? 기도실 위치는요?
+facility_guide,기도실에 남녀 구분되어 있나요? 기도실 위치는요?
+facility_guide,기도실에 들어가기 전에 예약해야 하나요? 기도실은 어디에 있어요?
+facility_guide,기도실에 들어가려면 신발 벗어야 하나요? 기도실 위치는요?
+facility_guide,기도실에 들어가면 안내해 주나요? 기도실은 어디에 있어요?
+facility_guide,기도실에 샤워 시설도 있나요? 기도실은 어디에 있어요?
+facility_guide,기도실은 어디에 위치해 있는지 알려줄 수 있나요?
+facility_guide,기도실은 어디에 위치해 있어요? 조용하게 기도하고 싶어요.
+facility_guide,기도실은 종교시설인가요? 어디쯤에 있는지 알려주세요.
+facility_guide,달러 말고 유로도 환전 가능한가요? 환전소 위치를 알려주세요.
+facility_guide,"담배 한 대 피우고 싶은데, 흡연실은 공항 어디에 위치해 있나요?"
+facility_guide,"로밍 신청해야 하는데, 로밍센터가 공항 어디쯤에 있는지 알려줄 수 있나요?"
+facility_guide,로밍센터 위치 어디인가요?
+facility_guide,로밍센터에서 e-sim 개통도 해주나요? 로밍센터 위치는 어디예요?
+facility_guide,로밍센터에서 국제전화 거는 법 안내해주나요? 로밍센터 위치는요?
+facility_guide,로밍센터에서 국제전화 카드도 파나요? 로밍센터 위치는요?
+facility_guide,로밍센터에서 데이터 로밍 바로 가능해요? 로밍센터는 어디에 있어요?
+facility_guide,로밍센터에서 데이터 무제한 요금제도 있나요? 로밍센터 위치는요?
+facility_guide,로밍센터에서 데이터 사용량 확인도 되나요? 로밍센터 위치는요?
+facility_guide,로밍센터에서 바로 로밍 가능한가요? 로밍센터는 어디에 있죠?
+facility_guide,로밍센터에서 선불 유심도 파나요? 로밍센터 위치는요?
+facility_guide,로밍센터에서 외국 유심 구매도 가능한가요? 로밍센터 위치는요?
+facility_guide,로밍센터에서 통신사 상관없이 서비스 받나요? 그리고 위치는 어디예요?
+facility_guide,로밍센터에서 해외에서 데이터 사용 시 주의할 점 알려주나요? 로밍센터 위치는요?
+facility_guide,로밍센터에서 해외에서 전화 거는 법 알려주나요? 로밍센터 위치는요?
+facility_guide,로밍센터에서 휴대폰 충전도 되나요? 로밍센터 위치는요?
+facility_guide,면세 구역 안에 화장실이 많나요? 어디에 주로 있나요?
+facility_guide,면세점 말고 기념품 살 만한 다른 샵이 공항에 있나요? 있다면 위치가 어디예요?
+facility_guide,면세점 어디 있어요?
+facility_guide,면세점 위치 좀 알려줘. 출국장 안에 있나요?
+facility_guide,면세점에 명품 가방도 파나요? 어느 면세점에 가면 되나요?
+facility_guide,면세점에 술 종류 뭐뭐 있어요? 면세점 위치는요?
+facility_guide,면세점에 전자제품도 파나요? 어느 면세점에 가면 볼 수 있나요?
+facility_guide,면세점에 한국 전통 기념품 파나요? 면세점 위치는요?
+facility_guide,면세점에서 기념품 살 만한 곳 추천해주세요. 어느 면세점에 가면 되나요?
+facility_guide,면세점에서 담배 살 수 있나요? 면세점 위치는요?
+facility_guide,면세점에서 선글라스 외에 안경도 파나요? 면세점 위치는요?
+facility_guide,면세점에서 선글라스도 파나요? 면세점 위치는요?
+facility_guide,"면세점에서 쇼핑하고 싶은데, 면세점이 출국장 몇 층에 있나요?"
+facility_guide,면세점에서 시계도 파나요? 면세점 위치는요?
+facility_guide,면세점에서 주류 종류 뭐뭐 있어요? 면세점 위치는요?
 facility_guide,면세점에서 화장품 외에 기초 케어도 파나요? 면세점 위치는요?
+facility_guide,면세점에서 화장품 외에 향수도 파나요? 면세점 위치는요?
+facility_guide,면세점은 어디에 있어요?
+facility_guide,배가 고픈데 밥집 좀 알려주세요. 식사할 수 있는 곳이 어디에 있죠?
+facility_guide,"배가 너무 아픈데, 혹시 공항에 약국이나 의료 시설이 있나요? 있다면 어디인가요?"
+facility_guide,"병무청에 문의할 사항이 있는데, 공항 병무청 전화번호 아세요?"
+facility_guide,병무청에서 국외 여행 허가 연장 상담도 해주나요? 병무청 위치는요?
+facility_guide,병무청에서 군입대 연기 상담도 해주나요? 병무청 위치는요?
+facility_guide,병무청에서 귀국 신고도 받나요? 병무청 위치는요?
+facility_guide,병무청에서 유학 관련 상담도 가능한가요? 병무청 위치는요?
+facility_guide,병무청에서 유학생 관련 상담도 해주나요? 병무청 위치는요?
+facility_guide,병무청에서 유학생 귀국 절차 상담도 해주나요? 병무청 위치는요?
+facility_guide,병무청에서 입영 연기 상담도 해주나요? 병무청 위치는요?
+facility_guide,병무청에서 출국 허가 관련 상담받을 수 있나요? 병무청은 어디에 있어요?
+facility_guide,병무청에서 해외여행 허가 관련 상담도 해주나요? 병무청 위치는요?
+facility_guide,병무청은 공항 어디에 위치하고 있나요?
+facility_guide,병무청은 공항 어디에 있어요? 어떤 업무를 보나요?
+facility_guide,병무청은 입국장 쪽에 있나요? 어떤 업무를 처리하는 곳인가요?
+facility_guide,병무청이 공항에 왜 있나요? 정확히 어떤 업무를 하는 곳인지 궁금해요.
+facility_guide,비행기 시간 늦을 것 같아서 셔틀버스 타는 곳을 아는 대로 알려주세요. 어디로 가야 하나요?
+facility_guide,"비행기 시간까지 좀 남았는데, 아이들이 너무 힘이 넘치네요. 잠시 아이들이 놀 수 있는 시설이 공항 내에 있을까요? 있다면 어디예요?"
+facility_guide,셔틀버스 국내선 터미널에도 가나요? 셔틀버스 정류장 위치는요?
+facility_guide,셔틀버스 노선 안내 좀 해주세요. 셔틀버스 정류장 위치도요.
+facility_guide,셔틀버스 막차 시간은 몇 시예요? 셔틀버스 정류장 위치는요?
+facility_guide,셔틀버스 막히면 얼마나 더 걸리나요? 셔틀버스 정류장 위치는요?
+facility_guide,셔틀버스 운행 시간표 좀 알려주세요. 셔틀버스 정류장 위치는요?
+facility_guide,셔틀버스 운행 시간표 좀 알려주세요. 셔틀버스 타는 곳도요.
+facility_guide,셔틀버스 운행 중단될 때도 있나요? 셔틀버스 정류장 위치는요?
+facility_guide,셔틀버스 유모차 실을 수 있나요? 셔틀버스 정류장 위치는요?
+facility_guide,셔틀버스 정류장 번호가 뭔가요? 그리고 어디에 위치해 있나요?
+facility_guide,셔틀버스 타는 곳 어디예요?
+facility_guide,셔틀버스 타는 곳 어디예요? 국내선 터미널로 가야 해서요.
+facility_guide,셔틀버스 타는 곳이 어디예요? 다른 터미널로 이동해야 하는데.
+facility_guide,셔틀버스 탈 때 좌석이 편한가요? 셔틀버스 정류장 위치는요?
+facility_guide,셔틀버스 탈 때 캐리어 실을 수 있나요? 셔틀버스 정류장 위치는요?
+facility_guide,셔틀버스에 휠체어 이용 가능 공간 있나요? 셔틀버스 정류장 위치는요?
+facility_guide,수유실 위치 좀 상세하게 알려줘요. 아기 기저귀 갈아야 해요.
+facility_guide,수유실 위치 좀 알려주세요.
+facility_guide,수유실 이용 시 제한 시간 있나요? 수유실 위치는요?
+facility_guide,수유실 이용 시간이 정해져 있나요? 아니면 24시간 가능한가요?
+facility_guide,수유실에 분유 타는 곳도 있나요? 유아휴게실과 같은 곳인가요?
+facility_guide,수유실에 세면대 있나요? 수유실 위치는요?
+facility_guide,수유실에 소독기 있나요? 수유실 위치는요?
+facility_guide,수유실에 소독액 비치되어 있나요? 수유실 위치는요?
+facility_guide,수유실에 소파 있나요? 수유실 위치는요?
+facility_guide,수유실에 온수기 있나요? 수유실 위치는요?
+facility_guide,수유실에 정수기 있나요? 수유실 위치 알려주세요.
 facility_guide,수유실에 테이블 있나요? 수유실 위치는요?
-facility_guide,카페에서 커피 말고 다른 음료도 팔아요? 카페 위치는요?
+facility_guide,수유실은 면세 구역 안에도 있나요? 아기가 면세 구역에서 울기 시작했어요.
+facility_guide,수유실은 몇 층에 있어요? 아기가 갑자기 배고파해서요.
+facility_guide,수유실은 언제든지 이용 가능한가요? 수유실 위치는요?
+facility_guide,수유실이 너무 북적거리진 않나요? 수유실 위치는요?
+facility_guide,식당가 어디예요? 밥 먹고 싶은데.
+facility_guide,"실수로 금지물품을 가방에 넣고 왔네요. 이걸 집에 택배로 보내야 하는데, 공항에 택배 서비스 가능한 곳이 있나요? 어디에 있어요?"
+facility_guide,"아기 기저귀 갈아야 하는데, 유아휴게실이 공항 어디에 있는지 알려줄 수 있나요?"
+facility_guide,아이들 놀 만한 곳이 공항에 있나요?
+facility_guide,약국 어디에 있어요?
+facility_guide,약국에 감기약 외에 다른 증상 완화제 팔아요? 약국 위치는요?
+facility_guide,약국에 감기약 종류 뭐뭐 있어요? 약국 위치는요?
+facility_guide,약국에 근육이완제 팔아요? 약국 위치는요?
+facility_guide,약국에 근육통약 팔아요? 약국 위치는요?
+facility_guide,약국에 두통약도 파나요? 공항 내 약국 위치가 궁금해요.
+facility_guide,약국에 멀미약 종류 뭐뭐 있어요? 약국 위치는요?
+facility_guide,약국에 멀미약 파나요? 약국 위치 알려주세요.
+facility_guide,약국에 반창고 세트 팔아요? 약국 위치는요?
 facility_guide,약국에 반창고 외에 밴드도 팔아요? 약국 위치는요?
-airline_info_query,인천공항에 취항하는 항공사 전체 목록을 보여주세요.
-airline_info_query,진에어 고객센터 연락처를 알려주세요.
-airline_info_query,인천공항에 취항하는 저가 항공사(LCC)는 어떤 것들이 있나요?
-airline_info_query,스타얼라이언스 소속 항공사는 어떤 것들이 있나요?
+facility_guide,약국에 밴드 종류 뭐뭐 있어요? 약국 위치는요?
+facility_guide,약국에 붕대 종류 뭐뭐 있어요? 약국 위치는요?
+facility_guide,약국에 상처 치료제 팔아요? 약국 위치는요?
+facility_guide,약국에 소독약도 팔아요? 약국 위치 알려주세요.
+facility_guide,약국에 소화제 외에 다른 배탈약 팔아요? 약국 위치는요?
+facility_guide,약국에 소화제 종류 뭐뭐 있어요? 약국 위치는요?
+facility_guide,약국에 알레르기 약 팔아요? 약국 위치는요?
+facility_guide,약국에 연고 종류 뭐뭐 있어요? 약국 위치는요?
+facility_guide,약국에 인공눈물도 팔아요? 약국 위치는요?
+facility_guide,약국에 진통제 종류 뭐뭐 있어요? 약국 위치는요?
+facility_guide,약국에 파스 외에 다른 통증 완화제 팔아요? 약국 위치는요?
+facility_guide,약국에 파스 종류 뭐뭐 있어요? 약국 위치는요?
+facility_guide,약국에 해열제 있어요? 약국 위치 알려주세요.
+facility_guide,약국에서 반창고 같은 거 살 수 있죠? 약국 위치는요?
+facility_guide,"약국에서 처방전 없이 살 수 있는 약은 뭐가 있고, 약국은 어디에 있나요?"
+facility_guide,"어린이 놀이시설 이용 시 주의사항은 뭐고, 시설은 어디에 있나요?"
+facility_guide,어린이 놀이시설에 CCTV 설치되어 있나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 보호 장비 착용해야 하나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 보호자 대기실 있나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 수유실도 있나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 신발 벗고 들어가나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 안전요원 있나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 연령 제한이 있나요? 어디에 위치해 있어요?
+facility_guide,어린이 놀이시설에 유모차 대여하는 곳이 있나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 유모차 보관소 있나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 정수기 있나요? 시설 위치는요?
+facility_guide,어린이 놀이시설에 화장실도 같이 있나요? 놀이시설 위치는요?
+facility_guide,어린이 놀이시설은 어디에 위치해 있어요? 아이가 지루해하네요.
+facility_guide,어린이 놀이시설이 공항 내에 있나요? 위치를 알고 싶어요.
+facility_guide,엄마가 공항이 처음이세요. 안내 데스크 위치 좀 간략하게 설명해줄래요?
+facility_guide,"여권 만료돼서 급한데, 여권민원실이 공항 어디에 위치해 있는지 알려주세요."
+facility_guide,여권민원실 어디예요?
+facility_guide,여권민원실 운영 시간은요? 여권민원실 위치는요?
+facility_guide,여권민원실에 대기 시간 긴가요? 여권민원실 위치는요?
+facility_guide,여권민원실에 사람 많나요? 여권민원실은 어디에 있어요?
+facility_guide,여권민원실에 사진 찍는 곳도 있나요? 여권민원실 위치는요?
+facility_guide,여권민원실에 영문 이름 변경도 되나요? 여권민원실 위치는요?
+facility_guide,여권민원실에 주차 가능한가요? 여권민원실 위치는요?
+facility_guide,여권민원실에서 긴급 여권 발급도 되나요? 위치를 알려주세요.
+facility_guide,여권민원실에서 여권 갱신 신청 방법 알려주세요. 여권민원실 위치는요?
+facility_guide,여권민원실에서 여권 번호 변경도 가능한가요? 여권민원실 위치는요?
+facility_guide,여권민원실에서 여권 분실 신고도 가능한가요? 여권민원실 위치는요?
+facility_guide,여권민원실에서 여권 사진 촬영 가능한가요? 여권민원실 위치는요?
+facility_guide,여권민원실에서 여권 업무를 볼 수 있나요? 위치를 알려주세요.
+facility_guide,여권민원실에서 여권 재발급도 되나요? 여권민원실 위치는요?
+facility_guide,"여행 가서 혹시 아플까 봐 상비약 좀 사가고 싶은데, 공항에 약국이 어디에 있죠?"
+facility_guide,"유아휴게실 찾고 있는데, 어디에 있는지 알려줄 수 있나요?"
+facility_guide,유아휴게실 찾아요.
+facility_guide,유아휴게실에 공기청정기 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 수유 쿠션 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 아기 목욕 시킬 수 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 아기 세정제도 비치되어 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 아기 이유식 데울 수 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 아기 체온계 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 아기 체중계도 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 아기 침대 소독 자주 하나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 아기 침대도 있나요? 유아휴게실은 어디에 있어요?
+facility_guide,유아휴게실에 유모차 소독 서비스 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에 전자레인지 있나요? 유아휴게실 위치는요?
+facility_guide,유아휴게실에서 아기용품도 구매할 수 있나요? 아니면 기저귀 가는 곳인가요? 위치는 어디예요?
+facility_guide,은행 위치는요?
+facility_guide,은행에 ATM 외에 창구도 있나요? 창구 위치를 알고 싶어요.
+facility_guide,은행에서 공과금 납부도 가능한가요? 은행은 공항 어디에 있어요?
+facility_guide,은행에서 공항 서비스 이용 가능한가요? 은행 위치는요?
+facility_guide,은행에서 공항에 있는 지점은 어디인가요?
+facility_guide,은행에서 동전 교환도 가능한가요? 은행 위치는요?
+facility_guide,은행에서 외화 통장 개설 가능한가요? 은행 위치 알려주세요.
+facility_guide,은행에서 자동이체 신청 가능한가요? 은행 위치는요?
+facility_guide,은행에서 통장 재발급 가능한가요? 은행 위치는요?
+facility_guide,은행에서 해외 송금도 가능한가요? 공항 내 은행 위치를 알려주세요.
+facility_guide,은행에서 해외에서 발행된 카드 사용 가능한가요? 은행 위치는요?
+facility_guide,은행에서 해외여행자 보험 가입도 가능한가요? 은행 위치는요?
+facility_guide,은행에서 해외카드 출금 수수료는요? 은행 위치는요?
+facility_guide,은행은 공항 어느 쪽에 있나요?
+facility_guide,음식점 중에 뷔페식당도 있나요? 위치를 알려주세요.
+facility_guide,음식점 중에서 분식점도 있나요? 위치를 알려주세요.
+facility_guide,음식점 중에서 아시안식당도 있나요? 위치를 알려주세요.
+facility_guide,음식점 중에서 양식 파는 곳 있나요? 위치를 알려주세요.
+facility_guide,음식점 중에서 일식 하는 곳이 있나요? 위치를 알고 싶어요.
+facility_guide,음식점 중에서 일식당 말고 다른 곳 추천해주세요. 위치는요?
+facility_guide,음식점 중에서 중식 하는 곳 있나요? 위치를 알려주세요.
+facility_guide,음식점 중에서 중식당 말고 다른 곳 추천해주세요. 위치는요?
+facility_guide,음식점 중에서 패스트푸드점도 있나요? 위치를 알려주세요.
+facility_guide,음식점 중에서 프랜차이즈 식당도 있나요? 위치를 알려주세요.
+facility_guide,음식점 중에서 한식 파는 곳 어디예요? 위치 좀 알려주세요.
+facility_guide,음식점 중에서 한식당 말고 다른 곳 추천해주세요. 위치는요?
+facility_guide,음식점은 어디 가면 볼 수 있나요?
+facility_guide,의료관광 안내센터 상담 시간은요? 그리고 어디에 있어요?
+facility_guide,의료관광 안내센터 어디에 있어요?
+facility_guide,의료관광 안내센터에서 건강검진 상담도 해주나요? 센터 위치는요?
+facility_guide,의료관광 안내센터에서 병원 추천도 해주나요? 센터 위치는요?
+facility_guide,의료관광 안내센터에서 성형외과 상담도 해주나요? 센터 위치는요?
+facility_guide,의료관광 안내센터에서 안과 상담도 해주나요? 센터 위치는요?
+facility_guide,의료관광 안내센터에서 어떤 정보를 얻을 수 있나요? 위치도 알려주세요.
+facility_guide,의료관광 안내센터에서 어떤 종류의 의료 상담을 받을 수 있나요? 위치도 궁금해요.
+facility_guide,의료관광 안내센터에서 진료 예약도 해주나요? 센터 위치는요?
+facility_guide,의료관광 안내센터에서 치과 상담도 해주나요? 센터 위치는요?
+facility_guide,의료관광 안내센터에서 통역 서비스도 제공하나요? 센터는 어디에 있어요?
+facility_guide,의료관광 안내센터에서 피부과 상담도 해주나요? 센터 위치는요?
+facility_guide,의료관광 안내센터에서 피부관리 상담도 해주나요? 센터 위치는요?
+facility_guide,의료관광 안내센터에서 한의원 상담도 해주나요? 센터 위치는요?
+facility_guide,카페 말고 베이커리도 공항에 있나요? 어디에 있어요?
+facility_guide,카페 찾는데 어디쯤에 있죠?
+facility_guide,카페에서 디저트도 팔죠? 카페 위치는요?
+facility_guide,카페에서 병 음료도 파나요? 카페 위치는요?
+facility_guide,카페에서 샌드위치도 파나요? 카페 위치 알려주세요.
+facility_guide,카페에서 스무디도 파나요? 카페 위치는요?
+facility_guide,카페에서 아이스크림도 파나요? 카페 위치는요?
+facility_guide,카페에서 주스 종류 뭐뭐 있어요? 카페 위치는요?
+facility_guide,카페에서 충전할 수 있는 곳 있나요? 위치를 알려주세요.
+facility_guide,카페에서 커피 말고 다른 음료도 팔아요? 카페 위치는요?
+facility_guide,카페에서 컵라면도 파나요? 카페 위치는요?
+facility_guide,카페에서 텀블러 할인 되나요? 카페 위치는요?
+facility_guide,카페에서 티 종류 뭐뭐 있어요? 카페 위치는요?
+facility_guide,"카페인 수혈이 시급한데, 근처 카페 어디에 있는지 알려줄 수 있나요?"
+facility_guide,택배 보낼 때 물품 가격 신고해야 하나요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 물품 보관도 되나요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 배송 조회 가능한가요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 보험 가입도 되나요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 상자도 제공해주나요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 서류도 함께 보낼 수 있나요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 어디서 보내야 하나요? 택배 접수처 위치를 알려주세요.
+facility_guide,택배 보낼 때 영수증 주나요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 운송장 작성 어떻게 해요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 주소 잘못 적으면 어떻게 해요? 택배 서비스 지점 위치는요?
+facility_guide,택배 보낼 때 파손 위험 물품은 어떻게 해야 해요? 택배 접수처 위치는요?
+facility_guide,택배 보낼 때 포장도 해주나요? 택배 서비스 지점은 어디에 있어요?
+facility_guide,택배 보낼 수 있는 곳은 어디에 있는지 알려주세요. 짐이 많아서요.
+facility_guide,택배 보낼 수 있는 곳이 공항에 있나요?
+facility_guide,택배 부치려면 어디로 가야 해요? 짐이 너무 많아서요.
+facility_guide,편의점 24시간 영업인가요? 어디에 있나요?
+facility_guide,편의점 위치 좀 알려주세요. 간단하게 뭐 좀 사고 싶어요.
+facility_guide,편의점에 간단한 식사류도 파나요? 위치 좀 알려주세요.
+facility_guide,편의점에 과자 종류 뭐뭐 있어요? 편의점 위치는요?
+facility_guide,편의점에 도시락 팔아요? 편의점 위치는요?
+facility_guide,편의점에 컵라면 팔아요? 편의점 위치는요?
+facility_guide,편의점에 휴대폰 충전기 팔아요? 편의점은 어디에 있어요?
+facility_guide,"편의점에서 간단하게 뭐 좀 사 먹고 싶은데, 공항 내 편의점은 어디에 있어요?"
+facility_guide,편의점에서 삼각김밥도 파나요? 편의점 위치를 알려주세요.
+facility_guide,편의점에서 음료수 종류 뭐뭐 있어요? 편의점 위치는요?
+facility_guide,편의점은 어디에 있어요?
+facility_guide,"해외 친구에게 줄 선물 사러 면세점 가고 싶은데, 어디에 있죠?"
+facility_guide,해외감염병신고센터 위치는요?
+facility_guide,해외감염병신고센터는 몇 시까지 운영해요? 위치도 알려주세요.
+facility_guide,해외감염병신고센터는 무슨 일을 하는 곳이에요? 어디에 있나요?
+facility_guide,해외감염병신고센터는 어떤 곳인가요? 어디에 위치해 있어요?
+facility_guide,해외감염병신고센터에 가면 바로 검사받나요? 센터 위치는요?
+facility_guide,해외감염병신고센터에 방문하지 않고 신고 가능한가요? 센터 전화번호는요?
+facility_guide,해외감염병신고센터에 신고하려면 어떻게 해요? 위치도 알려주세요.
+facility_guide,해외감염병신고센터에 신고하면 개인 정보 보호되나요? 센터 위치는요?
+facility_guide,해외감염병신고센터에 신고하면 검사 결과 알려주나요? 센터 위치는요?
+facility_guide,해외감염병신고센터에 신고하면 격리되나요? 센터 위치는요?
+facility_guide,해외감염병신고센터에 신고하면 기록에 남나요? 센터 위치는요?
+facility_guide,해외감염병신고센터에 신고하면 바로 조치해주나요? 센터 위치는요?
+facility_guide,해외감염병신고센터에 신고하면 바로 처리되나요? 센터 위치는요?
+facility_guide,해외감염병신고센터에 신고하면 비용 드나요? 센터 위치는요?
+facility_guide,"해외에서 입국했는데, 혹시 감염병 관련해서 신고할 곳이 있나요? 해외감염병신고센터 위치를 알고 싶어요."
+facility_guide,혼자 밥 먹기 좋은 음식점 없을까요? 식사할 만한 곳이 어디에 있어요?
+facility_guide,화장실 변기 깨끗한가요? 화장실 위치는요?
+facility_guide,화장실 어디예요?
+facility_guide,화장실 중 깨끗하고 넓은 곳으로 추천해주세요. 어디에 있죠?
+facility_guide,화장실에 거울 많나요? 화장실 위치는요?
+facility_guide,화장실에 방향제 있나요? 화장실 위치는요?
+facility_guide,화장실에 비누 있어요? 화장실 위치는요?
+facility_guide,화장실에 세면대가 높지 않나요? 화장실 위치는요?
+facility_guide,화장실에 세면도구도 비치되어 있나요? 화장실 위치 알려주세요.
+facility_guide,화장실에 장애인 편의시설 있나요? 화장실 위치는요?
+facility_guide,화장실에 핸드드라이어 있나요? 화장실 위치는요?
+facility_guide,화장실에 휴지는 충분한가요? 화장실 위치는요?
+facility_guide,화장실에 휴지통 많나요? 화장실 위치는요?
+facility_guide,화장실이 급해요! 제일 가까운 화장실 위치 알려주세요.
+facility_guide,화장실이 너무 많아서 어디 가야 할지 모르겠어요. 제일 가까운 곳 알려주세요.
+facility_guide,"환승 대기 중인데, 좀 편하게 쉴 수 있는 호텔이 공항 내에 있나요? 위치를 알고 싶어요."
+facility_guide,환승장에서 다음 터미널까지 얼마나 걸려요? 환승장 위치는요?
+facility_guide,환승장에서 라운지까지 얼마나 걸려요? 라운지 위치는요?
+facility_guide,환승장에서 면세점까지 가는 길 복잡해요? 면세점 위치는요?
+facility_guide,환승장에서 면세점까지 얼마나 걸려요? 면세점은 어디에 있나요?
+facility_guide,환승장에서 면세점까지 얼마나 걸리나요? 면세점 위치를 알려주세요.
+facility_guide,환승장에서 쇼핑할 시간 충분할까요? 면세점은 어디에 위치해 있나요?
+facility_guide,환승장에서 식당까지 멀어요? 식당 위치는요?
+facility_guide,환승장에서 유모차 대여도 되나요? 유모차 대여하는 곳 위치도 알려주세요.
+facility_guide,환승장에서 짐 찾을 수 있나요? 짐 찾는 곳 위치는요?
+facility_guide,환승장에서 출국장까지 얼마나 걸려요? 환승장 위치는요?
+facility_guide,환승장에서 택시 승강장까지 얼마나 걸려요? 택시 승강장 위치는요?
+facility_guide,환승장에서 흡연실까지 멀어요? 흡연실 위치는요?
+facility_guide,환승장에서 흡연실까지 얼마나 걸려요? 흡연실 위치는요?
+facility_guide,환승장으로 가는 길 좀 안내해 주세요. 다음 비행기로 갈아타야 해서요.
+facility_guide,환승장은 어디로 가야 해요?
+facility_guide,환승호텔 시설은 어떤가요? 위치와 함께 설명해 주세요.
+facility_guide,환승호텔 위치는요? 공항 터미널에서 얼마나 떨어져 있나요?
+facility_guide,환승호텔 위치는요? 환승객인데 하룻밤 묵어야 할 것 같아요.
+facility_guide,환승호텔에 레스토랑도 있나요? 환승호텔 위치는요?
+facility_guide,환승호텔에 룸서비스도 되나요? 환승호텔 위치는요?
+facility_guide,환승호텔에 마사지 서비스도 있나요? 환승호텔 위치는요?
+facility_guide,환승호텔에 뷔페 식당도 있나요? 환승호텔 위치는요?
+facility_guide,환승호텔에 비즈니스 센터도 있나요? 환승호텔 위치는요?
+facility_guide,환승호텔에 사우나도 있나요? 환승호텔 위치는요?
+facility_guide,환승호텔에 수영장도 있나요? 환승호텔 위치를 알려주세요.
+facility_guide,환승호텔에 조식 포함인가요? 환승호텔 위치는요?
+facility_guide,환승호텔에 피트니스 센터도 있나요? 환승호텔 위치는요?
+facility_guide,환승호텔에 회의실도 있나요? 환승호텔 위치는요?
+facility_guide,환승호텔에서 체크인하려면 어디로 가면 되나요?
+facility_guide,환승호텔은 어디에 있나요?
+facility_guide,환전소 전화번호 아세요? 미리 문의하고 싶어서요.
+facility_guide,환전소 주말에도 영업하나요? 그리고 위치도 알려주세요.
+facility_guide,환전소는 어디예요?
+facility_guide,환전소에서 소액도 환전되나요? 환전소 위치는요?
+facility_guide,환전소에서 여행자 보험 가입도 되나요? 환전소 위치는요?
+facility_guide,환전소에서 여행자 수표도 취급하나요? 환전소 위치는요?
+facility_guide,환전소에서 외국 동전도 환전되나요? 환전소 위치는요?
+facility_guide,환전소에서 외화 송금도 가능한가요? 환전소 위치는요?
+facility_guide,환전소에서 위안화도 환전되나요? 환전소 위치는요?
+facility_guide,환전소에서 일본 엔화도 환전되나요? 환전소 위치는요?
+facility_guide,환전소에서 잔돈도 환전해주나요? 환전소 위치는요?
+facility_guide,환전소에서 캐나다 달러도 환전되나요? 환전소 위치는요?
+facility_guide,환전소에서 환율 변동 알림 서비스 있나요? 환전소 위치는요?
+facility_guide,환전소에서 환율 우대 받을 수 있나요? 환전소 위치는요?
+facility_guide,"환전하려고 하는데, 환전소가 공항 어디에 위치해 있는지 알려주세요."
+facility_guide,흡연실 안에 공기청정기 있나요? 흡연실 위치 알려주세요.
+facility_guide,흡연실 안에 환기 잘 되나요? 흡연실 위치를 알려주세요.
+facility_guide,흡연실 위치가 입국장 게이트랑 가까운가요? 흡연실은 어디에 있어요?
+facility_guide,흡연실에 난방/냉방 되나요? 흡연실 위치는요?
+facility_guide,흡연실에 창문 있나요? 흡연실 위치는요?
+facility_guide,흡연실에 환풍 시설 잘 되어 있나요? 흡연실 위치는요?
+facility_guide,흡연실은 야외인가요 실내인가요? 위치도 알려주세요.
+facility_guide,흡연실은 어디에 있는지 정확한 위치 좀 알려줘.
+facility_guide,흡연실은 어디에 있어요?
+facility_guide,흡연실은 입국장에도 있나요? 입국해서 바로 피우고 싶어서요.
+facility_guide,흡연실은 출국장 게이트 근처에도 있나요?
+facility_guide,흡연실이 게이트랑 가까운가요? 흡연실 위치는요?
+facility_guide,흡연실이 너무 작지는 않나요? 흡연실 위치는요?
+facility_guide,흡연실이 답답하진 않나요? 흡연실 위치는요?
+airline_info_query,FedEX는 인천공항 몇 번 게이트인가요?
+airline_info_query,FedEX항공 고객센터 전화번호가 뭔가요?
+airline_info_query,FedEX항공 로고를 볼 수 있나요?
+airline_info_query,FedEX항공에 어떻게 연락하면 되죠?
 arrival_policy_info,입국 절차 알려줘 
 arrival_policy_info,한국 입국 시 비자가 필요한가요?
 arrival_policy_info,입국할 때 반입 금지된 물품은 무엇인가요?
@@ -2176,7 +2016,6 @@ departure_policy_info,대한항공 체크인 카운터는 어디 있나요?
 departure_policy_info,셀프 백드랍 시 수하물 규정은 무엇인가요?
 departure_policy_info,탑승권 없이 셀프 백드랍을 사용할 수 있나요?
 departure_policy_info,무료 수하물 허용 범위 초과 시 어떻게 해야 하나요?
-departure_policy_info,스포츠 장비는 어떻게 위탁하나요?
 departure_policy_info,반려동물과 함께 셀프체크인을 이용할 수 있나요?
 departure_policy_info,체크인 후 수하물은 어디에서 보안 검사를 하나요?
 departure_policy_info,수하물에 귀중품을 넣어도 되나요?
@@ -3700,7 +3539,6 @@ parking_location_recommendation,"여기요, 지금 제2터미널 단기 주차�
 parking_location_recommendation,"내일 아침 비행기 타러 가야 하는데, 제1터미널 장기 주차 P2에 주차할 예정이거든? 동편이랑 서편 중에 어디가 더 한가하고 빨리 주차할 수 있어?"
 parking_location_recommendation,"오늘 저녁 9시쯤 제2터미널 주차타워 동편에 도착할 건데, 야간이라 혹시 좀 어두울까 봐 걱정되네요. 안전하고 밝은 주차 공간을 추천해주실 수 있을까요?"
 parking_location_recommendation,"제가 제1터미널 단기 주차장 지상 1층에 주차를 해야 하는데, 혹시 지금 만차 직전이면 다른 층이나 구역 중 주차하기 좀 더 수월한 곳을 추천해주시겠어요?"
-parking_location_recommendation,"담주 금요일 오후에 제2터미널 장기 주차 P4에 주차할 건데, 퇴근 시간이랑 겹쳐서 주차장이 엄청 복잡해질 것 같아. 그때쯤 가장 여유롭고 주차하기 쉬운 곳으로 추천해 줄 수 있을까?"
 parking_location_recommendation,저는 주차 요금이 저렴한 곳을 선호합니다. 제1터미널 근처 장기 주차장 중에서 가성비가 가장 좋은 주차장을 추천해주실 수 있으세요?
 parking_location_recommendation,"제2터미널에 친구 마중 나갈 예정이라 잠깐 주차할 건데, 단기 주차장 중 가장 빠르고 쉽게 주차하고 나갈 수 있는 곳을 추천해주세요. 픽업이라 시간이 촉박해서요."
 parking_location_recommendation,제가 큰 차를 몰아서 주차 공간이 넓은 곳을 선호합니다. 제1터미널 장기 주차장 중에서 넓은 공간을 찾기 쉽고 주차 스트레스 덜한 곳을 추천해주실 수 있을까요?
@@ -3845,8 +3683,8 @@ parking_location_recommendation,"제1터미널 단기 주차장 지하 2층에 �
 parking_location_recommendation,"제2터미널 장기 주차장 P4에 주차할 건데, 밤늦게 도착해도 주차하고 나서 차량용품점이나 편의시설이 가까운 곳을 추천해주세요."
 flight_info,KE123 어디서 타요?
 flight_info,아시아나 101편 지연됐나요?
-parking_availability_query,주차장 어디가 여유 있어요?
-facility_guide,면세점 어디 있어요?
+parking_query,주차장 어디가 여유 있어요?
+facility_guide,흡연실이 출국장 밖에 있나요? 흡연실 위치는요?
 arrival_policy_info,입국할 때 반드시 입국 심사를 받아야 하나요
 arrival_policy_info,한국에 도착하면 여권 외에 제출해야 하는 서류가 있나요
 arrival_policy_info,입국 심사에서 질문을 받는 경우도 있나요
@@ -4411,7 +4249,6 @@ flight_info,인천발 싱가포르행 비행기 운항 시간
 flight_info,오늘 밤 도착하는 국내선 비행기 목록
 flight_info,HL8901 항공기 출발 시간
 flight_info,KE1101편 오늘 운항하나요?
-flight_info,인천공항 도착편 중 지연 여부 확인
 flight_info,비행기 LH701편 지금 이륙했나요?
 flight_info,HL9001 항공기 현재 위치.
 flight_info,OZ10001편 도착 예정 시간 변경됐는지
@@ -4420,7 +4257,6 @@ flight_info,오늘 오후에 도착하는 국내선 항공편 목록
 flight_info,HL9101 항공기 운항 정보
 flight_info,KE1201편 지금 착륙했나요?
 flight_info,비행기 TK801편 지연 여부
-flight_info,인천공항 출발편 중 지연된 항공기 정보
 flight_info,오늘 인천에 도착하는 비행기 중 가장 빠른 국제선은?
 flight_info,HL9201 항공기 도착 예정 시간
 flight_info,OZ11001편 지금 출발했나요?
@@ -4433,16 +4269,13 @@ flight_info,인천발 밴쿠버행 비행기 운항 시간.
 flight_info,오늘 밤 출발하는 국내선 비행기 목록
 flight_info,HL9401 항공기 출발 시간
 flight_info,OZ12001편 오늘 운항하나요?
-flight_info,인천공항 도착편 중 지연된 항공편 조회
 flight_info,비행기 ET1001편 지금 이륙했나요
 flight_info,HL9501 항공기 현재 위치
 flight_info,KE1401편 도착 예정 시간 변경됐는지
 flight_info,인천발 아부다비행 비행기 스케줄
-flight_info,오늘 오후에 도착하는 국제선 항공편 목록
 flight_info,HL9601 항공기 운항 정보
 flight_info,OZ13001편 지금 착륙했나요?
 flight_info,비행기 AY1101편 지연 여부
-flight_info,인천공항 출발편 중 지연된 항공기 정보
 flight_info,오늘 인천에 도착하는 비행기 중 가장 늦은 국내선은?
 flight_info,HL9701 항공기 도착 예정 시간.
 flight_info,KE1501편 지금 출발했나요?
@@ -4476,21 +4309,16 @@ flight_info,인천발 모스크바행 비행기 운항 시간
 flight_info,오늘 밤 출발하는 국제선 비행기 목록.
 flight_info,HL0051 항공기 출발 시간
 flight_info,OZ17001편 오늘 운항하나요?
-flight_info,인천공항 도착편 중 지연 여부 확인
 flight_info,비행기 AA1601편 지금 이륙했나요?
 flight_info,HL0061 항공기 현재 위치
 flight_info,KE1901편 도착 예정 시간 변경됐는지.
 flight_info,인천발 달라스행 비행기 스케줄.
-flight_info,오늘 오후에 도착하는 국제선 항공편 목록.
 flight_info,HL0071 항공기 운항 정보.
 flight_info,OZ18001편 지금 착륙했나요?
 flight_info,비행기 MH1701편 지연 여부
-flight_info,인천공항 출발편 중 지연된 항공기 정보.
-flight_info,오늘 인천에 도착하는 비행기 중 가장 빠른 국제선은?
 flight_info,HL0081 항공기 도착 예정 시간.
 flight_info,KE2001편 지금 출발했나요?
 flight_info,인천발 쿠알라룸푸르행 비행기 스케줄
-flight_info,오늘 오전 도착하는 국제선 비행기 목록
 flight_info,HL0091 항공기 운항 상태
 flight_info,TW1001편
 flight_info,TW1001
@@ -4634,7 +4462,6 @@ parking_congestion_prediction,특정 날짜 주차장 혼잡 예측.
 parking_congestion_prediction,주말 오전 주차장 혼잡도는요?
 parking_congestion_prediction,내일 오후 공항 주차장 혼잡도.
 parking_congestion_prediction,주차장 혼잡도 다음 주말.
-parking_congestion_prediction,몇 시쯤 주차장이 덜 붐빌까요?
 parking_congestion_prediction,오늘 밤 주차장 자리 있을까요?
 parking_congestion_prediction,내일 제1터미널 주차장 자리 예상.
 parking_congestion_prediction,연휴 기간 주차장 혼잡도.
@@ -4706,90 +4533,23 @@ parking_congestion_prediction,다음 주 수요일 점심시간 (12시~1시)에 
 parking_congestion_prediction,"내일 오후 늦게 (4시~5시) 제1터미널 단기 주차장 지하 1층에 주차할 예정인데, 퇴근 시간과 겹쳐서 많이 혼잡할지 예측해주실 수 있나요?"
 parking_congestion_prediction,이번 여름 휴가 시즌에 제2터미널 장기 주차 P2가 평소보다 얼마나 더 혼잡할 것으로 예상되나요? 특정 날짜의 혼잡도도 알려주시면 좋습니다.
 parking_congestion_prediction,"이번 주말에 제1터미널 장기 주차장 P1에 주차할 건데, 혹시 그때쯤 주차 공간이 많이 혼잡할지 미리 예측해주실 수 있을까요? 연휴 직전이라 미리 알고 싶네요."
-parking_congestion_prediction,"야, 내일 아침 8시쯤 제2터미널 단기 주차장 지하 1층에 주차하려고 하는데, 그때 주차장 얼마나 붐빌까? 자리 바로 찾을 수 있을까?"
-parking_congestion_prediction,"어르신들 모시고 공항 가는데, 제1터미널 단기 주차장 지상 1층에 내일 오후쯤 되면 주차할 자리가 여유로울지, 아니면 많이 혼잡할지 예측 좀 해주세요."
-parking_congestion_prediction,"다음 주 화요일 오후에 제2터미널 주차타워 서편에 주차할 건데요, 업무 때문에 방문하는 거라 주차가 중요하거든요. 그 시간대에 주차장이 많이 붐빌지 미리 파악 가능할까요?"
 parking_congestion_prediction,"이번 연휴 때 제1터미널 장기 주차장 P3에 주차하려고 하는데, 평소보다 얼마나 더 붐빌지, 아니면 아예 만차라서 주차하기가 엄청 어려울 수도 있을까요? 여행 계획 때문에요."
-parking_congestion_prediction,"여기요, 지금으로부터 한 시간 뒤쯤 제2터미널 단기 주차장 지하 2층에 주차하려고 하는데, 그때쯤 주차 가능한 공간이 남아있을지 미리 예측해줄 수 있어요?"
-parking_congestion_prediction,"내일 아침 비행기 타러 가야 하는데, 제1터미널 장기 주차 P2에 주차할 예정이거든? 이른 시간에도 주차장 동편이나 서편 중 특별히 더 혼잡한 곳이 있을지 예상해 줄래?"
-parking_congestion_prediction,"오늘 저녁 9시쯤 제2터미널 주차타워 동편에 도착할 건데, 그 시간에 주차장이 많이 여유로울지, 아니면 벌써 꽉 차 있을지 알고 싶어요. 주차 못 할까 봐 불안해서요."
-parking_congestion_prediction,"아, 제가 제1터미널 단기 주차장 지상 1층에 주차를 해야 하는데, 혹시 지금으로부터 30분 뒤쯤 주차장이 만차 직전이라서 아예 못 들어가는 건 아니겠죠? 빨리 알려주세요."
-parking_congestion_prediction,"담주 금요일 오후에 제2터미널 장기 주차 P4에 주차할 건데, 퇴근 시간이랑 겹쳐서 주차장이 엄청 복잡해질까? 미리 혼잡도 예측 가능할까?"
-parking_congestion_prediction,"다음 주 월요일 아침 일찍 제1터미널 단기 주차장 지하 1층에 차를 댈 건데요, 출근 시간이라 많이 혼잡할까요 아니면 좀 여유 있을까요? 궁금해서요."
-parking_congestion_prediction,지금으로부터 한 시간 뒤쯤 제2터미널 장기 주차장 P1에 주차할 수 있는 빈자리가 있을까요? 주변에 차들이 너무 많아서 나중에 자리 없을까 봐 걱정돼.
-parking_congestion_prediction,"이번 주말 제1터미널 주차타워 서편이 엄청 붐빌 것 같던데, 혹시 주차 가능한 자리가 있긴 할까요? 아님 다른 쪽이 더 나을지 예측해 주실래요?"
-parking_congestion_prediction,"내일 오후 늦게 제2터미널 단기 주차장 지하 2층에 주차할 예정인데, 그 시간에도 주차 공간이 넉넉할지 알고 싶어요. 자리 없을까 봐 걱정되네요."
-parking_congestion_prediction,연말 연초에 제1터미널 장기 주차장 P3은 보통 어느 정도로 혼잡한가요? 아예 다른 주차장을 고려해야 할 정도로 심각할지 예측 부탁드립니다.
-parking_congestion_prediction,"와, 진짜 급한데, 제2터미널 단기 주차장 지상 1층에 지금으로부터 10분 뒤쯤 주차할 자리가 아예 없을까 봐 걱정돼요. 빨리 확인 가능한가요?"
-parking_congestion_prediction,"내일 출국인데, 제1터미널 장기 주차 P2 동편이랑 서편 중에 어디가 더 혼잡도가 낮을지 미리 예측해 줄 수 있어? 사람 없는 곳으로 가고 싶어서."
-parking_congestion_prediction,"오늘 밤 자정쯤 제2터미널 주차타워 동편에 주차할 생각인데, 그 시간에 주차장이 텅 비어있을지 아니면 그래도 꽤 차 있을지 예측 궁금해요."
-parking_congestion_prediction,"제가 제1터미널 단기 주차장 지하 1층을 선호하거든요. 지금으로부터 한 시간 뒤쯤 그 구역에 주차할 곳이 있을지, 아니면 다른 층으로 가야 하는지 예측 좀 해주세요."
-parking_congestion_prediction,"담주 수요일 오후에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간대에 공항 전체 주차장 혼잡도는 어떤 수준일까? 주차장 너무 복잡하면 싫거든."
-parking_congestion_prediction,이번 주말 제1터미널 단기 주차장 지상 1층이 만차 예상되나요? 아니면 그래도 아직 주차할 공간이 남아있을지 예측해주세요.
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차할 건데, 이른 시간에 혼잡도가 낮을 것으로 기대해도 될까요? 항상 붐벼서요."
-parking_congestion_prediction,지금으로부터 30분 뒤쯤 제1터미널 주차타워 동편의 주차 상황은 어떤가요? 그때쯤 주차하러 들어가도 괜찮을지 궁금합니다.
-parking_congestion_prediction,"다음 주 목요일 저녁에 제2터미널 단기 주차장 지하 1층에 주차할 건데, 그 시간에도 자리가 많이 남아있을지 예측해 주세요. 보통 그 시간에 꽉 차던데."
-parking_congestion_prediction,"이번 연휴에 제1터미널 장기 주차 P3에 주차하려고 하는데, 주차장 빈자리 현황을 미리 알 수 있는 실시간 예측 정보가 혹시 있을까요?"
 parking_congestion_prediction,"야, 제2터미널 단기 주차장 지하 2층에 주차할 생각인데, 지금으로부터 한 시간 뒤쯤 그쪽 주차장이 얼마나 꽉 차 있을지 예측해 줘. 주차할 수 있겠니?"
 parking_congestion_prediction,"내일 오후 늦게 제1터미널 장기 주차 P2 서편에 주차할 건데, 그 시간에 혼잡도가 높아져서 주차하기 많이 어려워질까요? 미리 대비하고 싶어서요."
-parking_congestion_prediction,"오늘 밤 공항에 도착해서 제2터미널 주차타워 동편에 주차할 건데, 늦은 시간이라 주차장 전체가 여유로울지 예측 궁금합니다."
-parking_congestion_prediction,"제가 제1터미널 단기 주차장 지상 1층을 주로 이용하는데, 현재 주차장이 거의 만차 상태인지, 아니면 아직 여유가 있어서 바로 주차할 수 있을지 예측해 주세요."
-parking_congestion_prediction,"담주 금요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간에 주차장이 얼마나 한가할지 미리 예측해 줄 수 있을까? 편하게 주차하고 싶거든."
-parking_congestion_prediction,이번 주말 제1터미널 단기 주차장 지하 1층이 많이 붐빌 것으로 예상되나요? 아니면 주차하기 무난한 수준일까요? 가족 여행이라서요.
 parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차하려고 하는데, 이른 아침에도 주차장 동편이랑 서편 중 더 여유로운 곳이 있을지 예측해 주세요."
-parking_congestion_prediction,지금으로부터 15분 뒤쯤 제1터미널 주차타워 서편에 주차할 수 있는 빈자리가 있을까요? 너무 차가 많으면 다른 곳으로 가려고 하는데.
 parking_congestion_prediction,"다음 주 화요일 점심시간에 제2터미널 단기 주차장 지하 2층에 주차할 예정인데, 그 시간에 주차할 자리가 넉넉할지 예측 부탁드립니다."
-parking_congestion_prediction,이번 여름 휴가 시즌에 제1터미널 장기 주차 P3은 보통 어느 정도로 혼잡한가요? 아예 만차 위험이 높은 시간대가 따로 있을지 예측해주세요.
-parking_congestion_prediction,"제2터미널 단기 주차장 지상 1층에 주차하려고 하는데, 지금으로부터 10분 뒤쯤 주차장이 매우 혼잡해서 대기해야 할 정도인지 예측 가능할까요?"
-parking_congestion_prediction,"내일 오후 제1터미널 장기 주차 P2 동편에 주차할 건데, 그 시간대에도 주차장이 많이 혼잡할까? 일 때문에 가는 거라 미리 알고 싶네."
-parking_congestion_prediction,"오늘 밤 10시쯤 제2터미널 주차타워 동편에 주차할 건데, 늦은 시간이라 주차장 혼잡도는 어떻게 예상되나요? 너무 붐비면 곤란해서요."
 parking_congestion_prediction,"제가 제1터미널 단기 주차장 지하 1층을 이용하고 싶은데요, 지금으로부터 한 시간 뒤쯤 그 구역에 주차 가능한 공간이 몇 개나 남아있을지 예측해 줄 수 있을까요?"
 parking_congestion_prediction,"다음 주 목요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간에는 주차장이 텅 비어있을 정도로 여유로울까? 주차하기 편했으면 좋겠어."
-parking_congestion_prediction,"이번 주말 제1터미널 단기 주차장 지상 1층에 주차할 예정인데, 혹시 오후 시간대 혼잡도가 많이 높을까요? 미리 대비하고 싶어서요."
 parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차할 건데, 주차할 곳이 바로 보일 정도로 여유로울지 예측해주세요. 짐이 많아서 빨리 주차하고 싶어요."
-parking_congestion_prediction,지금으로부터 5분 뒤쯤 제1터미널 주차타워 동편이 붐비나요? 아니면 주차할 자리가 넉넉한가요? 빨리 주차하고 싶어서요.
-parking_congestion_prediction,"다음 주 화요일 퇴근 시간 (오후 6시)에 제2터미널 단기 주차장 지하 1층에 주차하려고 하는데, 주차장 진입이 어려울 정도로 혼잡할까요? 예측 좀 해주세요."
-parking_congestion_prediction,"이번 설 연휴에 제1터미널 장기 주차 P3에 주차할 건데, 연휴 시작일에 주차장이 얼마나 붐빌지 미리 알려주세요. 주차 스트레스 없이 가고 싶어요."
-parking_congestion_prediction,"야, 제2터미널 단기 주차장 지하 2층에 주차할 생각인데, 지금으로부터 30분 뒤쯤 그쪽 주차장 혼잡도가 어느 정도 되는지 실시간으로 예측해 줘. 거의 만차니?"
 parking_congestion_prediction,"내일 오후 늦게 제1터미널 장기 주차 P2 서편에 주차할 예정인데, 그 시간에 혼잡도가 높아져서 주차하기 많이 어려워질까요? 다른 대안을 찾아야 할지 고민되네요."
-parking_congestion_prediction,"오늘 밤 12시쯤 제2터미널 주차타워 동편에 도착할 건데, 자정쯤이면 주차장이 많이 한가해질지 예측 궁금해요. 늦은 시간이라 피곤해서 빨리 주차하고 싶어요."
 parking_congestion_prediction,"제가 제1터미널 단기 주차장 지상 1층에 주차를 해야 하는데, 혹시 지금으로부터 10분 뒤쯤 주차장이 만차 직전이라서 아예 못 들어가는 건 아니겠죠? 예측 좀 해주세요."
-parking_congestion_prediction,"담주 금요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간대에 주차장 혼잡도가 어느 정도일지 예측해 줄 수 있을까? 여유롭게 주차하고 싶거든."
 parking_congestion_prediction,"이번 주말 제1터미널 단기 주차장 지하 1층이 꽤 붐빌 것 같은데, 혹시 주차장 진입 대기 시간이 길어질지 예측해 주세요. 시간을 아끼고 싶어서요."
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차할 건데, 혹시 동편과 서편 중 어느 곳이 주차할 자리가 더 많을지 예측해 줄 수 있을까? 짐이 많아서 편한 곳으로 가고 싶어."
 parking_congestion_prediction,지금으로부터 한 시간 뒤쯤 제1터미널 주차타워 서편이 붐빌까요? 주차하기 어렵지 않을까요? 늦으면 비행기를 놓칠 수도 있어서요.
 parking_congestion_prediction,"다음 주 화요일 점심시간에 제2터미널 단기 주차장 지하 2층에 주차할 예정인데, 그 시간에 주차할 자리가 충분할지 예측 부탁드립니다. 식사 약속이 있어서요."
-parking_congestion_prediction,"이번 휴가철에 제1터미널 장기 주차 P3에 주차할 건데, 주차장이 너무 붐빌까 봐 걱정돼요. 예측 가능한가요? 주차 스트레스를 줄이고 싶어요."
 parking_congestion_prediction,"제2터미널 단기 주차장 지상 1층에 주차하려고 하는데, 지금으로부터 20분 뒤쯤 주차장이 매우 혼잡해서 대기해야 할 정도인지 예측 가능할까요?"
-parking_congestion_prediction,"제가 제1터미널 단기 주차장 지하 1층을 이용하고 싶은데요, 지금으로부터 45분 뒤쯤 그 구역에 주차 가능한 공간이 몇 개나 남아있을지 예측해 줄 수 있을까요?"
-parking_congestion_prediction,"다음 주 목요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간에는 주차장이 텅 비어있을 정도로 여유로울까? 주차 공간 찾기 쉬웠으면 좋겠어."
-parking_congestion_prediction,"이번 주말 제1터미널 단기 주차장 지상 1층이 꽤 붐빌 것 같은데, 혹시 주차할 수 있는 빈 공간이 아예 없을까 봐 걱정돼요. 친구와 함께 가거든요."
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차하려고 하는데, 이른 아침에도 주차장이 많이 혼잡할 가능성이 있나요? 미리 대비하고 싶어서요."
 parking_congestion_prediction,지금으로부터 10분 뒤쯤 제1터미널 주차타워 동편 주차 상황은 어떤가요? 주차할 공간을 바로 찾을 수 있을까요? 급한 일정이 있어서요.
-parking_congestion_prediction,"다음 주 화요일 퇴근 시간 (오후 7시)에 제2터미널 단기 주차장 지하 1층에 주차할 건데, 그 시간에 주차장이 너무 혼잡해서 대기해야 할까요? 미리 알고 싶어서요."
-parking_congestion_prediction,"이번 설 연휴에 제1터미널 장기 주차 P3에 주차할 계획인데, 연휴 기간 내내 주차장이 매우 혼잡할 것으로 예상되나요? 주차에 대한 부담을 줄이고 싶어요."
 parking_congestion_prediction,"야, 제2터미널 단기 주차장 지하 2층에 주차할 건데, 지금으로부터 1시간 반 뒤쯤 그쪽 주차장이 얼마나 꽉 차 있을지 실시간으로 예측해 줘. 거의 만차면 다른 곳으로 가야 해서."
-parking_congestion_prediction,"내일 오후 제1터미널 장기 주차 P2 서편에 주차할 예정인데, 그 시간에 주차장이 만차가 될 확률이 높을까요? 미리 대안을 찾아야 할 것 같아서요."
-parking_congestion_prediction,"오늘 밤 11시쯤 제2터미널 주차타워 동편에 도착할 건데, 자정쯤이면 주차장이 좀 한가해져서 주차하기 편할까요? 피곤해서 빨리 주차하고 싶어요."
-parking_congestion_prediction,"제가 제1터미널 단기 주차장 지상 1층에 주차해야 하는데, 지금으로부터 5분 뒤쯤 그쪽에 주차 공간이 몇 칸이나 남아있을지 정확히 예측해 주세요."
-parking_congestion_prediction,"이번 주말 제1터미널 단기 주차장 지하 1층이 꽤 붐빌 것 같은데, 혹시 주차장 진입 자체가 어려울 정도로 혼잡할까요? 주말이라 걱정되네요."
 parking_congestion_prediction,지금으로부터 20분 뒤쯤 제1터미널 주차타워 서편이 붐비나요? 주차하기 어렵지 않을까요? 늦으면 비행기를 놓칠 수도 있어서요.
-parking_congestion_prediction,"다음 주 화요일 점심시간에 제2터미널 단기 주차장 지하 2층에 주차할 건데, 그 시간에 주차할 자리가 충분할지 예측 부탁드립니다. 식사 약속이 있어서요."
-parking_congestion_prediction,"제2터미널 단기 주차장 지상 1층에 주차하려고 하는데, 지금으로부터 15분 뒤쯤 주차장이 매우 혼잡해서 주차하기 힘들 정도인지 예측 가능할까요?"
-parking_congestion_prediction,"내일 오후 제1터미널 장기 주차 P2 동편에 주차할 건데, 그 시간에 주차장 상황은 어떨까요? 여유로울까요? 미리 알고 싶어서요."
-parking_congestion_prediction,"오늘 밤 10시쯤 제2터미널 주차타워 동편에 주차할 건데, 늦은 시간이라 주차장이 많이 붐비지 않겠죠? 편하게 주차하고 싶어요."
-parking_congestion_prediction,"제가 제1터미널 단기 주차장 지하 1층을 주로 이용하는데, 현재 주차장이 만차인지 아닌지 알려주세요. 다른 곳으로 갈지 말지 결정해야 해서요."
-parking_congestion_prediction,"다음 주 목요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간에는 주차장이 텅텅 비어있을 정도로 여유로울까? 주차 공간 찾기 쉬웠으면 좋겠어."
-parking_congestion_prediction,지금으로부터 3분 뒤쯤 제1터미널 주차타워 동편 주차 상황은 어떤가요? 주차할 공간을 바로 찾을 수 있을까요? 급한 일정이 있어서요.
-parking_congestion_prediction,"야, 제2터미널 단기 주차장 지하 2층에 주차할 건데, 지금으로부터 2시간 뒤쯤 그쪽 주차장이 얼마나 꽉 차 있을지 실시간으로 예측해 줘. 거의 만차면 다른 곳으로 가야 해서."
-parking_congestion_prediction,"제가 제1터미널 단기 주차장 지상 1층에 주차해야 하는데, 지금으로부터 10분 뒤쯤 그쪽에 주차 공간이 몇 칸이나 남아있을지 정확히 예측해 주세요."
-parking_congestion_prediction,지금으로부터 30분 뒤쯤 제1터미널 주차타워 서편이 붐비나요? 주차하기 어렵지 않을까요? 늦으면 비행기를 놓칠 수도 있어서요.
-parking_congestion_prediction,"제2터미널 단기 주차장 지상 1층에 주차하려고 하는데, 지금으로부터 1시간 뒤쯤 주차장이 매우 혼잡해서 주차하기 힘들 정도인지 예측 가능할까요?"
-parking_congestion_prediction,"이번 주말에 제1터미널 장기 주차장 P1에 주차할 건데, 혹시 그때쯤 주차 공간이 너무 혼잡해서 자리 찾기 어렵진 않을지 미리 예측해주실 수 있을까요? 연휴 직전이라 미리 알고 싶네요."
-parking_congestion_prediction,"야, 제2터미널 단기 주차장 지하 2층에 주차할 생각인데, 지금으로부터 1시간 반 뒤쯤 그쪽 주차장이 얼마나 꽉 차 있을지 실시간으로 예측해 줘. 거의 만차면 다른 곳으로 가야 해서."
-parking_congestion_prediction,"내일 오후 늦게 제1터미널 장기 주차 P2 서편에 주차할 예정인데, 그 시간에 혼잡도가 높아져서 주차하기 많이 어려워질까요? 미리 대비하고 싶어서요."
-parking_congestion_prediction,"다음 주 화요일 점심시간에 제2터미널 단기 주차장 지하 2층에 주차할 예정인데, 그 시간에 주차할 자리가 넉넉할지 예측 부탁드립니다. 식사 약속이 있어서요."
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차할 건데, 주차할 곳이 바로 보일 정도로 여유로울까요? 짐이 많아서 빨리 주차하고 싶어요."
 parking_congestion_prediction,"안녕하세요. 이번 주말에 제1터미널 장기 주차장 P1에 주차할 예정인데, 혹시 그때쯤 주차 공간이 너무 혼잡해서 진입 자체가 힘들진 않을지 미리 예측해주실 수 있을까요? 연휴 직전이라 걱정이 많네요."
 parking_congestion_prediction,"야, 내일 아침 8시쯤 제2터미널 단기 주차장 지하 1층에 주차하려고 하는데, 그때 주차장 얼마나 붐빌까? 주차 자리 바로 찾을 수 있을까?"
 parking_congestion_prediction,"어르신들 모시고 공항 가는데, 제1터미널 단기 주차장 지상 1층에 내일 오후쯤 되면 주차할 자리가 여유로울지, 아니면 많이 혼잡해서 대기해야 할지 예측 좀 해주세요."
@@ -4797,35 +4557,20 @@ parking_congestion_prediction,"다음 주 화요일 오후에 제2터미널 주�
 parking_congestion_prediction,"이번 연휴 때 제1터미널 장기 주차장 P3에 주차하려고 하는데, 평소보다 얼마나 더 붐빌지, 아니면 아예 만차라서 주차 자체가 불가능할 수도 있을까요? 여행 계획을 수정해야 할지 고민됩니다."
 parking_congestion_prediction,"여기요, 지금으로부터 한 시간 뒤쯤 제2터미널 단기 주차장 지하 2층에 주차하려고 하는데, 그때쯤 주차 가능한 공간이 남아있을지 미리 예측해줄 수 있어요? 앱 정보가 최신이 아닌 것 같아서요."
 parking_congestion_prediction,"내일 아침 비행기 타러 가야 하는데, 제1터미널 장기 주차 P2에 주차할 예정이거든? 이른 시간에도 주차장 동편이나 서편 중 유독 혼잡해서 주차 대기해야 하는 곳이 있을지 예상해 줄래?"
-parking_congestion_prediction,"오늘 저녁 9시쯤 제2터미널 주차타워 동편에 도착할 건데, 그 시간에 주차장이 많이 여유로울지, 아니면 벌써 꽉 차서 다른 주차장을 찾아야 할지 알고 싶어요. 주차 못 할까 봐 불안해서요."
 parking_congestion_prediction,"아, 제가 제1터미널 단기 주차장 지상 1층에 주차를 해야 하는데, 혹시 지금으로부터 30분 뒤쯤 주차장이 만차 직전이라 진입 자체가 안 되는 건 아니겠죠? 제발 빨리 예측해주세요."
-parking_congestion_prediction,"담주 금요일 오후에 제2터미널 장기 주차 P4에 주차할 건데, 퇴근 시간이랑 겹쳐서 주차장이 엄청 복잡해질 것 같아. 그때쯤 가장 여유롭고 주차하기 쉬운 곳으로 추천해 줄 수 있을까?"
 parking_congestion_prediction,"다음 주 월요일 아침 일찍 제1터미널 단기 주차장 지하 1층에 차를 댈 건데요, 출근 시간이라 많이 혼잡해서 자리 찾기 어려울까요 아니면 좀 여유 있을까요? 궁금해서요."
 parking_congestion_prediction,"이번 주말 제1터미널 주차타워 서편이 엄청 붐빌 것 같던데, 혹시 주차 가능한 자리가 있긴 할까요? 아님 다른 쪽이 훨씬 낫다고 예측해 주실 만한 곳이 있으세요?"
-parking_congestion_prediction,"내일 오후 늦게 제2터미널 단기 주차장 지하 2층에 주차할 예정인데, 그 시간에도 주차 공간이 넉넉할지 알고 싶어요. 자리 없으면 곤란해서요."
-parking_congestion_prediction,연말 연초에 제1터미널 장기 주차장 P3은 보통 어느 정도로 혼잡한가요? 아예 다른 주차장을 고려해야 할 정도로 주차가 어려울지 예측 부탁드립니다.
 parking_congestion_prediction,"와, 진짜 급한데, 제2터미널 단기 주차장 지상 1층에 지금으로부터 10분 뒤쯤 주차할 자리가 아예 없을까 봐 걱정돼요. 빨리 확인 가능한가요? 시간 없어요!"
 parking_congestion_prediction,"내일 출국인데, 제1터미널 장기 주차 P2 동편이랑 서편 중에 어디가 더 혼잡도가 낮을지 미리 예측해 줄 수 있어? 주차 대기 없이 바로 들어가고 싶어서."
-parking_congestion_prediction,"오늘 밤 자정쯤 제2터미널 주차타워 동편에 주차할 생각인데, 그 시간에 주차장이 텅 비어있을지 아니면 그래도 꽤 차 있을지 예측 궁금해요. 심야 비행이라서요."
 parking_congestion_prediction,"담주 수요일 오후에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간대에 공항 전체 주차장 혼잡도는 어떤 수준일까? 주차장이 너무 복잡해서 스트레스받기 싫거든."
-parking_congestion_prediction,이번 주말 제1터미널 단기 주차장 지상 1층이 만차 예상되나요? 아니면 그래도 아직 주차할 공간이 남아있어서 바로 주차할 수 있을까요?
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차할 건데, 이른 시간에 혼잡도가 낮을 것으로 기대해도 될까요? 항상 붐벼서 불안하네요."
-parking_congestion_prediction,"제가 제1터미널 단기 주차장 지상 1층을 주로 이용하는데, 현재 주차장이 거의 만차 상태인지, 아니면 아직 여유가 있어서 바로 주차할 수 있을지 정확히 알려주세요."
 parking_congestion_prediction,이번 주말 제1터미널 단기 주차장 지하 1층이 많이 붐빌 것으로 예상되나요? 아니면 주차하기 무난한 수준일까요? 가족 여행이라 걱정이 앞서네요.
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차하려고 하는데, 이른 아침에도 주차장 동편이랑 서편 중 더 여유로운 곳이 있을지 예측해 주세요. 짐이 많아서 편한 곳으로 가고 싶어요."
-parking_congestion_prediction,이번 여름 휴가 시즌에 제1터미널 장기 주차 P3은 보통 어느 정도로 혼잡한가요? 아예 만차 위험이 높은 시간대가 따로 있을지 예측해주세요. 휴가 계획에 반영하고 싶어서요.
-parking_congestion_prediction,"제2터미널 단기 주차장 지상 1층에 주차하려고 하는데, 현재 주차장이 매우 혼잡해서 대기해야 할 정도인지 예측 가능할까요? 시간이 없어서 발만 동동 구르고 있습니다."
-parking_congestion_prediction,"내일 오후 늦게 제1터미널 장기 주차 P2 서편에 주차할 예정인데, 그 시간에 혼잡도가 높아져서 주차하기 어려워질까요? 다른 대안을 찾아야 할지 고민되네요."
 parking_congestion_prediction,"제가 제1터미널 단기 주차장 지상 1층에 주차해야 하는데, 혹시 지금으로부터 10분 뒤쯤 주차장이 만차 직전이라 진입 자체가 안 되는 건 아니겠죠? 예측 좀 해주세요."
-parking_congestion_prediction,"담주 금요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간대에 주차장 혼잡도가 어느 정도일까요? 여유롭게 주차하고 싶거든."
-parking_congestion_prediction,"이번 주말 제1터미널 단기 주차장 지하 1층이 꽤 붐빌 것 같은데, 혹시 주차장 진입 대기 시간이 길어질까요? 시간을 아끼고 싶어서요."
 parking_congestion_prediction,"이번 연휴 때 제1터미널 장기 주차장 P3에 주차하려고 하는데, 평소보다 얼마나 더 붐빌지, 아니면 아예 만차라서 주차 자체가 불가능할 수도 있을까요? 여행 계획 때문에요."
 parking_congestion_prediction,"오늘 저녁 9시쯤 제2터미널 주차타워 동편에 도착할 건데, 그 시간에 주차장이 많이 여유로울지, 아니면 벌써 꽉 차 있을지 알고 싶어요."
 parking_congestion_prediction,"담주 금요일 오후에 제2터미널 장기 주차 P4에 주차할 건데, 퇴근 시간이랑 겹쳐서 주차장이 엄청 복잡해질까? 미리 확인 가능할까?"
 parking_congestion_prediction,"내일 오후 늦게 제2터미널 단기 주차장 지하 2층에 주차할 예정인데, 그 시간에도 주차 공간이 넉넉할지 알고 싶어요."
 parking_congestion_prediction,"내일 출국인데, 제1터미널 장기 주차 P2 동편이랑 서편 중에 어디가 더 혼잡도가 낮을지 미리 알려줄 수 있어?"
 parking_congestion_prediction,"담주 수요일 오후에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간대에 공항 전체 주차장 혼잡도는 어떤 수준일까?"
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차할 건데, 이른 시간에 혼잡도가 낮을 것으로 기대해도 될까요?"
 parking_congestion_prediction,"다음 주 목요일 저녁에 제2터미널 단기 주차장 지하 1층에 주차할 건데, 그 시간에도 자리가 많이 남아있을지 예측해 주세요."
 parking_congestion_prediction,"야, 제2터미널 단기 주차장 지하 2층에 주차할 생각인데, 지금으로부터 1시간 반 뒤쯤 그쪽 주차장이 얼마나 꽉 차 있을지 실시간으로 예측해 줘."
 parking_congestion_prediction,"내일 오후 늦게 제1터미널 장기 주차 P2 서편에 주차할 예정인데, 그 시간에 혼잡도가 높아져서 주차하기 많이 어려워질까요?"
@@ -4837,11 +4582,7 @@ parking_congestion_prediction,"제2터미널 단기 주차장 지상 1층에 주
 parking_congestion_prediction,"내일 오후 제1터미널 장기 주차 P2 동편에 주차할 건데, 그 시간대에도 주차장이 많이 혼잡할까?"
 parking_congestion_prediction,"오늘 밤 10시쯤 제2터미널 주차타워 동편에 주차할 건데, 늦은 시간이라 주차장 혼잡도는 어떻게 예상되나요?"
 parking_congestion_prediction,"다음 주 목요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간에는 주차장이 텅 비어있을 정도로 여유로울까?"
-parking_congestion_prediction,"이번 주말 제1터미널 단기 주차장 지상 1층에 주차할 예정인데, 혹시 오후 시간대 혼잡도가 많이 높을까요?"
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차할 건데, 주차할 곳이 바로 보일 정도로 여유로울까요?"
 parking_congestion_prediction,지금으로부터 5분 뒤쯤 제1터미널 주차타워 동편이 붐비나요? 아니면 주차할 자리가 넉넉한가요?
-parking_congestion_prediction,"다음 주 화요일 퇴근 시간 (오후 6시)에 제2터미널 단기 주차장 지하 1층에 주차하려고 하는데, 주차장 진입이 어려울 정도로 혼잡할까요?"
-parking_congestion_prediction,"이번 설 연휴에 제1터미널 장기 주차 P3에 주차할 건데, 연휴 시작일에 주차장이 얼마나 붐빌지 미리 알려주세요."
 parking_congestion_prediction,"야, 제2터미널 단기 주차장 지하 2층에 주차할 생각인데, 지금으로부터 30분 뒤쯤 그쪽 주차장 혼잡도가 어느 정도 되는지 실시간으로 예측해 줘."
 parking_congestion_prediction,"내일 오후 늦게 제1터미널 장기 주차 P2 서편에 주차할 예정인데, 그 시간에 혼잡도가 높아져서 주차하기 어려워질까요?"
 parking_congestion_prediction,"오늘 밤 12시쯤 제2터미널 주차타워 동편에 도착할 건데, 자정쯤이면 주차장이 많이 한가해질지 예측 궁금해요."
@@ -4852,19 +4593,13 @@ parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차�
 parking_congestion_prediction,지금으로부터 20분 뒤쯤 제1터미널 주차타워 서편이 붐비나요? 주차하기 어렵지 않을까요?
 parking_congestion_prediction,"다음 주 화요일 점심시간에 제2터미널 단기 주차장 지하 2층에 주차할 건데, 그 시간에 주차할 자리가 충분할지 예측 부탁드립니다."
 parking_congestion_prediction,"이번 휴가철에 제1터미널 장기 주차 P3에 주차할 건데, 주차장이 너무 붐빌까 봐 걱정돼요. 예측 가능한가요?"
-parking_congestion_prediction,"제2터미널 단기 주차장 지상 1층에 주차하려고 하는데, 현재 주차장이 매우 혼잡해서 주차하기 힘들 정도인가요?"
 parking_congestion_prediction,"내일 오후 제1터미널 장기 주차 P2 동편에 주차할 건데, 그 시간에 주차장 상황은 어떨까요?"
 parking_congestion_prediction,"오늘 밤 10시쯤 제2터미널 주차타워 동편에 주차할 건데, 늦은 시간이라 주차장이 많이 붐비지 않겠죠?"
-parking_congestion_prediction,"제가 제1터미널 단기 주차장 지하 1층을 주로 이용하는데, 현재 주차장이 만차인지 아닌지 알려주세요."
 parking_congestion_prediction,"다음 주 목요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간에는 주차장이 텅텅 비어있을 정도로 여유로울까?"
 parking_congestion_prediction,"이번 주말 제1터미널 단기 주차장 지상 1층이 꽤 붐빌 것 같은데, 혹시 주차할 수 있는 빈 공간이 아예 없을까 봐 걱정돼요."
-parking_congestion_prediction,"내일 아침 일찍 제2터미널 장기 주차장 P1에 주차하려고 하는데, 이른 아침에도 주차장이 많이 혼잡할 가능성이 있나요?"
 parking_congestion_prediction,지금으로부터 3분 뒤쯤 제1터미널 주차타워 동편 주차 상황은 어떤가요?
-parking_congestion_prediction,"다음 주 화요일 퇴근 시간 (오후 7시)에 제2터미널 단기 주차장 지하 1층에 주차할 건데, 그 시간에 주차장이 너무 혼잡해서 대기해야 할까요?"
 parking_congestion_prediction,"이번 설 연휴에 제1터미널 장기 주차 P3에 주차할 계획인데, 연휴 기간 내내 주차장이 매우 혼잡할 것으로 예상되나요?"
 parking_congestion_prediction,"야, 제2터미널 단기 주차장 지하 2층에 주차할 건데, 지금 그쪽 주차장이 얼마나 꽉 차 있는지 실시간으로 예측해 줘."
-parking_congestion_prediction,"내일 오후 제1터미널 장기 주차 P2 서편에 주차할 예정인데, 그 시간에 주차장이 만차가 될 확률이 높을까요?"
-parking_congestion_prediction,"오늘 밤 11시쯤 제2터미널 주차타워 동편에 도착할 건데, 자정쯤이면 주차장이 좀 한가해져서 주차하기 편할까요?"
 parking_congestion_prediction,"제가 제1터미널 단기 주차장 지상 1층에 주차해야 하는데, 혹시 지금으로부터 5분 뒤쯤 그쪽에 주차 공간이 몇 칸이나 남아있을지 정확히 예측해 주세요."
 parking_congestion_prediction,"담주 금요일 오전에 제2터미널 장기 주차 P4에 주차할 건데, 그 시간대에 주차장 혼잡도가 어느 정도일지 예측해 줄 수 있을까?"
 parking_congestion_prediction,"이번 주말 제1터미널 단기 주차장 지하 1층이 꽤 붐빌 것 같은데, 혹시 주차장 진입 자체가 어려울 정도로 혼잡할까요?"
@@ -4898,186 +4633,135 @@ baggage_claim_info,짐 찾다가 놓쳤는데 다시 돌려받을 수 있나요?
 baggage_claim_info,KE188Y 도착했는데 수하물은 아직 안 나왔어요. 왜 그런가요?
 baggage_claim_info,제 짐이 파손됐는데 어떻게 보상받을 수 있나요?
 baggage_claim_info,수하물 수취대가 어디인가요? 
-airline_info_query,인천공항에 어떤 항공사들이 취항하고 있나요?
-airline_info_query,인천국제공항 이용 가능한 항공사 목록 알려주세요.
+airline_info_query,FedEX항공은 화물 운송 항공사인가요?
+airline_info_query,FX 항공사 인천공항 번호를 알려주세요.
+airline_info_query,FX 항공사는 어떤 이미지인가요?
+airline_info_query,FX 항공사의 IATA 코드는 뭐예요?
+airline_info_query,FX 항공은 승객도 받나요?
+airline_info_query,GIA 항공사 이미지가 있을까요?
+airline_info_query,KE 항공사
+airline_info_query,KL 항공사 문의 전화번호를 알려주세요.
+airline_info_query,KL 항공사의 항공편 조회는 어디서 하나요?
+airline_info_query,KLM네덜란드항공 고객센터 번호
+airline_info_query,KLM항공 로고 링크 있나요?
+airline_info_query,KLM항공 인천공항 연락처를 알고 싶어요.
+airline_info_query,KL은 어떤 항공사인가요?
+airline_info_query,OZ 항공사
+airline_info_query,가루다인도네시아 인천공항 카운터 전화번호 알려주세요.
+airline_info_query,가루다인도네시아는 인천공항에서 운영하나요?
+airline_info_query,가루다항공 마크가 궁금해요.
+airline_info_query,가루다항공에 전화하려면 어디로 해야 하나요?
+airline_info_query,가루다항공의 본사는 어디인가요?
+airline_info_query,각 항공사의 로고 이미지를 볼 수 있나요?
+airline_info_query,각 항공사의 인천공항 번호를 한눈에 볼 수 있나요?
+airline_info_query,국내 항공사
+airline_info_query,국외 항공사
+airline_info_query,대한항공
+airline_info_query,스타얼라이언스 소속 항공사는 어떤 것들이 있나요?
+airline_info_query,아시아나
+airline_info_query,아시아나 항공
+airline_info_query,에어부산
+airline_info_query,에어서울
+airline_info_query,인도네시아행 항공사로 가루다 말고 또 있나요?
+airline_info_query,인천공항 기준 항공사 전체 알려주세요.
 airline_info_query,인천공항 출발 항공사 전체 리스트 보여줄 수 있나요?
 airline_info_query,인천공항 항공사 전체 명단 확인하고 싶어요.
-airline_info_query,인천공항에서 운영 중인 모든 항공사를 알려줘.
+airline_info_query,인천공항에 어떤 항공사들이 취항하고 있나요?
 airline_info_query,인천공항에 있는 항공사 전체 알려줄래요?
-airline_info_query,지금 인천공항에서 이용 가능한 항공사들은 뭐가 있나요?
-airline_info_query,인천공항을 이용하는 항공사 목록이 궁금해요.
-airline_info_query,인천공항 기준 항공사 전체 알려주세요.
-airline_info_query,인천공항에서 취항하는 항공사 종류를 알고 싶습니다.
-airline_info_query,FedEX항공 고객센터 전화번호가 뭔가요?
-airline_info_query,KLM항공 인천공항 연락처를 알고 싶어요.
-airline_info_query,가루다인도네시아 인천공항 카운터 전화번호 알려주세요.
-airline_info_query,인천공항의 KL 항공사 연락처는 어떻게 되나요?
-airline_info_query,FX 항공사 인천공항 번호를 알려주세요.
-airline_info_query,가루다항공에 전화하려면 어디로 해야 하나요?
-airline_info_query,KLM네덜란드항공 고객센터 번호
-airline_info_query,각 항공사의 인천공항 번호를 한눈에 볼 수 있나요?
-airline_info_query,FedEX항공에 어떻게 연락하면 되죠?
-airline_info_query,KL 항공사 문의 전화번호를 알려주세요.
-airline_info_query,FedEX항공 로고를 볼 수 있나요?
-airline_info_query,FX 항공사는 어떤 이미지인가요?
-airline_info_query,KLM항공 로고 링크 있나요?
-airline_info_query,가루다항공 마크가 궁금해요.
-airline_info_query,각 항공사의 로고 이미지를 볼 수 있나요?
-airline_info_query,FX 항공사의 IATA 코드는 뭐예요?
-airline_info_query,KL은 어떤 항공사인가요?
+airline_info_query,인천공항에 취항하는 저가 항공사(LCC)는 어떤 것들이 있나요?
+airline_info_query,인천공항에 취항하는 항공사 전체 목록을 보여주세요.
 airline_info_query,인천공항에서 FDX는 무슨 항공사인가요?
-airline_info_query,항공사 코드 GIA는 어디 항공사인가요?
-airline_info_query,GIA 항공사 이미지가 있을까요?
-airline_info_query,가루다인도네시아는 인천공항에서 운영하나요?
-airline_info_query,인천공항에서 KLM네덜란드항공 이용할 수 있나요?
-airline_info_query,인도네시아행 항공사로 가루다 말고 또 있나요?
-airline_info_query,FedEX항공은 화물 운송 항공사인가요?
-airline_info_query,FX 항공은 승객도 받나요?
-airline_info_query,가루다항공의 본사는 어디인가요?
-airline_info_query,KL 항공사의 항공편 조회는 어디서 하나요?
-airline_info_query,FedEX는 인천공항 몇 번 게이트인가요?
-airline_info_query,인천공항에서 FX 항공은 주로 언제 운항되나요?
-transfer_info,인천공항에서 환승 시 환승 통로 어떻게 해?
-transfer_info,환승 공항 내 이동 어떤가요?
-transfer_info,보안 심사 준비해야 하나요?
-transfer_info,트랜스퍼할 때 탑승권 확인도 포함돼?
-transfer_info,환승 관련 여유 시간 안내해줘.
-transfer_info,환승 보안검색대 어떤가요?
-transfer_info,환승 관련 기내 수하물 규정 안내해줘.
-transfer_info,환승 시 공항 내 셔틀 이용는 어디서 확인해?
-transfer_info,환승 절차 어떻게 준비해?
-transfer_info,트랜스퍼할 때 전자여행허가 어떻게 처리되나요?
-transfer_info,트랜스퍼할 때 보안 심사도 포함돼?
-transfer_info,트랜스퍼할 때 환승 시 인터뷰도 포함돼?
-transfer_info,환승 통로 준비해야 하나요?
-transfer_info,환승 중에 환승 보안검색대 필요해?
-transfer_info,환승 시 환승 절차는 어디서 확인해?
-transfer_info,공항에서 탑승권 확인 관련해서 뭘 해야 돼?
-transfer_info,보안 심사 심사 받아야 해?
-transfer_info,환승 시 공항 내 셔틀 이용 꼭 해야 돼?
-transfer_info,인천공항에서 환승 시 의약품 반입 어떻게 해?
-transfer_info,트랜스퍼할 때 환승 통로 어떻게 처리되나요?
-transfer_info,환승 절차 검사 있어?
-transfer_info,환승 통로 심사 받아야 해?
-transfer_info,트랜스퍼할 때 기내 수하물 규정 어떻게 처리되나요?
-transfer_info,휴대품 검사 어떻게 준비해?
-transfer_info,환승 중에 전자여행허가 필요해?
-transfer_info,트랜스퍼할 때 환승 절차 어떻게 처리되나요?
-transfer_info,트랜스퍼할 때 면세품 신고 어떻게 처리되나요?
-transfer_info,기내 수하물 규정 언제 해?
-transfer_info,트랜스퍼할 때 공항 내 이동 어떻게 처리되나요?
-transfer_info,환승 절차 어디서 해?
-transfer_info,건강상태질문서 절차가 궁금해요.
-transfer_info,면세품 신고 어디서 해?
-transfer_info,환승 시 수하물 세관 신고는 어디서 확인해?
-transfer_info,공항에서 공항 내 이동 관련해서 뭘 해야 돼?
-transfer_info,공항 내 이동 어디서 해?
-transfer_info,전자세관신고 심사 받아야 해?
-transfer_info,트랜스퍼할 때 휴대품 검사 어떻게 처리되나요?
-transfer_info,환승 기내 수하물 규정 어떤가요?
-transfer_info,트랜스퍼할 때 공항 내 셔틀 이용 어떻게 처리되나요?
-transfer_info,환승 관련 기내 반입 금지품목 안내
-transfer_info,출국장 위치 심사 받아야 해?
-transfer_info,인천공항에서 환승 시 출입국 심사 어떻게 해?
-transfer_info,LAGs 규정에 대한 규정이 궁금해.
-transfer_info,환승 관련 여권 검사 안내해줘.
-transfer_info,K-스탑오버가 뭐예요?
-transfer_info,K-스탑오버 자유여행 프로그램 설명해 주세요.
-transfer_info,경유 중에 한국 나갔다 올 수 있나요?
-transfer_info,인천공항에서 스탑오버 가능한가요?
-transfer_info,스탑오버 여행하려면 어떤 조건이 있어야 하나요?
-transfer_info,K-스탑오버는 어떻게 신청하나요?
-transfer_info,스탑오버 프로그램은 유료인가요?
-transfer_info,스탑오버 신청은 어디서 해요?
-transfer_info,경유객을 위한 관광 프로그램 있나요?
-transfer_info,K-스탑오버 이용할 수 있는 항공사 알려주세요.
-transfer_info,스탑오버 가능한 나라가 따로 있나요?
-transfer_info,환승 중에 서울 관광해도 되나요?
-transfer_info,스탑오버할 때 짐은 어떻게 처리되나요?
-transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요?
-transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요?
-transfer_info,K-스탑오버는 누구나 이용할 수 있나요?
-transfer_info,외국인도 스탑오버 가능해요?
-transfer_info,한국 경유할 때 스탑오버 신청하고 나갔다 와도 돼요?
-transfer_info,스탑오버 후 다시 입국할 때 절차는 어떻게 되나요?
-transfer_info,스탑오버 중 공항 밖에 나갈 수 있는 조건은?
-transfer_info,K-스탑오버 프로그램 어떻게 이용해요?
 transfer_info,K-스탑오버 신청하는 법 알려줘.
-transfer_info,스탑오버 되는 항공편 뭐 있어?
-transfer_info,스탑오버가 가능한지 어떻게 알아요?
-transfer_info,공항 밖 나갔다 다시 들어올 수 있나요?
+transfer_info,K-스탑오버 이용할 수 있는 항공사 알려주세요. 신청하고 싶은데요.
+transfer_info,K-스탑오버 자유여행 프로그램 설명해 주세요.
+transfer_info,K-스탑오버 자유여행 프로그램 설명해 주세요. 어디서 알아볼 수 있나요?
+transfer_info,K-스탑오버 프로그램 어떻게 이용해요?
+transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요 할 수 있어요?
+transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요?
+transfer_info,K-스탑오버가 뭐예요 궁금합니다.
+transfer_info,K-스탑오버가 뭐예요?
+transfer_info,K-스탑오버는 누구나 이용할 수 있나요
+transfer_info,K-스탑오버는 어떻게 신청하나요?
 transfer_info,K-스탑오버로 관광하고 싶은데 도와주세요.
-transfer_info,스탑오버 관광 가능한 도시 알려줘.
-transfer_info,환승 시간 동안 시내 나가도 되나요?
-transfer_info,인천공항 환승할 때 서울 다녀올 수 있어요?
-transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요 신청하고 싶은데요.
-transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요 하고 싶어요.
-transfer_info,한국 경유할 때 스탑오버 신청하고 나갔다 와도 돼요 할 수 있어요?
-transfer_info,스탑오버 신청은 어디서 해요 되는 거예요?
-transfer_info,K-스탑오버 이용할 수 있는 항공사 알려주세요.
-transfer_info,스탑오버 신청은 어디서 해요 하고 싶어요.
-transfer_info,스탑오버 신청은 어디서 해요 어디서 알아볼 수 있나요?
-transfer_info,스탑오버 프로그램은 유료?
+transfer_info,LAGs 규정에 대한 규정이 궁금해.
+transfer_info,건강상태질문서 절차가 궁금해요.
+transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요 궁금합니다.
+transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요?
+transfer_info,경유 중에 한국 나갔다 올 수 있나요
+transfer_info,경유 중에 한국 나갔다 올 수 있나요?
 transfer_info,경유객을 위한 관광 프로그램 알려줘
 transfer_info,경유객을 위한 관광 프로그램 있나요 할 수 있어요?
-transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요 신청하고 싶은데요.
-transfer_info,외국인도 스탑오버 가능해요 되는 거예요?
-transfer_info,K-스탑오버 자유여행 프로그램 설명해 주세요. 어디서 알아볼 수 있나요?
-transfer_info,인천공항에서 스탑오버 가능한가요 가능한가요?
-transfer_info,K-스탑오버가 뭐예요 할 수 있어요?
-transfer_info,경유 중에 한국 나갔다 올 수 있나요 가능한가요?
-transfer_info,스탑오버할 때 짐은 어떻게 처리되나요 신청하고 싶은데요.
-transfer_info,스탑오버 가능한 나라가 따로 있나요 신청하고 싶은데요.
-transfer_info,경유객을 위한 관광 프로그램 있나요 어디서 알아볼 수 있나요?
-transfer_info,스탑오버 후 다시 입국할 때 절차는 어떻게 되나요 신청하고 싶은데요.
+transfer_info,경유객을 위한 관광 프로그램 있나요?
+transfer_info,공항 내 이동 어디서 해?
+transfer_info,공항 밖 나갔다 다시 들어올 수 있나요?
+transfer_info,공항에서 공항 내 이동 관련해서 뭘 해야 돼?
+transfer_info,공항에서 탑승권 확인 관련해서 뭘 해야 돼?
+transfer_info,기내 수하물 규정 언제 해?
+transfer_info,면세품 신고 어디서 해?
+transfer_info,보안 심사 심사 받아야 해?
+transfer_info,보안 심사 준비해야 하나요?
+transfer_info,스탑오버 신청은 어디서 해요 되는 거예요?
+transfer_info,스탑오버 신청은 어디서 해요?
 transfer_info,스탑오버 여행하려면 어떤 조건이 있어야 하나요
-transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요 가능한가요?
-transfer_info,한국 경유할 때 스탑오버 신청하고 나갔다 와도 돼요 하고 싶어요.
-transfer_info,인천공항에서 스탑오버 가능한가요 궁금합니다.
-transfer_info,스탑오버 후 다시 입국할 때 절차는 어떻게 되나요 되는 거예요?
-transfer_info,인천공항에서 스탑오버 가능한가요 가능한가요?
-transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요 어디서 알아볼 수 있나요?
-transfer_info,스탑오버 여행하려면 어떤 조건이 있어야 하나요 하고 싶어요.
-transfer_info,경유객을 위한 관광 프로그램 있나요 가능한가요?
-transfer_info,K-스탑오버가 뭐예요 할 수 있어요?
-transfer_info,K-스탑오버 자유여행 프로그램 설명해 주세요. 어디서 알아볼 수 있나요?
-transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요 궁금합니다.
-transfer_info,외국인도 스탑오버 가능해요 알려줘
-transfer_info,한국 경유할 때 스탑오버 신청하고 나갔다 와도 돼요 어디서 알아볼 수 있나요?
-transfer_info,스탑오버 중 공항 밖에 나갈 수 있는 조건은 해도 되나요?
-transfer_info,K-스탑오버는 어떻게 신청하나요 되는 거예요?
-transfer_info,인천공항에서 스탑오버 가능한가요 신청하고 싶은데요.
-transfer_info,외국인도 스탑오버 가능해요 가능한가요?
-transfer_info,K-스탑오버는 어떻게 신청하나요 궁금합니다.
-transfer_info,스탑오버 프로그램은 유료인가요 신청하고 싶은데요.
-transfer_info,경유객을 위한 관광 프로그램 있나요 하고 싶어요.
-transfer_info,인천공항에서 스탑오버 가능한가요 알려줘
-transfer_info,K-스탑오버 이용할 수 있는 항공사 알려주세요. 신청하고 싶은데요.
-transfer_info,K-스탑오버가 뭐예요 궁금합니다.
-transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요 되는 거예요?
-transfer_info,외국인도 스탑오버 가능해요 되는 거예요?
-transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요 할 수 있어요?
-transfer_info,스탑오버 프로그램은 유료인가요 신청하고 싶은데요.
-transfer_info,K-스탑오버 자유여행 프로그램 설명해 주세요. 신청하고 싶은데요.
-transfer_info,스탑오버 여행하려면 어떤 조건이 있어야 하나요 신청하고 싶은데요.
-transfer_info,인천공항에서 스탑오버 가능한가요 할 수 있어요?
-transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요 할 수 있어요?
-transfer_info,스탑오버 후 다시 입국할 때 절차는 어떻게 되나요 하고 싶어요.
-transfer_info,스탑오버 중 공항 밖에 나갈 수 있는 조건은 신청하고 싶은데요.
-transfer_info,외국인도 스탑오버 가능해요 되는 거예요?
-transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요 해도 되나요?
-transfer_info,스탑오버 후 다시 입국할 때 절차는 어떻게 되나요
-transfer_info,경유 중에 한국 나갔다 올 수 있나요
-transfer_info,경유 시간 몇 시간 이상이면 스탑오버 할 수 있나요 궁금합니다.
-transfer_info,K-스탑오버가 뭐예요 하고 싶어요.
-transfer_info,스탑오버 프로그램은 유료인가요 할 수 있어요?
-transfer_info,인천공항에서 스탑오버 가능한가요 되는 거예요?
-transfer_info,K-스탑오버가 뭐예요 되는 거예요?
 transfer_info,스탑오버 여행하려면 어떤 조건이 있어야 하나요 해도 되나요?
-transfer_info,경유 중에 한국 나갔다 올 수 있나요 해도 되나요?
-transfer_info,스탑오버 여행하려면 어떤 조건이 있어야 하나요 알려줘
-transfer_info,K-스탑오버 하면 입국 심사 다시 받아야 해요 신청하고 싶은데요.
-transfer_info,K-스탑오버는 누구나 이용할 수 있나요
+transfer_info,스탑오버 여행하려면 어떤 조건이 있어야 하나요?
+transfer_info,스탑오버 중 공항 밖에 나갈 수 있는 조건은 해도 되나요?
+transfer_info,스탑오버 중 공항 밖에 나갈 수 있는 조건은?
+transfer_info,스탑오버 프로그램은 유료?
+transfer_info,스탑오버 프로그램은 유료인가요 신청하고 싶은데요.
+transfer_info,스탑오버 프로그램은 유료인가요 할 수 있어요?
+transfer_info,스탑오버 프로그램은 유료인가요?
+transfer_info,스탑오버 후 다시 입국할 때 절차는 어떻게 되나요 하고 싶어요.
+transfer_info,스탑오버 후 다시 입국할 때 절차는 어떻게 되나요?
+transfer_info,스탑오버가 가능한지 어떻게 알아요?
+transfer_info,스탑오버할 때 짐은 어떻게 처리되나요 신청하고 싶은데요.
+transfer_info,스탑오버할 때 짐은 어떻게 처리되나요?
+transfer_info,외국인도 스탑오버 가능해요 가능한가요?
+transfer_info,외국인도 스탑오버 가능해요 되는 거예요?
+transfer_info,외국인도 스탑오버 가능해요 알려줘
+transfer_info,외국인도 스탑오버 가능해요?
+transfer_info,인천공항 환승할 때 서울 다녀올 수 있어요?
+transfer_info,인천공항에서 스탑오버 가능한가요 신청하고 싶은데요.
+transfer_info,인천공항에서 스탑오버 가능한가요 알려줘
+transfer_info,인천공항에서 스탑오버 가능한가요?
+transfer_info,인천공항에서 환승 시 의약품 반입 어떻게 해?
+transfer_info,인천공항에서 환승 시 출입국 심사 어떻게 해?
+transfer_info,인천공항에서 환승 시 환승 통로 어떻게 해?
+transfer_info,전자세관신고 심사 받아야 해?
+transfer_info,출국장 위치 심사 받아야 해?
+transfer_info,트랜스퍼할 때 공항 내 셔틀 이용 어떻게 처리되나요?
+transfer_info,트랜스퍼할 때 공항 내 이동 어떻게 처리되나요?
+transfer_info,트랜스퍼할 때 기내 수하물 규정 어떻게 처리되나요?
+transfer_info,트랜스퍼할 때 면세품 신고 어떻게 처리되나요?
+transfer_info,트랜스퍼할 때 보안 심사도 포함돼?
+transfer_info,트랜스퍼할 때 전자여행허가 어떻게 처리되나요?
+transfer_info,트랜스퍼할 때 탑승권 확인도 포함돼?
+transfer_info,트랜스퍼할 때 환승 시 인터뷰도 포함돼?
+transfer_info,트랜스퍼할 때 환승 절차 어떻게 처리되나요?
+transfer_info,트랜스퍼할 때 환승 통로 어떻게 처리되나요?
+transfer_info,트랜스퍼할 때 휴대품 검사 어떻게 처리되나요?
+transfer_info,한국 경유할 때 스탑오버 신청하고 나갔다 와도 돼요?
+transfer_info,환승
+transfer_info,환승 공항 내 이동 어떤가요?
+transfer_info,환승 관련 기내 반입 금지품목 안내
+transfer_info,환승 관련 기내 수하물 규정 안내해줘.
+transfer_info,환승 관련 여권 검사 안내해줘.
+transfer_info,환승 관련 여유 시간 안내해줘.
+transfer_info,환승 기내 수하물 규정 어떤가요?
+transfer_info,환승 보안검색대 어떤가요?
+transfer_info,환승 시 공항 내 셔틀 이용 꼭 해야 돼?
+transfer_info,환승 시 공항 내 셔틀 이용는 어디서 확인해?
+transfer_info,환승 시 수하물 세관 신고는 어디서 확인해?
+transfer_info,환승 시 환승 절차는 어디서 확인해?
+transfer_info,환승 시간 동안 시내 나가도 되나요?
+transfer_info,환승 절차 검사 있어?
+transfer_info,환승 절차 어디서 해?
+transfer_info,환승 절차 어떻게 준비해?
+transfer_info,환승 정보
+transfer_info,환승 중에 서울 관광해도 되나요?
+transfer_info,환승 중에 전자여행허가 필요해?
+transfer_info,환승 중에 환승 보안검색대 필요해?
+transfer_info,환승 통로 심사 받아야 해?
 transfer_route_guide,국제선에서 국내선으로 환승할 때 절차가 어떻게 돼?
 transfer_route_guide,국내선에서 국제선으로 갈아탈 때 시간이 얼마나 걸려?
 transfer_route_guide,제2터미널에서 제1터미널로 갈아타려면 어떻게 이동하나요?
@@ -5125,3 +4809,299 @@ default_greeting,공항 챗봇 맞지?
 default_greeting,뭐부터 물어볼까?
 default_greeting,당신은 누구십니까?
 default_greeting,안녕
+airline_info_query,인천공항에서 FX 항공은 주로 언제 운항되나요?
+airline_info_query,인천공항에서 KLM네덜란드항공 이용할 수 있나요?
+airline_info_query,인천공항에서 운영 중인 모든 항공사를 알려줘.
+airline_info_query,인천공항에서 취항하는 항공사 종류를 알고 싶습니다.
+airline_info_query,인천공항을 이용하는 항공사 목록이 궁금해요.
+airline_info_query,인천공항의 KL 항공사 연락처는 어떻게 되나요?
+airline_info_query,인천국제공항 이용 가능한 항공사 목록 알려주세요.
+airline_info_query,제주항공
+airline_info_query,지금 인천공항에서 이용 가능한 항공사들은 뭐가 있나요?
+airline_info_query,진에어
+airline_info_query,진에어 고객센터 연락처를 알려주세요.
+airline_info_query,티웨이
+airline_info_query,항공사
+airline_info_query,항공사 검색
+airline_info_query,항공사 고객센터
+airline_info_query,항공사 리스트
+airline_info_query,항공사 목록
+airline_info_query,항공사 문의
+airline_info_query,항공사 번호
+airline_info_query,항공사 안내
+airline_info_query,항공사 어디서 확인해
+airline_info_query,항공사 연락처
+airline_info_query,항공사 위치
+airline_info_query,항공사 이름
+airline_info_query,항공사 전화번호
+airline_info_query,항공사 정보
+airline_info_query,항공사 정보 알려줘
+airline_info_query,항공사 조회
+airline_info_query,항공사 찾기
+airline_info_query,항공사 코드
+airline_info_query,항공사 코드 GIA는 어디 항공사인가요?
+airline_info_query,항공사명
+airline_info_query,항공사별 위치
+transfer_info,환승 통로 준비해야 하나요?
+transfer_info,휴대품 검사 어떻게 준비해?
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
+,
