@@ -20,7 +20,7 @@ def fetch_and_save_to_mongodb():
     params_base = {
         'numOfRows': '1000',
         'pageNo': '1',
-        'terno' : 'T2',
+        'terno': 'T2',
         'type': 'json'
     }
 
@@ -47,6 +47,12 @@ def fetch_and_save_to_mongodb():
             print(f"[{current_time_str}] 'items'가 비어 있습니다.")
             return
 
+        # 기존 문서 전체 삭제
+        collection.delete_many({})
+        print(f"[{current_time_str}] 기존 문서 삭제 완료.")
+
+        # 새로운 문서 목록 생성
+        docs = []
         for item in items:
             flight_id = item.get('flightid', '').strip()
             estimated_time = item.get('estimatedtime', '').strip()
@@ -62,17 +68,15 @@ def fetch_and_save_to_mongodb():
                 "scheduled_time": item.get('scheduletime', '').strip(),
                 "terminal_number": item.get('terno', '').strip()
             }
+            docs.append(doc)
 
-            collection.update_one(
-                {"congestion_now_id": congestion_now_id},
-                {"$set": doc},
-                upsert=True
-            )
-
-        print(f"[{current_time_str}] MongoDB 저장 완료. 총 {len(items)}개 문서.")
+        # 문서 일괄 삽입
+        collection.insert_many(docs)
+        print(f"[{current_time_str}] MongoDB 새 데이터 삽입 완료. 총 {len(docs)}개 문서.")
 
     except Exception as e:
         print(f"[{current_time_str}] 오류 발생: {e}")
+
 
 # --- 주기적 실행 ---
 if __name__ == "__main__":
