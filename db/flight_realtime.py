@@ -16,7 +16,7 @@ if not mongo_uri:
     print("❌ 오류: .env 파일에서 MONGO_URI를 찾을 수 없습니다. 파일을 확인해주세요.")
     exit(1)
 if not incheon_api_service_key:
-    print("❌ 오류: .env 파일에서 INCHEON_API_SERVICE_KEY를 찾을 수 없습니다. 파일을 확인해주세요.")
+    print("❌ 오류: .env 파일에서 SERVICE_KEY를 찾을 수 없습니다. 파일을 확인해주세요.") 
     exit(1)
 
 # --- MongoDB 연결 설정 ---
@@ -117,18 +117,26 @@ def fetch_flight_data(api_url, search_date, direction_korean_label, service_key)
 
 
 # --- 데이터 MongoDB에 저장 함수 ---
-def save_flight_data_to_db(flight_data, direction_korean_label, airline_map):
-    total_processed = 0
-    inserted_count = 0
-    updated_count = 0
+# 기존 save_flight_data_to_db 함수를 수정하여 모든 데이터를 삭제하고 새로 삽입합니다.
+def refresh_and_save_flight_data_to_db(flight_data, direction_korean_label, airline_map):
+    print(f"\n--- {direction_korean_label} 항공편 데이터 MongoDB 갱신 시작 ---")
 
-    print(f"\n--- {direction_korean_label} 항공편 데이터 MongoDB 저장 시작 ---")
+    # 특정 방향(도착/출발)의 기존 데이터만 삭제
+    delete_result = flight_realtime_collection.delete_many({'direction': direction_korean_label})
+    print(f"✅ 기존 '{direction_korean_label}' 항공편 데이터 {delete_result.deleted_count}건 삭제 완료.")
 
+    docs_to_insert = []
+    
     for item in flight_data:
         # 날짜/시간 문자열을 datetime 객체로 변환
         def parse_datetime(dt_str):
             try:
-                return datetime.strptime(str(dt_str), '%Y%m%d%H%M') if dt_str else None
+                # KST 시간대 정보 부여 (UTC+9)
+                dt_obj = datetime.strptime(str(dt_str), '%Y%m%d%H%M') if dt_str else None
+                if dt_obj:
+                    kst_timezone = timezone(timedelta(hours=9))
+                    return dt_obj.replace(tzinfo=kst_timezone)
+                return None
             except ValueError:
                 return None
 
@@ -136,9 +144,14 @@ def save_flight_data_to_db(flight_data, direction_korean_label, airline_map):
         api_airline_name = item.get('airline', '').strip() # API에서 가져온 항공사 이름의 앞뒤 공백 제거
         mapped_airline_code = airline_map.get(api_airline_name, None)
         
+        # 항공사 코드를 찾지 못했으면 경고 출력 후 건너뛰기
+        if not mapped_airline_code:
+            print(f"⚠️ 경고 ({direction_korean_label}편): 항공사명 {repr(api_airline_name)}에 대한 코드를 'Airline' 컬렉션에서 찾을 수 없습니다. 이 항목은 삽입되지 않고 건너뜁니다.")
+            continue
+
         # FlightRealtime 스키마에 맞게 데이터 가공
         flight_doc = {
-            'airline_code': mapped_airline_code, # 매핑된 코드를 사용
+            'airline_code': mapped_airline_code,
             'airport_code': item.get('airportCode'),
             'flight_id': item.get('flightId'),
             'direction': direction_korean_label,
@@ -148,7 +161,7 @@ def save_flight_data_to_db(flight_data, direction_korean_label, airline_map):
             'terminal_id': item.get('terminalid'),
             'gate_number': item.get('gatenumber'),
             'fid': item.get('fid'),
-            'updated_at': datetime.now(timezone.utc)
+            'updated_at': datetime.now(timezone.utc) # updated_at은 UTC로 유지
         }
 
         # 방향에 따른 특정 필드 처리
@@ -161,35 +174,23 @@ def save_flight_data_to_db(flight_data, direction_korean_label, airline_map):
             flight_doc['carousel_number'] = None
             flight_doc['exit_number'] = None
         
-        # FID는 필수값이므로 없으면 건너뜀 (고유 식별자로 사용)
+        # FID는 필수값이므로 없으면 건너뜀
         if not flight_doc.get('fid'):
-            print(f"⚠️ 경고: FID가 없는 레코드를 건너뜠습니다. 편명: {item.get('flightId')}")
+            print(f"⚠️ 경고: FID가 없는 레코드를 건너뛰었습니다. 편명: {item.get('flightId')}")
             continue
+        
+        docs_to_insert.append(flight_doc)
 
-        # 항공사 코드를 찾지 못했으면 경고 출력 후 건너뛰기
-        if not mapped_airline_code:
-            print(f"⚠️ 경고 ({direction_korean_label}편): 항공사명 {repr(api_airline_name)}에 대한 코드를 'Airline' 컬렉션에서 찾을 수 없습니다. 이 항목은 MongoDB에 삽입되지 않고 건너뜁니다.")
-            continue
-
-        # MongoDB에 upsert (업데이트 또는 삽입)
+    if docs_to_insert:
         try:
-            result = flight_realtime_collection.update_one(
-                {'fid': flight_doc['fid']},
-                {'$set': flight_doc},
-                upsert=True
-            )
-            total_processed += 1
-            if result.upserted_id:
-                inserted_count += 1
-            elif result.modified_count > 0:
-                updated_count += 1
-
+            insert_result = flight_realtime_collection.insert_many(docs_to_insert, ordered=False) # 실패 시 나머지 삽입 시도
+            print(f"✅ 새 '{direction_korean_label}' 항공편 데이터 {len(insert_result.inserted_ids)}건 삽입 완료.")
         except Exception as e:
-            print(f"❌ MongoDB 저장 오류 (FID: {flight_doc.get('fid')}): {e}")
+            print(f"❌ MongoDB 일괄 삽입 오류: {e}")
+    else:
+        print(f"ℹ️ '{direction_korean_label}' 삽입할 데이터가 없습니다.")
 
-    print(f"\n--- {direction_korean_label} 항공편 데이터 MongoDB 저장 완료 ---")
-    print(f"총 {total_processed}건의 데이터 처리.")
-    print(f"새로 {inserted_count}건 삽입, {updated_count}건 업데이트.")
+    print(f"\n--- {direction_korean_label} 항공편 데이터 MongoDB 갱신 완료 ---")
 
 
 # --- 메인 실행 ---
@@ -197,15 +198,17 @@ if __name__ == "__main__":
     kst_now = datetime.now(timezone(timedelta(hours=9)))
     today_str = kst_now.strftime('%Y%m%d') 
 
+    # 도착 항공편 데이터 처리
     arrival_api_url = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp/getPassengerArrivalsDeOdp"
     arrival_flights = fetch_flight_data(arrival_api_url, today_str, "도착", incheon_api_service_key)
     if arrival_flights:
-        save_flight_data_to_db(arrival_flights, "도착", airline_code_map)
+        refresh_and_save_flight_data_to_db(arrival_flights, "도착", airline_code_map)
 
+    # 출발 항공편 데이터 처리
     departure_api_url = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp/getPassengerDeparturesDeOdp"
     departure_flights = fetch_flight_data(departure_api_url, today_str, "출발", incheon_api_service_key)
     if departure_flights:
-        save_flight_data_to_db(departure_flights, "출발", airline_code_map)
+        refresh_and_save_flight_data_to_db(departure_flights, "출발", airline_code_map)
 
     client.close()
     print("\n--- MongoDB 연결 종료 ---")
