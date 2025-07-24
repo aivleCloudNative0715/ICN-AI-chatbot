@@ -4,6 +4,8 @@ from torch.nn.functional import softmax
 from transformers import BertModel, BertTokenizer
 import pickle
 
+
+
 # 🧠 모델 클래스 정의
 class KoBERTClassifier(nn.Module):
     def __init__(self, num_labels):
