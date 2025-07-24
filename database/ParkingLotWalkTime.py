@@ -53,7 +53,7 @@ try:
         parking_type_floor = str(row.get("주차장", "")).strip()
         terminal = row.get("터미널")
         checkin_counter = row.get("체크인카운터")
-        duration_seconds = int(row.get("상세시간(초)", 0))
+        duration_seconds = int(row.get("소요시간(분)", 0))
 
         parking_type = None
         floor = None
