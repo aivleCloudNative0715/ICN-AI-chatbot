@@ -1,0 +1,14 @@
+﻿payment_title,payment_step_description,available_cash,available_prepaid,available_postpaid,available_credit,available_transit,available_hipass,,,notes
+사전 무인 요금 정산기,"1. 주차장 내 설치된 사전 무인 요금정산기에 차량번호를 검색하세요.
+2. 기기에 표시된 금액을 지불하시고 영수증을 받으세요.
+3. 유·무인출구를 이용하여 별도의 절차없이 출차하세요.",FALSE,TRUE,TRUE,TRUE,TRUE,TRUE,,,"1. 본인 차량번호를 정확히 선택 후 결제 진행하세요.
+2. 다른 차량번호 선택 후 결제 시 출차 지연 및 불이익이 발생할 수 있습니다.
+(환불 및 승인 취소는 2일 이상 소요)"
+유인부스,"1. 유인부스로 이동해주세요.
+2. 유인출구로 진입하셔서 요금을 지불하고 출차하세요",TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,,,예약 주차장에는 유인부스 없음
+모바일 앱 (임시중단),"1. 인천공항 가이드앱 다운로드(iOS/Android 모두 지원)
+2. 차량번호 입력
+3. 결제 후 출차",FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,,,
+무인정산기,"1. 무인부스로 이동해주세요.
+2. 출구 무인 정산기에 표시된 요금을 지불하세요.
+3. 요금 지불 후 출차하세요.",FALSE,TRUE,TRUE,TRUE,TRUE,TRUE,,,"대기 시간 발생 가능, 사전 정산을 권장함"
