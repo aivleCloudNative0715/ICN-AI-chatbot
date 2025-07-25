@@ -7,6 +7,7 @@ import { MenuItem } from 'primereact/menuitem'; // MenuItem 타입 임포트
 import { useState } from 'react'; // useState 임포트
 import AdminHeader from '@/components/admin/AdminHeader';
 import DashboardTab from './tab/DashboardTab';
+import AdminContentBoard from './tab/AdminContentBoard';
 
 export default function AdminDashboardMain() {
   const router = useRouter();
@@ -28,36 +29,36 @@ export default function AdminDashboardMain() {
     className: activeIndex === 0 ? 'font-bold text-blue-600' : 'text-gray-700', 
     command: () => setActiveIndex(0) 
   },
-  { 
-    label: '문의 사항', 
-    icon: 'pi pi-question-circle', 
-    className: activeIndex === 1 ? 'font-bold text-blue-600' : 'text-gray-700', 
-    command: () => setActiveIndex(1) 
-  },
-  { 
-    label: '건의 사항', 
-    icon: 'pi pi-lightbulb', 
-    className: activeIndex === 2 ? 'font-bold text-blue-600' : 'text-gray-700', 
-    command: () => setActiveIndex(2) 
-  },
-  { 
-    label: '미처리 건', 
-    icon: 'pi pi-exclamation-circle', 
-    className: activeIndex === 3 ? 'font-bold text-blue-600' : 'text-gray-700', 
-    command: () => setActiveIndex(3) 
-  },
-  { 
-    label: '완료 건', 
-    icon: 'pi pi-check-circle', 
-    className: activeIndex === 4 ? 'font-bold text-blue-600' : 'text-gray-700', 
-    command: () => setActiveIndex(4) 
-  },
-  { 
-    label: '리포트', 
-    icon: 'pi pi-chart-bar', 
-    className: activeIndex === 5 ? 'font-bold text-blue-600' : 'text-gray-700', 
-    command: () => setActiveIndex(5) 
-  },
+  // { 
+  //   label: '문의 사항', 
+  //   icon: 'pi pi-question-circle', 
+  //   className: activeIndex === 1 ? 'font-bold text-blue-600' : 'text-gray-700', 
+  //   command: () => setActiveIndex(1) 
+  // },
+  // { 
+  //   label: '건의 사항', 
+  //   icon: 'pi pi-lightbulb', 
+  //   className: activeIndex === 2 ? 'font-bold text-blue-600' : 'text-gray-700', 
+  //   command: () => setActiveIndex(2) 
+  // },
+  // { 
+  //   label: '미처리 건', 
+  //   icon: 'pi pi-exclamation-circle', 
+  //   className: activeIndex === 3 ? 'font-bold text-blue-600' : 'text-gray-700', 
+  //   command: () => setActiveIndex(3) 
+  // },
+  // { 
+  //   label: '완료 건', 
+  //   icon: 'pi pi-check-circle', 
+  //   className: activeIndex === 4 ? 'font-bold text-blue-600' : 'text-gray-700', 
+  //   command: () => setActiveIndex(4) 
+  // },
+  // { 
+  //   label: '리포트', 
+  //   icon: 'pi pi-chart-bar', 
+  //   className: activeIndex === 5 ? 'font-bold text-blue-600' : 'text-gray-700', 
+  //   command: () => setActiveIndex(5) 
+  // },
   { 
     label: '관리자', 
     icon: 'pi pi-user', 
@@ -78,47 +79,23 @@ export default function AdminDashboardMain() {
     switch (activeIndex) {
       case 0: // 대시보드
         return <DashboardTab />;
-      case 1: // 문의 사항
-        return (
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">문의 사항 관리</h2>
-            <p className="text-gray-700">여기는 문의 사항 목록을 관리하는 페이지입니다.</p>
-            {/* 문의 사항 목록 테이블, 필터링, 검색 등 UI 추가 */}
-          </div>
-        );
-      case 2: // 건의 사항
-        return (
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">건의 사항 관리</h2>
-            <p className="text-gray-700">여기는 건의 사항 목록을 관리하는 페이지입니다.</p>
-            {/* 건의 사항 목록 테이블, 필터링, 검색 등 UI 추가 */}
-          </div>
-        );
-      case 3: // 미처리 건
-        return (
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">미처리 건 관리</h2>
-            <p className="text-gray-700">여기는 미처리된 문의/건의 목록을 관리하는 페이지입니다.</p>
-            {/* 미처리 건 목록 테이블, 필터링, 검색 등 UI 추가 */}
-          </div>
-        );
-      case 4: // 완료 건
-        return (
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">완료 건 관리</h2>
-            <p className="text-gray-700">여기는 처리가 완료된 문의/건의 목록을 관리하는 페이지입니다.</p>
-            {/* 완료 건 목록 테이블, 필터링, 검색 등 UI 추가 */}
-          </div>
-        );
-      case 5: // 리포트
-        return (
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">리포트</h2>
-            <p className="text-gray-700">여기는 주차장 혼잡도 예측 리포트 등 각종 리포트를 볼 수 있는 페이지입니다.</p>
-            {/* 리포트 차트, 데이터 테이블 등 UI 추가 */}
-          </div>
-        );
-      case 6: // 관리자
+      // case 1:
+      //   return <AdminContentBoard type="inquiry" />;
+      // case 2:
+      //   return <AdminContentBoard type="suggestion" />;
+      // case 3:
+      //   return <AdminContentBoard type="pending" />;
+      // case 4:
+      //   return <AdminContentBoard type="completed" />;
+      // case 5: // 리포트
+      //   return (
+      //     <div className="p-4 bg-white rounded-lg shadow-md">
+      //       <h2 className="text-2xl font-bold mb-6 text-gray-800">리포트</h2>
+      //       <p className="text-gray-700">여기는 주차장 혼잡도 예측 리포트 등 각종 리포트를 볼 수 있는 페이지입니다.</p>
+      //       {/* 리포트 차트, 데이터 테이블 등 UI 추가 */}
+      //     </div>
+      //   );
+      case 1: // 관리자
         return (
           <div className="p-4 bg-white rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-6 text-gray-800">관리자 계정 관리</h2>
@@ -126,7 +103,7 @@ export default function AdminDashboardMain() {
             {/* 관리자 목록 테이블, 관리자 추가 폼 등 UI 추가 */}
           </div>
         );
-      case 7: // 파일 업로드
+      case 2: // 파일 업로드
         return (
           <div className="p-4 bg-white rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-6 text-gray-800">파일 업로드</h2>
