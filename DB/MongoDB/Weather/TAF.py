@@ -7,7 +7,7 @@ import time
 from datetime import datetime
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from key_manager import get_valid_api_key
+from ..Key.key_manager import get_valid_api_key
 
 load_dotenv()  # .env 파일에서 환경변수 불러오기
 mongo_uri = os.getenv("MONGO_URI")
