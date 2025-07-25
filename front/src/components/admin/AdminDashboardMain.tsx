@@ -8,6 +8,7 @@ import { useState } from 'react'; // useState 임포트
 import AdminHeader from '@/components/admin/AdminHeader';
 import DashboardTab from './tab/DashboardTab';
 import AdminContentBoard from './tab/AdminContentBoard';
+import AdminManagePage from './tab/AdminManagePage';
 
 export default function AdminDashboardMain() {
   const router = useRouter();
@@ -97,11 +98,7 @@ export default function AdminDashboardMain() {
       //   );
       case 1: // 관리자
         return (
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">관리자 계정 관리</h2>
-            <p className="text-gray-700">여기는 관리자 계정을 추가, 수정, 삭제할 수 있는 페이지입니다.</p>
-            {/* 관리자 목록 테이블, 관리자 추가 폼 등 UI 추가 */}
-          </div>
+          <AdminManagePage/>
         );
       case 2: // 파일 업로드
         return (
