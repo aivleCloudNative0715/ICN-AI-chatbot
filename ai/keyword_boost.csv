@@ -1,0 +1,91 @@
+﻿intent,question
+arrival_congestion_query,입국장
+arrival_congestion_query,입국장 혼잡도
+arrival_congestion_query,입국장 게이트
+arrival_congestion_query,입국장 현황
+arrival_congestion_query,입국장 대기
+departure_congestion_prediction,출국장
+departure_congestion_prediction,출국장 예측
+departure_congestion_prediction,출국장 혼잡도
+departure_congestion_prediction,출국장 미래
+departure_congestion_prediction,출국장 승객
+arrival_congestion_prediction,입국장
+arrival_congestion_prediction,입국장 예측
+arrival_congestion_prediction,입국장 혼잡도
+arrival_congestion_prediction,입국장 미래
+arrival_congestion_prediction,입국장 승객
+airport_weather_current,공항 날씨
+airport_weather_current,공항 기온
+airport_weather_current,날씨
+airport_weather_current,기상
+airport_weather_current,바람
+airport_weather_current,비
+facility_guide,화장실
+facility_guide,면세점
+facility_guide,식당
+facility_guide,흡연실
+facility_guide,라운지
+facility_guide,상업 시설
+facility_guide,음식점
+facility_guide,카페
+facility_guide,편의 시설
+facility_guide,시설
+transfer_info,환승
+transfer_info,환승 절차
+transfer_info,환승 심사
+transfer_route_guide,환승 경로
+transfer_route_guide,셔틀
+transfer_route_guide,환승 
+flight_info,항공편
+flight_info,게이트
+flight_info,항공편 터미널
+arrival_policy_info,입국
+arrival_policy_info,입국 절차
+arrival_policy_info,입국 검사
+departure_policy_info,출국
+departure_policy_info,출국 절차
+baggage_claim_info,수하물
+baggage_claim_info,수하물 찾기
+baggage_claim_info,수취대
+baggage_claim_info,수취대 위치
+baggage_claim_info,수취대 도착
+baggage_rule_query,수하물
+baggage_rule_query,수하물 무게
+baggage_rule_query,수하물 크기
+baggage_rule_query,수하물 금지
+baggage_rule_query,수하물 허용
+airline_info_query,항공사
+airline_info_query,대한항공
+airline_info_query,아시아나
+airline_info_query,취항
+airline_info_query,항공사 목록
+regular_schedule_query,정기 운항
+regular_schedule_query,정기 운항 시간
+regular_schedule_query,정기 스케줄
+regular_schedule_query,정기 항공편
+parking_availability_query,주차장 이용
+parking_availability_query,주차장 현황
+parking_availability_query,주차장
+parking_availability_query,주차장 혼잡도
+parking_fee_info,주차 요금
+parking_fee_info,요금
+parking_fee_info,주차 할인
+parking_fee_info,주차 감면
+parking_fee_info,주차 비용
+parking_location_recommendation,주차장 추천
+parking_location_recommendation,주차장 위치
+parking_location_recommendation,주차장 거리
+parking_location_recommendation,주차장 터미널
+parking_congestion_prediction,주차장 혼잡도 예측
+parking_congestion_prediction,주차장 예측
+parking_congestion_prediction,주차장 미래
+parking_walk_time_info,도보
+parking_walk_time_info,도보 시간
+parking_walk_time_info,도보 거리
+parking_walk_time_info,주차장 도보
+parking_walk_time_info,주차장 카운터 도보
+default_greeting,안녕
+default_greeting,도와줘
+default_greeting,안녕하세요
+default_greeting,챗봇
+default_greeting,공항
