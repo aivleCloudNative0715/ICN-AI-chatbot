@@ -1,5 +1,3 @@
-# ai/chatbot/rag/client.py
-
 from pymongo import MongoClient
 from sentence_transformers import SentenceTransformer
 import os 
@@ -32,15 +30,15 @@ def get_collection(db_name: str, collection_name: str):
     client = get_mongo_client()
     return client[db_name][collection_name]
 
-# 🚨 인덱스 이름 매핑 딕셔너리 추가
+# 🚨 인덱스 이름 매핑 딕셔너리 추가/수정
 # 실제 MongoDB Atlas에 정의된 인덱스 이름을 여기에 매핑합니다.
 VECTOR_INDEX_NAMES = {
     "Airline": "airline_vector_index",
     "Airport": "airport_vector_index",
-    "AirportEnterprise": "aiportEnterprise_vector_index", # 오타가 없다면 그대로
-    "AirportProcedure": "airportProcedure_vector_index", # 🚨 이 부분이 핵심!
-    "Country": "country_vector_index", # Country도 필요할 수 있으니 추가
-    # TODO: 다른 컬렉션과 인덱스 매핑도 여기에 추가하세요.
+    "AirportEnterprise": "aiportEnterprise_vector_index",
+    "AirportProcedure": "airportProcedure_vector_index",
+    "Country": "country_vector_index",
+    "AirportFacility": "airportFacility_vector_index", 
 }
 
 # 3. 벡터 검색 함수 정의
@@ -104,5 +102,35 @@ if __name__ == "__main__":
             print(f"📍 절차 유형: {res.get('procedure_type', 'N/A')}")
             print(f"📄 설명: {res.get('description', 'N/A')[:100]}...") # 처음 100자만 출력
             print(f"🔢 단계: {res.get('step_name', 'N/A')}")
+
+    # 🚨 AirportFacility 컬렉션 테스트 추가
+    print("\n--- AirportFacility 컬렉션 테스트 ---")
+    query_facility = "약국 위치 알려줘"
+    query_embedding_facility = model_for_test.encode(query_facility).tolist()
+    results_facility = query_vector_store("AirportFacility", query_embedding_facility, top_k=3)
+
+    if results_facility:
+        print("🔍 공항 시설 정보 검색 결과:")
+        for idx, res in enumerate(results_facility, 1):
+            print(f"\n📦 결과 {idx}")
+            print(f"🏢 시설 이름: {res.get('facility_name', 'N/A')}")
+            print(f"🗺️ 위치: {res.get('location', 'N/A')}")
+            print(f"📝 설명: {res.get('description', 'N/A')[:100]}...")
+            print(f"📏 카테고리: {res.get('large_category', 'N/A')} > {res.get('medium_category', 'N/A')}")
+
+    # 🚨 AirportEnterprise 컬렉션 테스트 추가
+    print("\n--- AirportEnterprise 컬렉션 테스트 ---")
+    query_enterprise = "스타벅스 운영 시간 알려줘"
+    query_embedding_enterprise = model_for_test.encode(query_enterprise).tolist()
+    results_enterprise = query_vector_store("AirportEnterprise", query_embedding_enterprise, top_k=3)
+
+    if results_enterprise:
+        print("🔍 공항 입점업체 정보 검색 결과:")
+        for idx, res in enumerate(results_enterprise, 1):
+            print(f"\n📦 결과 {idx}")
+            print(f"🏪 업체 이름: {res.get('enterprise_name', 'N/A')}")
+            print(f"🗺️ 위치: {res.get('location', 'N/A')}")
+            print(f"⏰ 운영 시간: {res.get('service_time', 'N/A')}")
+            print(f"📞 전화: {res.get('tel', 'N/A')}")
 
     print("\n--- client.py 단독 테스트 종료 ---")
