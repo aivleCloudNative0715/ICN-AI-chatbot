@@ -1,103 +1,104 @@
-import Image from "next/image";
+// src/app/page.tsx
+'use client';
 
-export default function Home() {
+import ChatBotScreen from '@/components/chat/ChatBotScreen';
+import ChatSidebar from '@/components/chat/ChatSidebar';
+import Header from '@/components/common/Header'; // Header 컴포넌트 임포트
+import AuthModal from '@/components/auth/AuthModal'; // AuthModal 컴포넌트 임포트
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function HomePage() {
+  const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('jwt_token');
+    const userRole = localStorage.getItem('user_role');
+
+    if (token) {
+      // TODO: 토큰 유효성 검사 API 호출
+      setIsLoggedIn(true);
+      if (userRole === 'admin') { // Check if the stored role is admin
+        setIsAdmin(true);
+      }
+    }
+  }, []);
+
+  const openAuthModal = (mode: 'login' | 'register' = 'login') => {
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
+  };
+  
+  const closeAuthModal = () => {
+    // 창이 닫히면 로그인 되도록 임시 처리함 (나중에 지워야함)
+    // setIsLoggedIn(true);
+    // setIsAuthModalOpen(false);
+
+    // 창이 닫히면 관리자로 로그인 되도록 임시 처리함 (나중에 지워야함)
+    setIsLoggedIn(true);
+    setIsAdmin(true); // Set isAdmin to true
+    localStorage.setItem('jwt_token', 'temp_admin_token'); // Simulate a token
+    localStorage.setItem('user_role', 'admin'); // Simulate admin role
+    setIsAuthModalOpen(false);
+    router.push('/admin'); // Redirect to the admin main page 
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    closeAuthModal();
+  }
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  const handleLogout = () => {
+    // TODO: 실제 API 호출 및 토큰 삭제 로직 (API-08-20030)
+    localStorage.removeItem('jwt_token');
+    localStorage.removeItem('user_role');
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    alert('로그아웃되었습니다.');
+    // 현재 챗봇 페이지이므로 특별한 라우팅 필요 없음
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="flex flex-col flex-1 w-full h-full"> {/* 전체 화면 차지 */}
+      {/* 챗봇용 헤더 */}
+      <Header
+        onLoginClick={() => openAuthModal('login')}
+        onRegisterClick={() => openAuthModal('register')}
+        onMenuClick={toggleSidebar}
+        isLoggedIn={isLoggedIn}
+        onLogoutClick={handleLogout}
+      />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      {/* 메인 콘텐츠 영역 (챗봇 화면) */}
+      <div className="flex-grow flex overflow-hidden">
+        <ChatBotScreen
+          isLoggedIn={isLoggedIn}
+          onLoginStatusChange={setIsLoggedIn} // 로그인 상태 변경 직접 전달
+          onSidebarToggle={toggleSidebar} // 사이드바 토글 핸들러 전달
+        />
+      </div>
+      
+
+      {/* 챗봇 사이드바 (조건부 렌더링) */}
+      {isSidebarOpen && (
+        <ChatSidebar isLoggedIn={isLoggedIn} onClose={toggleSidebar} />
+      )}
+
+      {/* 인증 모달 */}
+      {isAuthModalOpen && (
+        <AuthModal
+          onClose={closeAuthModal}
+          onLoginSuccess={handleLoginSuccess}
+          initialMode={authMode}
+        />
+      )}
     </div>
   );
 }
