@@ -64,6 +64,7 @@ try:
             entry_requirement = doc.get('entry_requirement', '')
 
             # 의미를 잘 전달할 수 있는 문장 구성
+            text_to_embed = ''
             if visa_required == False and (entry_requirement is None or entry_requirement == ''):
                 text_to_embed = f"국가코드 {country_code}인 {country_name_kor}는 입국시 별도의 비자 필요 없이 최대 {stay_duration}일 까지 체류 가능합니다"
             elif visa_required == False and entry_requirement:
@@ -105,6 +106,7 @@ try:
 
     print(f"\n총 {processed_documents_count}개의 문서를 임베딩하여 '{airport_vectors_collection.name}' 컬렉션에 저장했습니다.")
     
+    
     # 2. ----- RestrictedItem -----
     # 모든 문서 불러오기 (커서 사용)
     documents_cursor_2 = airport_collection_2.find({})
@@ -125,12 +127,13 @@ try:
             checked_baggage_policy = doc.get('checked_baggage_policy', '')
 
             # 의미를 잘 전달할 수 있는 문장 구성
+            text_to_embed = ''
             if carry_on_policy == "불가" and checked_baggage_policy == "불가":
                 text_to_embed = f"{item_category} {item_name}는 기내 반입 불가(휴대 수화물). 위탁 수하물 불가"
             elif carry_on_policy == "불가":
-                text_to_embed = f"{item_category} {item_name}는 기내 반입 불가(휴대 수화물). 그러나 위탁 수하물은 조건부 가능. {checked_baggage_policy}"
-            elif carry_on_policy != "불가" and checked_baggage_policy == "불가":
-                text_to_embed = f"{item_category}의 {item_name}는 {carry_on_policy}. 위탁 수하물의 경우 {checked_baggage_policy}"              
+                text_to_embed = f"{item_category} {item_name}는 기내 반입 불가(휴대 수화물). 그러나 위탁 수하물은 조건부. {checked_baggage_policy}"
+            elif carry_on_policy is not "불가":
+                text_to_embed = f"{item_category}의 {item_name}는 기내 반입의 경우 {carry_on_policy}. 위탁 수하물의 경우 {checked_baggage_policy}"              
 
             if not text_to_embed.strip(): # 텍스트가 비어있으면 건너뛰기
                 print(f"경고: _id {doc.get('_id')} 문서에서 임베딩할 텍스트를 생성할 수 없습니다. 건너_id")
@@ -174,7 +177,7 @@ try:
     documents_to_insert = []
 
 
-    for doc in tqdm(documents_cursor_2, total=total_documents_2, desc="Processing"):
+    for doc in tqdm(documents_cursor_3, total=total_documents_3, desc="Processing"):
         try:
             # 3. 임베딩할 텍스트 구성
             procedure_type = doc.get('procedure_type', '')            
@@ -183,6 +186,7 @@ try:
             
 
             # 의미를 잘 전달할 수 있는 문장 구성
+            text_to_embed = ''
             text_to_embed = f"{procedure_type}시 절차 안내. {step_name} : {description}"
 
             if not text_to_embed.strip(): # 텍스트가 비어있으면 건너뛰기

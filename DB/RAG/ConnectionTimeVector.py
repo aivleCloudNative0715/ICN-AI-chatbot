@@ -69,8 +69,8 @@ try:
                 destination_terminal = '제 1터미널'
             elif destination_terminal == 'P02':
                 destination_terminal = '탑승동'
-            elif origin_terminal == 'P03':
-                origin_terminal = '제 2터미널'
+            elif destination_terminal == 'P03':
+                destination_terminal = '제 2터미널'
                 
             min_time_minutes = doc.get('min_time_minutes', '')
 
