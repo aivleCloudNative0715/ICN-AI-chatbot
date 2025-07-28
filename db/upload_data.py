@@ -26,13 +26,15 @@ except Exception as e:
     exit(1) # 연결 실패 시 프로그램 종료
 
 
-EXCEL_FILES_DIR = "./" 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+EXCEL_FILES_DIR = SCRIPT_DIR
 
-visa_file = os.path.join(EXCEL_FILES_DIR, "visa.xlsx")
-restricted_item_file = os.path.join(EXCEL_FILES_DIR, "restricted_item.xlsx")
-min_transit_time_file = os.path.join(EXCEL_FILES_DIR, "최소 환승 시간.xlsx")
+# --- 업데이트할 파일 경로 활성화 ---
+# visa_file = os.path.join(EXCEL_FILES_DIR, "visa.xlsx")
+# restricted_item_file = os.path.join(EXCEL_FILES_DIR, "restricted_item.xlsx")
+min_transit_time_file = os.path.join(EXCEL_FILES_DIR, "최소 환승 시간.xlsx") # 활성화
 airport_procedure_file = os.path.join(EXCEL_FILES_DIR, "공항 절차.xlsx")
-transit_path_file = os.path.join(EXCEL_FILES_DIR, "환승 경로.xlsx") 
+transit_path_file = os.path.join(EXCEL_FILES_DIR, "환승 경로.xlsx") # 활성화
 
 
 # --- 각 컬렉션별 데이터 업로드 함수 정의 ---
@@ -100,7 +102,7 @@ def upload_minimum_connection_time_data(file_path, db):
         df['destination_terminal'] = df['destination_terminal'].apply(lambda x: None if pd.isna(x) else str(x))
         data = df.to_dict(orient="records")
         collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
+        collection.delete_many({}) # 활성화: 기존 데이터 삭제
         collection.insert_many(data)
         print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
     except FileNotFoundError:
@@ -137,7 +139,7 @@ def upload_airport_procedure_data(file_path, db):
 
         data = df.to_dict(orient="records")
         collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
+        collection.delete_many({}) # 기존 데이터 삭제 (이미 활성화되어 있음)
         collection.insert_many(data)
         print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
     except FileNotFoundError:
@@ -162,7 +164,7 @@ def upload_transit_path_data(file_path, db):
                 df[col] = None
         data = df.to_dict(orient="records")
         collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
+        collection.delete_many({}) # 활성화: 기존 데이터 삭제
         collection.insert_many(data)
         print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
     except FileNotFoundError:
@@ -173,17 +175,12 @@ def upload_transit_path_data(file_path, db):
 
 # --- 모든 데이터 업로드 실행 ---
 
-print("\n--- 모든 엑셀 데이터 MongoDB 업로드 시작 ---")
+print("\n--- MongoDB 컬렉션 업데이트 시작 (기존 데이터 삭제 후) ---")
 
-# 모든 컬렉션의 기존 데이터를 삭제하고 새로 넣고 싶다면,
-# 각 함수 내부의 'collection.delete_many({})' 주석을 해제
-
-upload_country_data(visa_file, db)
-upload_restricted_item_data(restricted_item_file, db)
-upload_minimum_connection_time_data(min_transit_time_file, db)
-upload_airport_procedure_data(airport_procedure_file, db)
-upload_transit_path_data(transit_path_file, db)
+upload_minimum_connection_time_data(min_transit_time_file, db) # 최소 환승 시간 업데이트
+upload_airport_procedure_data(airport_procedure_file, db) # 공항 절차 업데이트
+upload_transit_path_data(transit_path_file, db) # 환승 경로 업데이트
 
 # --- MongoDB 연결 종료 ---
 client.close()
-print("\n--- 모든 데이터 업로드 완료 및 MongoDB 연결 종료 ---")
+print("\n--- 데이터 업로드 완료 및 MongoDB 연결 종료 ---")
