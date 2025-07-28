@@ -1,3 +1,4 @@
+// src/components/admin/tab/AdminContentBoard.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -7,20 +8,22 @@ import { Checkbox } from 'primereact/checkbox';
 import { InputText } from 'primereact/inputtext';
 import CustomPriorityDropdown from '@/components/CustomPriorityDropdown';
 import { CalendarDaysIcon, TagIcon, UserIcon } from '@heroicons/react/24/outline';
+// AdminAnswerBoard는 더 이상 여기서 직접 임포트하지 않습니다.
 
 interface AdminContentBoardProps {
   type: 'dashboard' | 'inquiry' | 'suggestion' | 'pending' | 'completed';
+  onSelectInquiry: (inquiry: any) => void; // 새로운 prop 추가
 }
 
-export default function AdminContentBoard({ type }: AdminContentBoardProps) {
-  // 상태
+export default function AdminContentBoard({ type, onSelectInquiry }: AdminContentBoardProps) {
+  // Existing states
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [category, setCategory] = useState('전체');
   const [priority, setPriority] = useState<string[]>([]);
   const [status, setStatus] = useState<string[]>([]);
   const [search, setSearch] = useState('');
 
-  // Dropdown 옵션
+  // Dropdown options (unchanged)
   const categoryOptions = [
     { label: '전체', value: '전체' },
     { label: '문의사항', value: '문의사항' },
@@ -30,13 +33,13 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
   const priorityOptions = ['높음', '보통', '낮음'];
   const statusOptions = ['미처리', '완료'];
 
-  // 더미 데이터 (이제 상태로 관리)
+  // Dummy data (unchanged)
   const [inquiries, setInquiries] = useState([
     {
       id: 1,
       title: '문의 사항 제목입니다.',
       content: '문의 사항 내용 미리보기 입니다.',
-      author: 'abcd',
+      author: '김00',
       date: '2025-07-16',
       category: '문의사항',
       priority: '높음',
@@ -54,7 +57,7 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
     },
   ]);
 
-  // 중요도 변경 핸들러
+  // 중요도 변경 핸들러 (이전과 동일)
   const handlePriorityChange = (id: number, newPriority: string) => {
     setInquiries((prevInquiries) =>
       prevInquiries.map((inquiry) =>
@@ -63,10 +66,19 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
     );
   };
 
+  // Handler for clicking an inquiry item
+  // 이제 setSelectedInquiry 대신 onSelectInquiry를 호출합니다.
+  const handleInquiryClick = (inquiry: any) => {
+    onSelectInquiry(inquiry);
+  };
+
+  // AdminContentBoard는 이제 AdminAnswerBoard를 렌더링하지 않습니다.
+  // 따라서 selectedInquiry 상태와 관련된 조건부 렌더링 로직이 제거됩니다.
+
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
       <div className="flex flex-col lg:flex-row border-2 rounded-t-[20px] border-[#C5C5C5] p-4 gap-4">
-        {/* 검색창 */}
+        {/* Search Input (이전과 동일) */}
         <div className="flex items-end gap-4 lg:w-2/3">
           <InputText
             placeholder="검색은 제목으로만 가능"
@@ -77,9 +89,9 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
           <i className="pi pi-search font-bold" />
         </div>
 
-        {/* 필터 영역 */}
+        {/* Filter Area (이전과 동일) */}
         <div className='grid grid-cols-[1fr_2fr] items-center gap-2 w-full lg:w-1/3'>
-          {/* 작성 날짜 */}
+          {/* Created Date */}
           <label>작성 날짜</label>
           <Calendar
             value={dateRange}
@@ -90,8 +102,8 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
             readOnlyInput
             />
 
-          {/* 카테고리 */}
-          <label>작성 날짜</label>
+          {/* Category */}
+          <label>카테고리</label>
           <Dropdown
             value={category}
             className='border rounded-md'
@@ -99,7 +111,7 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
             onChange={(e) => setCategory(e.value)}
           />
 
-          {/* 중요도 (필터) */}
+          {/* Priority (Filter) */}
           <span>중요도</span>
           <div className="flex gap-2">
               {priorityOptions.map((p) => (
@@ -120,7 +132,7 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
               ))}
             </div>
 
-            {/* 답변 처리 */}
+            {/* Answer Processing Status */}
             <span>답변 처리</span>
             <div className="flex gap-2">
               {statusOptions.map((s) => (
@@ -143,12 +155,13 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
         </div>
       </div>
 
-      {/* 리스트 */}
+      {/* List (이전과 동일) */}
       <div className="space-y-4 p-4 border-2 border-t-0 rounded-b-[20px] border-[#C5C5C5]">
         {inquiries.map((item) => (
           <div
             key={item.id}
-            className="border rounded-lg p-4 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center"
+            className="border rounded-lg p-4 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center cursor-pointer hover:bg-gray-50"
+            onClick={() => handleInquiryClick(item)} // 클릭 시 onSelectInquiry 호출
           >
             <div>
               <h3 className="text-lg font-bold">{item.title}</h3>
@@ -160,7 +173,7 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 md:mt-0">
-              {/* 중요도 Dropdown */}
+              {/* Importance Dropdown */}
               <CustomPriorityDropdown
                 value={item.priority}
                 onChange={(newValue) => handlePriorityChange(item.id, newValue)}
@@ -179,7 +192,7 @@ export default function AdminContentBoard({ type }: AdminContentBoardProps) {
         ))}
       </div>
 
-      {/* 페이지네이션 */}
+      {/* Pagination (이전과 동일) */}
       <div className="flex justify-center items-center mt-6 gap-2">
         {[1, 2, 3, 4, 5].map((num) => (
           <button
