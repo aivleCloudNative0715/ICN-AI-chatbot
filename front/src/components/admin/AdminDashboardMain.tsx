@@ -9,6 +9,7 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import DashboardTab from './tab/DashboardTab';
 import AdminContentBoard from './tab/AdminContentBoard';
 import AdminManagePage from './tab/AdminManagePage';
+import AdminFileUploadTab from './tab/AdminFileUploadTab';
 
 export default function AdminDashboardMain() {
   const router = useRouter();
@@ -102,11 +103,7 @@ export default function AdminDashboardMain() {
         );
       case 2: // 파일 업로드
         return (
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">파일 업로드</h2>
-            <p className="text-gray-700">여기는 챗봇 학습을 위한 파일을 업로드하고 관리하는 페이지입니다.</p>
-            {/* 파일 업로드 폼, 업로드된 파일 목록 등 UI 추가 */}
-          </div>
+          <AdminFileUploadTab />
         );
       default:
         return null;
