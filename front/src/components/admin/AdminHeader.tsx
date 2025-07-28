@@ -21,7 +21,7 @@ export default function AdminHeader({ onLogoutClick }: AdminHeaderProps) {
       <div>
         <button
           onClick={onLogoutClick}
-          className="px-4 py-2 bg-white border border-black rounded-md hover:bg-black hover:text-white transition duration-300"
+          className="px-3 py-1.5 text-sm bg-white border border-black rounded-md hover:bg-black hover:text-white transition duration-300"
         >
           로그아웃
         </button>
