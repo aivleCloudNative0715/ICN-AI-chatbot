@@ -2,6 +2,7 @@ import requests
 import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+import re
 from dotenv import load_dotenv
 from ..Key.key_manager import get_valid_api_key
 
@@ -56,7 +57,7 @@ try:
         parking_type_floor = str(row.get("주차장", "")).strip()
         terminal = row.get("터미널")
         checkin_counter = row.get("체크인카운터")
-        duration_seconds = int(row.get("소요시간(분)", 0))
+        duration_seconds = sum(int(val) * (60 if unit == '분' else 1) for val, unit in re.findall(r'(\d+)(분|초)', row.get("소요시간(분)", '00분00초')))
 
         parking_type = None
         floor = None
@@ -81,10 +82,31 @@ try:
         }
 
         parking_lot_doc = parking_lot_col.find_one(query)
+        
+        # --- 주차장 정보 필드 추출 ---
+        parking_type = parking_lot_doc.get('parking_type', '')
+        floor = parking_lot_doc.get('floor') # floor는 null일 수 있으므로 직접 비교
+        zone = parking_lot_doc.get('zone', '')
+        terminal = parking_lot_doc.get('terminal', '')        
+        
+        parts = []
+        if terminal:
+            parts.append(f"{terminal} 터미널")
+        if parking_type:
+            parts.append(f"{parking_type}")
+        
+        # floor 필드 처리: null이 아니고, 유효한 문자열일 경우에만 추가
+        if floor is not None and str(floor).strip(): # floor가 None이 아니고 비어있지 않은 문자열인 경우
+            parts.append(f"{floor}")
+        
+        if zone:
+            parts.append(f"{zone} 구역")
+            
+        parking_lot_id_str = " ".join(parts)
 
         if parking_lot_doc:
             doc = {
-                "parkingLot_id": parking_lot_doc["_id"],
+                "parkingLot_id": parking_lot_id_str,
                 "check_in_counter": checkin_counter,
                 "duration_minutes": duration_seconds
             }
