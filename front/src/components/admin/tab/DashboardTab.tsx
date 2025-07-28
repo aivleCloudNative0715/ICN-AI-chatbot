@@ -1,10 +1,15 @@
+// src/components/admin/tab/DashboardTab.tsx
 'use client';
 
 import React from 'react';
 import AdminContentBoard from './AdminContentBoard';
 
-export default function DashboardTab() {
-  // 데이터 정의
+interface DashboardTabProps {
+  onSelectInquiry: (inquiry: any) => void; // 새로운 prop 추가
+}
+
+export default function DashboardTab({ onSelectInquiry }: DashboardTabProps) { // prop 받기
+  // 데이터 정의 (이전과 동일)
   const summaryCards = [
     { label: '전체', value: 80 },
     { label: '문의 사항', value: 80 },
@@ -23,7 +28,7 @@ export default function DashboardTab() {
     <div className="p-4 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">대시보드</h2>
 
-      {/* 대시보드 요약 정보 */}
+      {/* 대시보드 요약 정보 (이전과 동일) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {summaryCards.map((card, index) => (
           <div
@@ -36,7 +41,7 @@ export default function DashboardTab() {
         ))}
       </div>
 
-      {/* 우선순위 정보 */}
+      {/* 우선순위 정보 (이전과 동일) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {priorityCards.map((card, index) => (
           <div
@@ -50,7 +55,8 @@ export default function DashboardTab() {
         ))}
       </div>
 
-      <AdminContentBoard type="dashboard" />
+      {/* AdminContentBoard에 onSelectInquiry prop 전달 */}
+      <AdminContentBoard type="dashboard" onSelectInquiry={onSelectInquiry} />
     </div>
   );
 }
