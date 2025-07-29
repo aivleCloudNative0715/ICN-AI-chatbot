@@ -1,15 +1,16 @@
-﻿intent,question
-arrival_congestion_query,인천공항 입국장 요즘도 붐비나요?
-arrival_congestion_query,입국장 들어가는 게이트 막혔어요?
-arrival_congestion_query,인천공항 입국 게이트 어느 쪽이 복잡한가요?
-arrival_congestion_query,입국장 들어가는 데 줄 길게 서야 하나요?
-arrival_congestion_query,입국장 통로 복잡한지 확인할 수 있나요?
-arrival_congestion_query,입국장 근처에 사람 너무 많나요?
-arrival_congestion_query,공항 입국 라인 복잡해요?
-arrival_congestion_query,입국장 안쪽 꽉 찼나요?
-arrival_congestion_query,입국장 입구 쪽 혼잡한가요?
-arrival_congestion_query,인천공항 입국장 줄 안 긴 시간대는 언제인가요?
-arrival_congestion_query,지금 입국장 줄 많이 빠졌을까요?
+intent,question
+airport_info,JFK 공항은 어느 나라에 있나요?
+airport_info,인천국제공항의 공항 코드는 무엇인가요?
+airport_info,LAX 공항의 한글 이름은 무엇인가요?
+airport_info,나리타 공항 정보 알려줘
+airport_info,히드로 공항은 어디에 있어?
+airport_info,샤를 드골 공항 코드 알려줘
+airport_info,시드니 공항은 어느 나라에 있나요?
+airport_info,베이징 서우두 국제공항의 공항 코드는 무엇인가요?
+airport_info,두바이 국제공항의 한글 이름은 무엇인가요?
+airport_info,프랑크푸르트 공항 정보 알려줘
+airport_info,암스테르담 스키폴 공항은 어디에 있어?
+airport_info,토론토 피어슨 국제공항 코드 알려줘
 arrival_congestion_query,지금 공항 도착층 한산한가요?
 arrival_congestion_query,입국장 줄 서서 기다려야 하나요?
 arrival_congestion_query,입국장 주변 공간 여유 있나요?
@@ -23,11 +24,11 @@ arrival_congestion_query,입국장 대기줄 예상 시간 알려줘요
 arrival_congestion_query,지금 입국 게이트별 통행량은 어떤가요?
 arrival_congestion_query,공항 입국장 공간 여유 있나요?
 arrival_congestion_query,입국장 안까지 들어가도 되나요?
-arrival_congestion_query,입국장 혼잡 상태 요약해줘 
+arrival_congestion_query,입국장 혼잡 상태 요약해줘
 arrival_congestion_query,입국장 혼잡도가 높은 구역은 어디예요?
 arrival_congestion_query,입국 게이트 중 어디가 가장 바쁜가요?
 arrival_congestion_query,지금 입국장 게이트 A 쪽 붐비고 있나요?
-arrival_congestion_query,인천공항 T2 입국장 상황 알려줘요 
+arrival_congestion_query,인천공항 T2 입국장 상황 알려줘요
 arrival_congestion_query,도착 게이트 바로 앞에 사람 많나요?
 arrival_congestion_query,지금 입국장 내부 꽉 찼나요?
 arrival_congestion_query,입국장 입구 통행 좀 막히나요?
@@ -36,7 +37,7 @@ arrival_congestion_query,공항 입국 라인 사람들이 바글대요?
 arrival_congestion_query,지금 입국장 줄 많이 밀려 있나요?
 arrival_congestion_query,인천공항 입국 게이트 높은 혼잡도인가요?
 arrival_congestion_query,입국장 각 게이트별 상태 볼 수 있어요?
-arrival_congestion_query,지금 입국장 상황 한눈에 알려줘요 
+arrival_congestion_query,지금 입국장 상황 한눈에 알려줘요
 arrival_congestion_query,인천공항 입국장 사람 얼마나 모였나요?
 arrival_congestion_query,지금 입국장 정체 심한가요?
 arrival_congestion_query,입국장 상황 지금 예전보다 어때요?
@@ -54,11 +55,11 @@ arrival_congestion_query,입국장 안쪽 줄 얼마나 길죠?
 arrival_congestion_query,공항 도착층 입국장 통로 얼마나 막혀 있어요?
 arrival_congestion_query,지인 도착하는데 입국장 미리 확인할 수 있어요?
 arrival_congestion_query,입국장 사람이 너무 많아 보여요 입국 게이트마다 혼잡도 다르나요?
-arrival_congestion_query,인천공항 입국장 상황 실시간으로 알려주세요 
+arrival_congestion_query,인천공항 입국장 상황 실시간으로 알려주세요
 arrival_congestion_query,입국장 게이트 앞 공간 있을까요?
 arrival_congestion_query,입국장 출구 가까운 쪽 혼잡하나요?
 arrival_congestion_query,인천공항 입국장 지금 여유 있나요?
-arrival_congestion_query,입국장 내부 밀도 알려줘요 
+arrival_congestion_query,입국장 내부 밀도 알려줘요
 arrival_congestion_query,인천공항 입국층 넓은 공간 있나요?
 arrival_congestion_query,입국장 실시간 사람 수 표시되나요?
 arrival_congestion_query,지금 입국장 줄장난 아니에요?
@@ -73,7 +74,7 @@ arrival_congestion_query,지금 입국장 정체 구간 있나요?
 arrival_congestion_query,입국장 줄 길이 얼마나 돼요?
 arrival_congestion_query,인천공항 입국장 상태 알려줄 수 있어요?
 arrival_congestion_query,입국장 라인 앞쪽 대기 인원 알려주세요
-arrival_congestion_query,입국장 내부 정체 상황 확인하고 싶어요 
+arrival_congestion_query,입국장 내부 정체 상황 확인하고 싶어요
 arrival_congestion_query,지금 입국장 밀집도 심한가요?
 arrival_congestion_query,입국장 통로 정체가 있나요?
 arrival_congestion_query,인천공항 입국장 실시간 혼잡도 확인 어디서 하죠?
@@ -99,7 +100,7 @@ arrival_congestion_query,입국장 실시간 데이터로 보기 가능해요?
 arrival_congestion_query,입국장 들어가는 길에 줄 서 있나요?
 arrival_congestion_query,지금 입국장 게이트별 밀집도 어때요?
 arrival_congestion_query,인천공항 입국장 사람이 많아서 걱정돼요 입국장 밀집도 실제로 어느 정도인가요?
-arrival_congestion_query,지금 입국장 대기 줄 상황 요약해줘요 
+arrival_congestion_query,지금 입국장 대기 줄 상황 요약해줘요
 arrival_congestion_query,실시간 입국장 상황 보여주는 곳 있나요?
 arrival_congestion_query,입국장 입구 앞 사람들이 많이 서 있나요?
 arrival_congestion_query,입국장 실시간 현황 어디서 확인하나요?
@@ -120,7 +121,7 @@ arrival_congestion_query,지금 입국장 주변 소란스러워요?
 arrival_congestion_query,인천공항 입국장 소란도 심한가요?
 arrival_congestion_query,입국장 줄 흐름 원활한가요?
 arrival_congestion_query,실시간 입국장 상황 요약해줄래요?
-arrival_congestion_query,입국장 들어가는 길 상태 알려주세요 
+arrival_congestion_query,입국장 들어가는 길 상태 알려주세요
 arrival_congestion_query,입국장 상황 모바일로 확인 가능한가요?
 arrival_congestion_query,입국장 상황 화면으로 어디서 볼 수 있죠?
 arrival_congestion_query,공항 입국장 내부 참 비좁나요?
@@ -137,38 +138,38 @@ arrival_congestion_query,인천공항 입국장 상황 지금 괜찮나요?
 arrival_congestion_query,입국장 데이터 실시간으로 받아볼 수 있나요?
 arrival_congestion_query,공항 입국장 줄 많이 생겼나요?
 arrival_congestion_query,입국장 상황 빨리 확인할 수 있어요?
-arrival_congestion_query,입국장 혼잡도 실시간 숫자로 확인할래요 
+arrival_congestion_query,입국장 혼잡도 실시간 숫자로 확인할래요
 arrival_congestion_query,입국장 들어가면 어떤 상태인가요?
-arrival_congestion_query,인천공항 입국장 정체 현황 알려주세요 
+arrival_congestion_query,인천공항 입국장 정체 현황 알려주세요
 arrival_congestion_query,입국장 밀집도 바로 확인할 수 있어요?
 arrival_congestion_query,공항 입국장 실시간 지표는 어디서 보나요?
 arrival_congestion_query,입국장 줄길이 영상으로 볼 수 있나요?
-arrival_congestion_query,지금 입국장 정체 심한 구역 알려줘요 
+arrival_congestion_query,지금 입국장 정체 심한 구역 알려줘요
 arrival_congestion_query,인천공항 입국장 기다리기 괜찮은가요?
 arrival_congestion_query,입국장 내부 어느 쪽이 덜 붐비나요?
-arrival_congestion_query,입국장 바로 앞 혼잡 정도 알려주세요 
+arrival_congestion_query,입국장 바로 앞 혼잡 정도 알려주세요
 arrival_congestion_query,입국장 주변 공간 얼마나 여유 있어요?
-arrival_congestion_query,인천공항 입국장 줄 관련 정보 알려주세요 
+arrival_congestion_query,인천공항 입국장 줄 관련 정보 알려주세요
 arrival_congestion_query,입국장 대기 구역이 넓나요?
-arrival_congestion_query,입국장 상황 실시간 비교해줘요 
+arrival_congestion_query,입국장 상황 실시간 비교해줘요
 arrival_congestion_query,입국장 실시간 현황 차트 있나요?
 arrival_congestion_query,지금 입국장 영상 중계 있나요?
 arrival_congestion_query,인천공항 입국장 상황 데이터 어디서 받을 수 있죠?
 arrival_congestion_query,입국장 지금 보기에 어떤 상태예요?
-arrival_congestion_query,입국장 상태 급하게 확인하고 싶어요 
+arrival_congestion_query,입국장 상태 급하게 확인하고 싶어요
 arrival_congestion_query,입국장 줄 너무 길면 알람 받을 수 있나요?
 arrival_congestion_query,입국장 주변에서 기다리는 게 나을까요?
 arrival_congestion_query,입국장 상황 실시간 알림 있나요?
-arrival_congestion_query,입국장 내부 꿀팁 있는 시간대 알려줘요 
+arrival_congestion_query,입국장 내부 꿀팁 있는 시간대 알려줘요
 arrival_congestion_query,입국장 상태 오늘 어떨 것 같아요?
 arrival_congestion_query,입국장 정보 빠르게 받을 수 있나요?
 arrival_congestion_query,입국장 실시간 API로 확인 가능해요?
 arrival_congestion_query,입국장 복잡도 실시간으로 보낼 수 있나요?
 arrival_congestion_query,입국장 상태 시스템으로 확인 가능합니까?
-arrival_congestion_query,입국장 내부 정체 상황 바로 알려주세요 
+arrival_congestion_query,입국장 내부 정체 상황 바로 알려주세요
 arrival_congestion_query,입국장 지나가기 어려울 정도인가요?
-arrival_congestion_query,입국장 라인 상태 빨리 알려주세요 
-arrival_congestion_query,입국장 상태 간략히 요약해줘요 
+arrival_congestion_query,입국장 라인 상태 빨리 알려주세요
+arrival_congestion_query,입국장 상태 간략히 요약해줘요
 arrival_congestion_query,입국장 정체 정도 알려주는 서비스 있나요?
 arrival_congestion_query,입국장 상황 지금 모니터링 가능해요?
 arrival_congestion_query,인천공항 입국장 공간 얼마나 널널한가요?
@@ -204,7 +205,7 @@ arrival_congestion_query,인천공항 1층 지금 줄 길어요?
 arrival_congestion_query,지금 1층 입국장 대기 시간 확인할 수 있나요?
 arrival_congestion_query,1터미널 1층 입국장 몇 분 걸릴까요?
 arrival_congestion_query,2터미널 1층 얼마나 걸려서 나오죠?
-arrival_congestion_query,1층 입국장 통과 시간 알려주세요 
+arrival_congestion_query,1층 입국장 통과 시간 알려주세요
 arrival_congestion_query,오늘 1층 입국장 줄 길이 어때요?
 arrival_congestion_query,인천 1층 입국장 북적거리나요?
 arrival_congestion_query,1층 입국장 이용객 많나요?
@@ -220,8 +221,8 @@ arrival_congestion_query,1층 입국장에서 시간 얼마나 지체되나요?
 arrival_congestion_query,지금 1층에서 얼마나 걸릴까요?
 arrival_congestion_query,인천공항 1층 입국장 줄 긴가요?
 arrival_congestion_query,1층 입국장 얼마나 붐벼요?
-arrival_congestion_query,1층 입국장 대기인원 알려주세요 
-arrival_congestion_query,입국장 1층 상황 실시간으로 알려줘 
+arrival_congestion_query,1층 입국장 대기인원 알려주세요
+arrival_congestion_query,입국장 1층 상황 실시간으로 알려줘
 arrival_congestion_query,인천공항 1층 지금 입국시간 길어요?
 arrival_congestion_query,1터미널 입국장 1층 혼잡도는요?
 arrival_congestion_query,입국장 1층 사람들이 몰려 있나요?
@@ -306,10 +307,10 @@ arrival_congestion_query,지금 입국장 내부 좀 알려주시겠어요?
 arrival_congestion_query,입국장 상태 웹으로 볼 수 있나요?
 arrival_congestion_query,입국장 정체 심하면 대기 멀어질까요?
 arrival_congestion_query,입국장 줄이랑 대기시간 같이 볼 수 있나요?
-arrival_congestion_query,입국장 입구 앞 혼잡도 알려줘요 
+arrival_congestion_query,입국장 입구 앞 혼잡도 알려줘요
 arrival_congestion_query,인천공항 입국장 과연 붐비나요?
 arrival_congestion_query,입국장 내부 상황 사진 볼 수 있나요?
-arrival_congestion_query,입국장 얼마나 혼잡한지 수치로 보고 싶어요 
+arrival_congestion_query,입국장 얼마나 혼잡한지 수치로 보고 싶어요
 arrival_congestion_query,입국장 게이트별 실시간 혼잡도 제공되나요?
 arrival_congestion_query,인천공항 1층 입국장 혼잡도 실시간으로 볼 수 있나요?
 arrival_congestion_query,2터미널 1층 사람 얼마나 있나요?
@@ -1077,7 +1078,7 @@ airport_weather_current,공항 습도가 너무 낮아서 건조한가요?
 airport_weather_current,공항 습도가 너무 낮아서 피부 건조해지진 않겠죠?
 airport_weather_current,공항 습도가 너무 낮으면 건조주의보 내려지나요?
 airport_weather_current,공항 습도가 너무 낮으면 정전기 생기나요?
-airport_weather_current,공항 습도가 너무 높으면 짐 꿉꿉해지나요? 
+airport_weather_current,공항 습도가 너무 높으면 짐 꿉꿉해지나요?
 airport_weather_current,"공항 습도가 너무 높은데요, 괜찮은 건가요?"
 airport_weather_current,공항 습도가 높으면 결로 현상 생기나요?
 airport_weather_current,공항 습도가 높으면 많이 꿉꿉한가요?
@@ -1089,7 +1090,7 @@ airport_weather_current,"공항 습한 편인가요, 현재?"
 airport_weather_current,공항 시정 나쁘면 비행기 못 뜰 수도 있다고?
 airport_weather_current,공항 시정 상태 좀 알려주세요.
 airport_weather_current,공항 시정 안 좋으면 비행기 못 뜨나요?
-airport_weather_current,공항 시정 안 좋으면 비행기 못 뜨는 거 맞아요? 
+airport_weather_current,공항 시정 안 좋으면 비행기 못 뜨는 거 맞아요?
 airport_weather_current,공항 시정거리가 몇 미터인지 알려주세요.
 airport_weather_current,"공항 시정이 너무 좋아서 멀리까지 다 보여요, 몇 km죠?"
 airport_weather_current,"공항 시정이 너무 좋아서 잘 보이네요, 몇 킬로미터에요?"
@@ -1119,22 +1120,22 @@ airport_weather_current,공항에 비가 오고 있나요?
 airport_weather_current,공항에 비가 오면 강수량은 얼마인가요?
 airport_weather_current,공항에 새벽 안개 소식 있나요?
 airport_weather_current,공항에 새벽에 안개가 끼는 걸까요?
-airport_weather_current,공항에 지금 기온 몇 도인가요? 
+airport_weather_current,공항에 지금 기온 몇 도인가요?
 airport_weather_current,공항에 지금 바람 불어?
 airport_weather_current,공항에 지금 바람은 어떤 상태인가요?
 airport_weather_current,공항에 지금 바람은 어떤가요?
 airport_weather_current,공항에 지금 비가 내리는지 확인 부탁해요.
 airport_weather_current,공항에 지금 안개 꼈나요?
-airport_weather_current,공항에 지금 안개 꼈나요? 
+airport_weather_current,공항에 지금 안개 꼈나요?
 airport_weather_current,공항에 지금 안개 꼈어?
 airport_weather_current,공항에 지금 안개나 연무가 끼어있나요?
 airport_weather_current,기온이 오늘 공항에서 많이 떨어질까요?
 airport_weather_current,기온이 오늘 공항에서 최고 몇 도까지 올라갈까요?
 airport_weather_current,나 우산 없는데 공항 왜 이렇게 하늘이 어두워?
-airport_weather_current,나 우산 없는데 왜 이렇게 하늘이 까맣지? 
+airport_weather_current,나 우산 없는데 왜 이렇게 하늘이 까맣지?
 airport_weather_current,"남편 공항 도착 시간인데, 거기 시야 괜찮은지 알려줘요."
 airport_weather_current,"남편 데리러 공항 가야 하는데, 지금 비 많이 와요? "
-airport_weather_current,내일 공항 가는 길 날씨 괜찮을지 궁금해요. 
+airport_weather_current,내일 공항 가는 길 날씨 괜찮을지 궁금해요.
 airport_weather_current,"내일 공항 가는 길, 안개 때문에 시야 안 좋을까 봐 걱정."
 airport_weather_current,"내일 공항 가는 길, 안개 심할까 걱정돼요."
 airport_weather_current,"내일 공항 가는 길, 안개 심할까 봐 걱정돼요. "
@@ -1154,7 +1155,7 @@ airport_weather_current,내일 공항에 눈이 많이 올까요?
 airport_weather_current,내일 공항에 눈이 오면 얼마나 올지 TAF에 나와있나요?
 airport_weather_current,내일 공항에 미세먼지 많으려나?
 airport_weather_current,내일 공항에 미세먼지 심할까요?
-airport_weather_current,내일 공항에 미세먼지 심할까요? 
+airport_weather_current,내일 공항에 미세먼지 심할까요?
 airport_weather_current,내일 공항에 바람이 세게 불 예정인가요?
 airport_weather_current,내일 공항에 바람이 세게 불까?
 airport_weather_current,내일 공항에 비가 오면 몇 시쯤일까요?
@@ -1165,7 +1166,7 @@ airport_weather_current,내일 공항에 아침 안개 예보 있어요?
 airport_weather_current,내일 공항에 아침에 안개가 심할까요?
 airport_weather_current,내일 공항에 천둥번개 예보 있어?
 airport_weather_current,내일 공항에 최저 기온이 몇 도까지 내려갈까요?
-airport_weather_current,내일 공항에 태풍 영향 있을까 봐 불안해요. 
+airport_weather_current,내일 공항에 태풍 영향 있을까 봐 불안해요.
 airport_weather_current,내일 공항에 태풍 영향 있을까요?
 airport_weather_current,내일 공항에 태풍 온다는 소리 있던데 사실이야?
 airport_weather_current,"내일 남편 공항 도착인데, 너무 추울까 봐 걱정돼요."
@@ -1173,7 +1174,7 @@ airport_weather_current,"내일 부모님 공항 마중 갈 건데, 날씨 예�
 airport_weather_current,"내일 부모님 공항 마중 나가는데, 날씨 예보 좀."
 airport_weather_current,내일 새벽 공항에 바람 많이 안 불었으면 좋겠는데.
 airport_weather_current,내일 새벽에 공항에 바람이 많이 불지 않았으면 좋겠는데.
-airport_weather_current,내일 새벽에 공항에 바람이 많이 불지 않았으면 좋겠는데. 
+airport_weather_current,내일 새벽에 공항에 바람이 많이 불지 않았으면 좋겠는데.
 airport_weather_current,"내일 아침 일찍 공항 가는데, 날씨가 너무 쌀쌀할까?"
 airport_weather_current,"내일 아침 일찍 공항 가는데, 새벽 날씨 별로 안 좋으려나?"
 airport_weather_current,"내일 아침 일찍 공항 가야 하는데, 새벽 날씨 어때요?"
@@ -1189,8 +1190,8 @@ airport_weather_current,내일 인천공항 날씨 요약해줘.
 airport_weather_current,내일 인천공항 날씨는 어때? 요약해서.
 airport_weather_current,내일 인천공항에 비 예보 있나요?
 airport_weather_current,바람 많이 불면 비행기 심하게 흔들려요? (공항)
-airport_weather_current,바람 많이 불면 비행기 흔들려서 울렁거릴까 봐 걱정돼요. 
-airport_weather_current,바람 많이 불면 비행기 흔들리나요? 
+airport_weather_current,바람 많이 불면 비행기 흔들려서 울렁거릴까 봐 걱정돼요.
+airport_weather_current,바람 많이 불면 비행기 흔들리나요?
 airport_weather_current,"바람 방향 좀 알려주세요, 공항."
 airport_weather_current,"바람 방향 좀 알려줘, 공항."
 airport_weather_current,바람 부는 방향 알려줘 공항.
@@ -1210,7 +1211,7 @@ airport_weather_current,"비행기 곧 내린다는데, 공항 시야는 괜찮�
 airport_weather_current,"비행기 곧 착륙한다는데, 공항 시야는 괜찮은가요?"
 airport_weather_current,비행기 타기 전에 공항 날씨 또 확인하고 싶어요.
 airport_weather_current,비행기 탑승 전에 공항 날씨 한 번 더 확인하고 싶어요.
-airport_weather_current,비행기 탑승 전에 공항 날씨 한 번 더 확인하고 싶어요. 
+airport_weather_current,비행기 탑승 전에 공항 날씨 한 번 더 확인하고 싶어요.
 airport_weather_current,"삼촌 공항에서 출발하셨는데, 바람이 세서 걱정돼요."
 airport_weather_current,새벽 공항에 저시정 예보 있나요?
 airport_weather_current,새벽에 공항에 안개 낄 것 같아?
@@ -1256,7 +1257,7 @@ airport_weather_current,오늘 공항 시정 나빠질까?
 airport_weather_current,오늘 공항 시정이 안 좋을 수도 있나요?
 airport_weather_current,오늘 공항 시정이 안 좋을까요?
 airport_weather_current,오늘 공항 평균 풍속 좀 알려주세요.
-airport_weather_current,오늘 공항에 강수량 기록은요? 
+airport_weather_current,오늘 공항에 강수량 기록은요?
 airport_weather_current,오늘 공항에 강수량이 얼마나 기록됐나요?
 airport_weather_current,"오늘 공항에 비 예보 있었는데, 얼마나 내렸어요?"
 airport_weather_current,"오늘 공항에 비 예보 있었는데, 얼마나 왔어요?"
@@ -1266,7 +1267,7 @@ airport_weather_current,오늘 공항에 소나기 예보 있니?
 airport_weather_current,오늘 공항에 소나기 올까요?
 airport_weather_current,오늘 공항의 풍속은 어떤가요?
 airport_weather_current,오늘 밤 공항에 눈 예보 있나요? 길이 미끄러울까 봐.
-airport_weather_current,오늘 밤 공항에 눈 예보 있나요? 아빠 차 몰고 가야 해서요. 
+airport_weather_current,오늘 밤 공항에 눈 예보 있나요? 아빠 차 몰고 가야 해서요.
 airport_weather_current,오늘 밤 공항에 눈 예보 있어요? 운전해야 해서.
 airport_weather_current,오늘 인천공항 바람은 어떤가요?
 airport_weather_current,오늘 인천공항에 바람 얼마나 부는지 궁금해요.
@@ -1288,12 +1289,12 @@ airport_weather_current,이따 공항에 우박 예보 있나요?
 airport_weather_current,이따 공항에 우박이 올 가능성 있나요?
 airport_weather_current,이따 저녁에 공항 날씨 괜찮으려나? 퇴근하고 가야 해서.
 airport_weather_current,이따 저녁에 공항 날씨 괜찮을까요? 퇴근하고 가야 해서.
-airport_weather_current,이따 저녁에 공항 날씨 괜찮을까요? 퇴근하고 애인 마중 가야 해서요. 
+airport_weather_current,이따 저녁에 공항 날씨 괜찮을까요? 퇴근하고 애인 마중 가야 해서요.
 airport_weather_current,"이모 공항 도착이신데, 거기 기온이 몇 도인지 알려줘."
 airport_weather_current,"이모 공항에서 지금 출발했다는데, 혹시 거기 날씨 어때요? "
 airport_weather_current,이번 주말 공항 날씨 전반적으로 어떤가요?
 airport_weather_current,이번 주말 공항 날씨는 전반적으로 어떨지 알려주세요.
-airport_weather_current,이번 주말 공항 날씨는 전반적으로 어떨지 알려주세요. 
+airport_weather_current,이번 주말 공항 날씨는 전반적으로 어떨지 알려주세요.
 airport_weather_current,인천공항 10분 평균 풍속 데이터 좀.
 airport_weather_current,인천공항 10분 평균 풍속은 어떻게 되나요?
 airport_weather_current,인천공항 10분 평균 풍속이 평소보다 센가요?
@@ -1326,7 +1327,7 @@ airport_weather_current,인천공항 시정이 너무 좋아서 잘 보이네요
 airport_weather_current,인천공항 시정이 어떤가요?
 airport_weather_current,인천공항 시정이 좋으면 항공편에 영향 없나요?
 airport_weather_current,인천공항 오늘 강수량 예보 좀.
-airport_weather_current,인천공항 오늘 강수량 예보 좀. 
+airport_weather_current,인천공항 오늘 강수량 예보 좀.
 airport_weather_current,인천공항 오늘 날씨 정보 궁금해요.
 airport_weather_current,인천공항 오늘 비 예보 양 좀.
 airport_weather_current,인천공항 온도 몇 도인지.
@@ -1353,13 +1354,13 @@ airport_weather_current,인천공항에 현재 시정은 어떤가요?
 airport_weather_current,지금 공항 기온 너무 떨어진 것 같아.
 airport_weather_current,지금 공항 기온 몇 도쯤이야?
 airport_weather_current,지금 공항 기온이 너무 내려간 것 같아요.
-airport_weather_current,지금 공항 기온이 너무 내려간 것 같아요. 
+airport_weather_current,지금 공항 기온이 너무 내려간 것 같아요.
 airport_weather_current,지금 공항 기온이 몇 도죠?
 airport_weather_current,지금 공항 기온이 몇 도지?
 airport_weather_current,지금 공항 날씨 어때요?
 airport_weather_current,지금 공항 바람이 좀 센 것 같아요.
 airport_weather_current,지금 공항 바람이 좀 심한 것 같아요.
-airport_weather_current,지금 공항 바람이 좀 심한 것 같아요. 
+airport_weather_current,지금 공항 바람이 좀 심한 것 같아요.
 airport_weather_current,지금 공항 시정 괜찮아요?
 airport_weather_current,지금 공항 시정 괜찮은가?
 airport_weather_current,지금 공항 시정 좋아요?
@@ -1367,7 +1368,7 @@ airport_weather_current,지금 공항에 강한 비 와요?
 airport_weather_current,지금 공항에 강한 비가 오는지 확인해주세요.
 airport_weather_current,지금 공항에 내린 비는 얼마나 되나요?
 airport_weather_current,지금 공항에 번개 쳐요? 무서운데.
-airport_weather_current,지금 공항에 번개 쳐요? 무서운데요. 
+airport_weather_current,지금 공항에 번개 쳐요? 무서운데요.
 airport_weather_current,지금 공항에 번개 쳐요? 무섭다.
 airport_weather_current,지금 공항에 비 많이 오나?
 airport_weather_current,지금 공항에 비 엄청 오는 중이야?
@@ -1810,7 +1811,7 @@ airline_info_query,FedEX는 인천공항 몇 번 게이트인가요?
 airline_info_query,FedEX항공 고객센터 전화번호가 뭔가요?
 airline_info_query,FedEX항공 로고를 볼 수 있나요?
 airline_info_query,FedEX항공에 어떻게 연락하면 되죠?
-arrival_policy_info,입국 절차 알려줘 
+arrival_policy_info,입국 절차 알려줘
 arrival_policy_info,한국 입국 시 비자가 필요한가요?
 arrival_policy_info,입국할 때 반입 금지된 물품은 무엇인가요?
 arrival_policy_info,세관 신고는 어떻게 하나요?
@@ -1818,7 +1819,7 @@ arrival_policy_info,도착 비자 발급이 가능한가요?
 arrival_policy_info,면세 한도는 얼마인가요?
 arrival_policy_info,육포나 과일 같은 음식물 반입 규정이 궁금해요.
 arrival_policy_info,전자담배는 가지고 들어가도 되나요?
-baggage_claim_info,KE123편 수하물은 어디서 찾을 수 있나요? 
+baggage_claim_info,KE123편 수하물은 어디서 찾을 수 있나요?
 baggage_claim_info,방금 도착한 OZ102편 짐 나오는 곳 알려주세요.
 baggage_claim_info,제 짐이 아직 안 나왔는데 어떻게 해야 하나요?
 baggage_claim_info,수하물 수취대 번호를 확인하고 싶어요.
@@ -1829,7 +1830,7 @@ baggage_claim_info,제주항공 7C101편 짐 찾는 곳 위치 좀 알려주세�
 baggage_claim_info,수하물이 파손되었을 경우 어떻게 해야 하나요?
 baggage_claim_info,도착했는데 짐이 없어요.
 baggage_rule_query,수하물 규정에 대해 알려주세요.
-baggage_rule_query,위탁 수하물은 몇 킬로그램까지 무료인가요? 
+baggage_rule_query,위탁 수하물은 몇 킬로그램까지 무료인가요?
 baggage_rule_query,기내용 캐리어 사이즈 제한이 있나요?
 baggage_rule_query,"스포츠 장비(골프채, 스키)는 어떻게 부쳐야 하나요?"
 baggage_rule_query,수하물 추가 요금은 얼마인가요?
@@ -3683,7 +3684,6 @@ parking_location_recommendation,"제1터미널 단기 주차장 지하 2층에 �
 parking_location_recommendation,"제2터미널 장기 주차장 P4에 주차할 건데, 밤늦게 도착해도 주차하고 나서 차량용품점이나 편의시설이 가까운 곳을 추천해주세요."
 flight_info,KE123 어디서 타요?
 flight_info,아시아나 101편 지연됐나요?
-parking_query,주차장 어디가 여유 있어요?
 facility_guide,흡연실이 출국장 밖에 있나요? 흡연실 위치는요?
 arrival_policy_info,입국할 때 반드시 입국 심사를 받아야 하나요
 arrival_policy_info,한국에 도착하면 여권 외에 제출해야 하는 서류가 있나요
@@ -4632,7 +4632,7 @@ baggage_claim_info,짐 나오는 벨트 번호 미리 알 수 있나요?
 baggage_claim_info,짐 찾다가 놓쳤는데 다시 돌려받을 수 있나요?
 baggage_claim_info,KE188Y 도착했는데 수하물은 아직 안 나왔어요. 왜 그런가요?
 baggage_claim_info,제 짐이 파손됐는데 어떻게 보상받을 수 있나요?
-baggage_claim_info,수하물 수취대가 어디인가요? 
+baggage_claim_info,수하물 수취대가 어디인가요?
 airline_info_query,FedEX항공은 화물 운송 항공사인가요?
 airline_info_query,FX 항공사 인천공항 번호를 알려주세요.
 airline_info_query,FX 항공사는 어떤 이미지인가요?
@@ -4844,264 +4844,296 @@ airline_info_query,항공사명
 airline_info_query,항공사별 위치
 transfer_info,환승 통로 준비해야 하나요?
 transfer_info,휴대품 검사 어떻게 준비해?
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
-,
+airport_info,공항 코드 JFK는 어디야?
+airport_info,LAX는 무슨 공항이야?
+airport_info,ICN은 어느 나라에 있어?
+airport_info,김포공항 코드는 뭐야?
+airport_info,공항 코드 'CDG' 알려줘
+airport_info,CDG는 프랑스야?
+airport_info,ICN
+airport_info,LAX
+airport_info,JFK
+airport_info,FTI
+airport_info,FIZ
+airport_info,FLG
+airport_info,BON
+airport_info,YFO
+airport_info,FLS
+airport_info,FLR
+airport_info,FLO
+airport_info,FLW
+airport_info,MTH
+airport_info,FRO
+airport_info,LHA
+airport_info,FOG
+airport_info,GCH
+airport_info,GAF
+airport_info,DHM
+airport_info,GNV
+airport_info,GEV
+airport_info,GWY
+airport_info,GLX
+airport_info,GAX
+airport_info,GMB
+airport_info,GAM
+airport_info,GAN
+airport_info,YQX
+airport_info,JFK는 미국 어디에 있어?
+airport_info,ICN 공항은 어느 나라에 있어?
+airport_info,LHR은 무슨 공항이야?
+airport_info,CDG는 어느 나라 공항이야?
+airport_info,LAX 공항은 어디 있는 거야?
+airport_info,HND는 도쿄에 있지?
+airport_info,PEK는 중국 공항이야?
+airport_info,공항 코드 FRA는 어디야?
+airport_info,SYD는 어떤 나라 공항이야?
+airport_info,김포공항 코드 알려줘
+airport_info,GMP는 어떤 공항이야?
+airport_info,인천공항은 공항 코드가 뭐야?
+airport_info,ICN은 어느 나라야?
+airport_info,CDG는 프랑스지?
+airport_info,HKG는 어디 공항이야?
+airport_info,공항 코드 JFK는 미국 맞지?
+airport_info,DXB는 어느 나라 공항이야?
+airport_info,도하에 있는 공항 코드가 뭐야?
+airport_info,NRT 공항은 일본 거지?
+airport_info,공항 코드 ICN 알려줘
+airport_info,인천은 공항 코드 뭐야?
+airport_info,토론토 피어슨 공항은 코드가 뭐야?
+airport_info,공항 코드 SIN은 어디지?
+airport_info,LGA는 어떤 공항이야?
+airport_info,파리 샤를드골 공항 코드 뭐야?
+airport_info,김해공항 코드 알려줘
+airport_info,로스앤젤레스 공항 코드가 뭐지?
+airport_info,도쿄 나리타 공항은 공항 코드가 뭐야?
+airport_info,오사카 간사이 공항 코드 알려줘
+airport_info,공항 코드 SFO는 어디야?
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 B까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T2 지상1층 동편(233지점)에서 출발해서 체크인카운터 L까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 F까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,혹시 T2 지상1층 동편(233지점)에서 체크인카운터 A까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T2 지상1층 서편(136지점)에 차 대면 체크인카운터 J까지 많이 멀까요?
+parking_walk_time_info,T2 지상1층 동편(233지점)에 차 대면 체크인카운터 B까지 많이 멀까요?
+parking_walk_time_info,T2 지상1층 서편(136지점) 위치에서 체크인카운터 M까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 L까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"T1 지하2층 A구역(A26) 쪽이 괜찮다고 들었는데, 체크인카운터 E까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 E까지 많이 멀까요?
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 E까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T2 지상1층 서편(136지점) 쪽이 괜찮다고 들었는데, 체크인카운터 L까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T2 지상1층 동편(233지점)에서 출발해서 체크인카운터 C까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 A까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,"T1 지하2층 H구역(H23) 쪽이 괜찮다고 들었는데, 체크인카운터 G까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T2 지상1층 서편(136지점)에 차 대면 체크인카운터 K까지 많이 멀까요?
+parking_walk_time_info,T2 지상1층 서편(136지점)에서 출발해서 체크인카운터 M까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 J까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 G까지 많이 멀까요?
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 E까지 걷기 괜찮을까요?"
+parking_walk_time_info,혹시 T2 지상1층 서편(136지점)에서 체크인카운터 F까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T2 지상1층 서편(136지점) 쪽이 괜찮다고 들었는데, 체크인카운터 C까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 C까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 K까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 M까지 걷기 괜찮을까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 C까지 많이 멀까요?
+parking_walk_time_info,"T2 지상1층 서편(136지점)에 주차하려고 하는데, 체크인카운터 K까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,혹시 T2 지상1층 서편(136지점)에서 체크인카운터 A까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 B까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 L까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 L까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 M까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 B까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"이번에 T2 지상1층 서편(136지점)에 세우려고 하는데요, 체크인카운터 J까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T1 지하2층 A구역(A26)에 주차하려고 하는데, 체크인카운터 K까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"T1 지하2층 H구역(H23) 쪽이 괜찮다고 들었는데, 체크인카운터 J까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 G까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 A구역(A26)에 차 대면 체크인카운터 H까지 많이 멀까요?
+parking_walk_time_info,"이번에 T2 지상1층 서편(136지점)에 세우려고 하는데요, 체크인카운터 C까지 걷기 괜찮을까요?"
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 D까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T2 지상1층 동편(233지점) 위치에서 체크인카운터 A까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 L까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"T1 지하2층 A구역(A26)에 주차하려고 하는데, 체크인카운터 A까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T2 지상1층 서편(136지점)에서 출발해서 체크인카운터 M까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T2 지상1층 동편(233지점)에 주차하려고 하는데, 체크인카운터 C까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"이번에 T2 지상1층 서편(136지점)에 세우려고 하는데요, 체크인카운터 L까지 걷기 괜찮을까요?"
+parking_walk_time_info,"이번에 T1 지하2층 A구역(A26)에 세우려고 하는데요, 체크인카운터 H까지 걷기 괜찮을까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 L까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T1 지하2층 H구역(H23) 쪽이 괜찮다고 들었는데, 체크인카운터 E까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T2 지상1층 동편(233지점)에 주차하려고 하는데, 체크인카운터 A까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"T2 지상1층 동편(233지점)에 주차하려고 하는데, 체크인카운터 L까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 L까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 D까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T1 지하2층 H구역(H23) 쪽이 괜찮다고 들었는데, 체크인카운터 L까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,혹시 T1 지하2층 H구역(H23)에서 체크인카운터 J까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T2 지상1층 서편(136지점)에 차 대면 체크인카운터 H까지 많이 멀까요?
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 F까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"이번에 T1 지하2층 A구역(A26)에 세우려고 하는데요, 체크인카운터 B까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T2 지상1층 서편(136지점) 쪽이 괜찮다고 들었는데, 체크인카운터 E까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T1 지하2층 A구역(A26) 쪽이 괜찮다고 들었는데, 체크인카운터 H까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,혹시 T2 지상1층 동편(233지점)에서 체크인카운터 C까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"이번에 T2 지상1층 동편(233지점)에 세우려고 하는데요, 체크인카운터 L까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T1 지하2층 A구역(A26) 쪽이 괜찮다고 들었는데, 체크인카운터 K까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 H까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,"T1 지하2층 A구역(A26)에 주차하려고 하는데, 체크인카운터 M까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T2 지상1층 동편(233지점)에 차 대면 체크인카운터 M까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 A구역(A26)에 차 대면 체크인카운터 E까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 F까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 A까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T2 지상1층 서편(136지점)에서 출발해서 체크인카운터 A까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T2 지상1층 동편(233지점)에서 출발해서 체크인카운터 J까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 F까지 많이 멀까요?
+parking_walk_time_info,T2 지상1층 서편(136지점) 위치에서 체크인카운터 G까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 E까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,혹시 T1 지하2층 H구역(H23)에서 체크인카운터 H까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 G까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 H까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T2 지상1층 서편(136지점) 쪽이 괜찮다고 들었는데, 체크인카운터 C까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T2 지상1층 동편(233지점) 쪽이 괜찮다고 들었는데, 체크인카운터 A까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T1 지하2층 H구역(H23) 쪽이 괜찮다고 들었는데, 체크인카운터 M까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T2 지상1층 동편(233지점)에 주차하려고 하는데, 체크인카운터 F까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 A구역(A26)에 차 대면 체크인카운터 M까지 많이 멀까요?
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 G까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"이번에 T1 지하2층 A구역(A26)에 세우려고 하는데요, 체크인카운터 E까지 걷기 괜찮을까요?"
+parking_walk_time_info,T2 지상1층 서편(136지점)에서 출발해서 체크인카운터 D까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T2 지상1층 동편(233지점)에 차 대면 체크인카운터 E까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 A까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 F까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 M까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 A까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 L까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 C까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"이번에 T2 지상1층 서편(136지점)에 세우려고 하는데요, 체크인카운터 G까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 E까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,혹시 T1 지하2층 H구역(H23)에서 체크인카운터 J까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T2 지상1층 서편(136지점)에서 출발해서 체크인카운터 A까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,혹시 T2 지상1층 서편(136지점)에서 체크인카운터 D까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 H까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T1 지하2층 A구역(A26) 쪽이 괜찮다고 들었는데, 체크인카운터 D까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T1 지하2층 A구역(A26)에 주차하려고 하는데, 체크인카운터 K까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T2 지상1층 서편(136지점)에서 출발해서 체크인카운터 K까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T1 지하2층 H구역(H23) 쪽이 괜찮다고 들었는데, 체크인카운터 E까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 H까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T1 지하2층 A구역(A26)에 주차하려고 하는데, 체크인카운터 A까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 F까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,"T2 지상1층 서편(136지점) 쪽이 괜찮다고 들었는데, 체크인카운터 A까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T2 지상1층 서편(136지점) 위치에서 체크인카운터 B까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T2 지상1층 동편(233지점)에서 출발해서 체크인카운터 M까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 B까지 걷기 괜찮을까요?"
+parking_walk_time_info,T2 지상1층 서편(136지점)에서 출발해서 체크인카운터 E까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 G까지 걷기 괜찮을까요?"
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 D까지 걷기 괜찮을까요?"
+parking_walk_time_info,"이번에 T2 지상1층 동편(233지점)에 세우려고 하는데요, 체크인카운터 B까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T2 지상1층 동편(233지점) 쪽이 괜찮다고 들었는데, 체크인카운터 K까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"이번에 T2 지상1층 서편(136지점)에 세우려고 하는데요, 체크인카운터 G까지 걷기 괜찮을까요?"
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 A까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T1 지하2층 H구역(H23) 쪽이 괜찮다고 들었는데, 체크인카운터 E까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 K까지 많이 멀까요?
+parking_walk_time_info,혹시 T2 지상1층 서편(136지점)에서 체크인카운터 A까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T2 지상1층 서편(136지점)에 차 대면 체크인카운터 G까지 많이 멀까요?
+parking_walk_time_info,혹시 T1 지하2층 H구역(H23)에서 체크인카운터 B까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T2 지상1층 서편(136지점) 쪽이 괜찮다고 들었는데, 체크인카운터 C까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T1 지하2층 A구역(A26) 쪽이 괜찮다고 들었는데, 체크인카운터 D까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 K까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 J까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T1 지하2층 A구역(A26)에 주차하려고 하는데, 체크인카운터 M까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"T1 지하2층 H구역(H23) 쪽이 괜찮다고 들었는데, 체크인카운터 D까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"이번에 T2 지상1층 동편(233지점)에 세우려고 하는데요, 체크인카운터 E까지 걷기 괜찮을까요?"
+parking_walk_time_info,혹시 T1 지하2층 H구역(H23)에서 체크인카운터 H까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 E까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,혹시 T2 지상1층 동편(233지점)에서 체크인카운터 J까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 F까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"T2 지상1층 동편(233지점)에 주차하려고 하는데, 체크인카운터 A까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,혹시 T1 지하2층 H구역(H23)에서 체크인카운터 A까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 L까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 H까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 F까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 A까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 D까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,혹시 T2 지상1층 서편(136지점)에서 체크인카운터 E까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 D까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"이번에 T1 지하2층 A구역(A26)에 세우려고 하는데요, 체크인카운터 K까지 걷기 괜찮을까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 F까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 L까지 걷기 괜찮을까요?"
+parking_walk_time_info,T1 지하2층 A구역(A26)에 차 대면 체크인카운터 J까지 많이 멀까요?
+parking_walk_time_info,"이번에 T1 지하2층 A구역(A26)에 세우려고 하는데요, 체크인카운터 M까지 걷기 괜찮을까요?"
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 J까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T2 지상1층 동편(233지점)에 차 대면 체크인카운터 K까지 많이 멀까요?
+parking_walk_time_info,T2 지상1층 동편(233지점)에 차 대면 체크인카운터 G까지 많이 멀까요?
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 F까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 L까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 J까지 걷기 괜찮을까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 L까지 많이 멀까요?
+parking_walk_time_info,"이번에 T2 지상1층 서편(136지점)에 세우려고 하는데요, 체크인카운터 K까지 걷기 괜찮을까요?"
+parking_walk_time_info,T2 지상1층 서편(136지점)에 차 대면 체크인카운터 G까지 많이 멀까요?
+parking_walk_time_info,"T2 지상1층 서편(136지점) 쪽이 괜찮다고 들었는데, 체크인카운터 K까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T2 지상1층 서편(136지점)에서 출발해서 체크인카운터 H까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 A구역(A26)에 차 대면 체크인카운터 H까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 A구역(A26)에 차 대면 체크인카운터 K까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 A구역(A26)에 차 대면 체크인카운터 E까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 G까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 J까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 J까지 많이 멀까요?
+parking_walk_time_info,혹시 T2 지상1층 동편(233지점)에서 체크인카운터 M까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,"T2 지상1층 서편(136지점) 쪽이 괜찮다고 들었는데, 체크인카운터 M까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T2 지상1층 동편(233지점) 위치에서 체크인카운터 J까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 J까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T1 지하2층 A구역(A26)에 주차하려고 하는데, 체크인카운터 E까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"이번에 T1 지하2층 H구역(H23)에 세우려고 하는데요, 체크인카운터 G까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T2 지상1층 동편(233지점) 쪽이 괜찮다고 들었는데, 체크인카운터 H까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"T1 지하2층 A구역(A26) 쪽이 괜찮다고 들었는데, 체크인카운터 J까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 F까지 많이 멀까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 A까지 많이 멀까요?
+parking_walk_time_info,"T2 지상1층 동편(233지점)에 주차하려고 하는데, 체크인카운터 H까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T2 지상1층 동편(233지점)에서 출발해서 체크인카운터 D까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 C까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 G까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 M까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23) 위치에서 체크인카운터 G까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,T1 지하2층 H구역(H23)에 차 대면 체크인카운터 J까지 많이 멀까요?
+parking_walk_time_info,"이번에 T2 지상1층 서편(136지점)에 세우려고 하는데요, 체크인카운터 G까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T1 지하2층 H구역(H23)에 주차하려고 하는데, 체크인카운터 M까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,혹시 T1 지하2층 A구역(A26)에서 체크인카운터 M까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 J까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,혹시 T2 지상1층 서편(136지점)에서 체크인카운터 L까지 가는 데 몇 분 정도 걸릴지 알 수 있을까요?
+parking_walk_time_info,T2 지상1층 동편(233지점)에 차 대면 체크인카운터 F까지 많이 멀까요?
+parking_walk_time_info,T2 지상1층 동편(233지점)에서 출발해서 체크인카운터 A까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T2 지상1층 서편(136지점) 위치에서 체크인카운터 C까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,"T2 지상1층 동편(233지점) 쪽이 괜찮다고 들었는데, 체크인카운터 A까지 도보 시간 얼마나 될까요?"
+parking_walk_time_info,"이번에 T2 지상1층 서편(136지점)에 세우려고 하는데요, 체크인카운터 H까지 걷기 괜찮을까요?"
+parking_walk_time_info,"이번에 T1 지하2층 A구역(A26)에 세우려고 하는데요, 체크인카운터 F까지 걷기 괜찮을까요?"
+parking_walk_time_info,T1 지하2층 H구역(H23)에서 출발해서 체크인카운터 L까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,"T2 지상1층 동편(233지점)에 주차하려고 하는데, 체크인카운터 E까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T1 지하2층 A구역(A26)에서 출발해서 체크인카운터 F까지 이동 시간 좀 알려주세요.
+parking_walk_time_info,T2 지상1층 동편(233지점)에 차 대면 체크인카운터 F까지 많이 멀까요?
+parking_walk_time_info,"이번에 T1 지하2층 A구역(A26)에 세우려고 하는데요, 체크인카운터 E까지 걷기 괜찮을까요?"
+parking_walk_time_info,"T2 지상1층 서편(136지점)에 주차하려고 하는데, 체크인카운터 G까지 걸어서 얼마나 걸릴까요?"
+parking_walk_time_info,T2 지상1층 동편(233지점) 위치에서 체크인카운터 F까지 가는 게 괜찮을까요? 걷는 시간이 궁금해서요.
+parking_walk_time_info,"짐이 무거운데, T1 H구역에서 J카운터까지 걷는 시간 얼마나 될까요?"
+parking_walk_time_info,체크인카운터 J까지 T1 H구역에서 걸어가려면 몇 분 봐야 하나요?
+flight_info,SC4612
+flight_info,OZ6711
+flight_info,CA8856
+flight_info,OZ114
+flight_info,EY8449
+flight_info,NH6954
+flight_info,ZE623
+flight_info,CZ3066
+flight_info,KE951
+flight_info,SV6612
+flight_info,EK3483
+flight_info,CA440
+flight_info,OZ6847
+flight_info,SC128
+flight_info,MU2018
+flight_info,KE5849
+flight_info,NX821
+flight_info,OZ6867
+flight_info,OZ713
+flight_info,BR2149
+flight_info,CA144
+flight_info,OZ6825
+flight_info,OM302
+flight_info,KE5867
+flight_info,RS723
+flight_info,TW671
+flight_info,OZ365
+flight_info,HO3107
+flight_info,KE017

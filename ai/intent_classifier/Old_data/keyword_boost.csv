@@ -1,4 +1,5 @@
-﻿airline_info_query,항공사 고객센터
+﻿intent,question
+airline_info_query,항공사 고객센터
 airline_info_query,항공사 전화번호
 airline_info_query,항공사 연락처
 airline_info_query,항공사 로고
@@ -68,7 +69,6 @@ default_greeting,도와주세요
 default_greeting,안녕
 default_greeting,도와줘
 default_greeting,챗봇
-default_greeting,공항
 default_greeting,처음입니다
 departure_congestion_prediction,출국장
 departure_congestion_prediction,출국장 예측
@@ -81,13 +81,13 @@ departure_policy_info,반출 금지
 departure_policy_info,출국
 departure_policy_info,여권 발급
 facility_guide,편의시설 안내
-facility_guide,약국 위치
-facility_guide,은행 위치
-facility_guide,환전소 위치
-facility_guide,식당가 위치
-facility_guide,카페 위치
-facility_guide,흡연실 위치
-facility_guide,기도실 위치
+facility_guide,약국
+facility_guide,은행
+facility_guide,환전소
+facility_guide,식당가
+facility_guide,카페
+facility_guide,흡연실
+facility_guide,기도실
 facility_guide,유아휴게실 위치
 facility_guide,어린이 놀이시설
 facility_guide,화장실
@@ -111,7 +111,6 @@ flight_info,도착 시간
 flight_info,항공편 지연
 flight_info,항공편 결항
 flight_info,운항 스케줄
-intent,question
 parking_availability_query,주차장 현황
 parking_availability_query,주차 가능
 parking_availability_query,주차 공간
@@ -122,7 +121,6 @@ parking_congestion_prediction,주차장 이따가
 parking_congestion_prediction,주차장 혼잡도
 parking_congestion_prediction,주말 주차장
 parking_congestion_prediction,연휴 주차장
-parking_congestion_prediction,주차장 혼잡도 예측
 parking_congestion_prediction,주차장 예측
 parking_congestion_prediction,주차장 미래
 parking_fee_info,주차 요금
@@ -162,4 +160,21 @@ transfer_route_guide,환승 방법
 transfer_route_guide,셔틀트레인
 transfer_route_guide,환승 게이트
 transfer_route_guide,셔틀
-transfer_route_guide,환승 
+transfer_route_guide,환승
+airport_info,공항 정보
+airport_info,공항 코드
+airport_info,공항 이름
+airport_info,공항 위치
+airport_info,어느 나라
+parking_availability_query,주차장 혼잡도
+facility_guide,시설
+parking_walk_time_info,주차장 도보시간
+parking_walk_time_info,도보시간
+baggage_rule_query,세관
+parking_location_recommendation,주차할 곳
+parking_location_recommendation,주차
+regular_schedule_query,정기
+regular_schedule_query,정기편
+parking_availability_query,주차할
+parking_fee_info,주차료
+,
