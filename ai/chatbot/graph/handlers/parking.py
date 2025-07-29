@@ -185,10 +185,3 @@ def parking_walk_time_info_handler(state: ChatState) -> ChatState:
         error_msg = f"죄송합니다. 정보를 검색하는 중 오류가 발생했습니다: {e}"
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
-
-import os
-from dotenv import load_dotenv
-from pathlib import Path
-
-env_path = Path(__file__).resolve().parents[2] / ".env"
-load_dotenv(dotenv_path=env_path)  # ✅ 조건 없이 수행
