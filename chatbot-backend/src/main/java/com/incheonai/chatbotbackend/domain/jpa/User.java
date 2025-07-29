@@ -1,4 +1,4 @@
-package com.incheonai.chatbotbackend.domain;
+package com.incheonai.chatbotbackend.domain.jpa;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

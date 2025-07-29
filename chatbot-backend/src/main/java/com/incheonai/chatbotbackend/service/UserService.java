@@ -1,7 +1,7 @@
 package com.incheonai.chatbotbackend.service;
 
-import com.incheonai.chatbotbackend.domain.LoginProvider;
-import com.incheonai.chatbotbackend.domain.User;
+import com.incheonai.chatbotbackend.domain.jpa.LoginProvider;
+import com.incheonai.chatbotbackend.domain.jpa.User;
 import com.incheonai.chatbotbackend.dto.SignUpRequestDto;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
