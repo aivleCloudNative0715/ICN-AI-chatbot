@@ -1,0 +1,32 @@
+# Docker Compose 버전 정의
+version: '3.8'
+
+# 실행할 서비스(컨테이너)들 정의
+services:
+  # PostgreSQL 서비스
+  postgres-db:
+    image: postgres:16  # PostgreSQL 16 버전 이미지 사용
+    container_name: postgres-db
+    restart: always # 컨테이너가 꺼지면 항상 다시 시작
+    environment:
+      POSTGRES_DB: ${DB_NAME}       # .env 파일과 동일하게 설정
+      POSTGRES_USER: ${DB_USERNAME}   # .env 파일과 동일하게 설정
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # .env 파일과 동일하게 설정
+    ports:
+      - "5432:5432" # 내 컴퓨터의 5432 포트와 컨테이너의 5432 포트를 연결
+
+  # MongoDB 서비스
+  mongo-db:
+    image: mongo:7 # MongoDB 7 버전 이미지 사용
+    container_name: mongo-db
+    restart: always
+    ports:
+      - "27017:27017" # 내 컴퓨터의 27017 포트와 컨테이너의 27017 포트를 연결
+
+  # Redis 서비스
+  redis-db:
+    image: redis:7 # Redis 7 버전 이미지 사용
+    container_name: redis-db
+    restart: always
+    ports:
+      - "6379:6379" # 내 컴퓨터의 6379 포트와 컨테이너의 6379 포트를 연결
