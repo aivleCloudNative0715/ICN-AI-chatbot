@@ -1,0 +1,180 @@
+﻿intent,question
+airline_info_query,항공사 고객센터
+airline_info_query,항공사 전화번호
+airline_info_query,항공사 연락처
+airline_info_query,항공사 로고
+airline_info_query,항공사 이미지
+airline_info_query,항공사 코드
+airline_info_query,항공사 취항
+airline_info_query,취항
+airline_info_query,항공사
+airline_info_query,항공사 목록
+airline_info_query,화물 운송
+airport_weather_current,공항 날씨
+airport_weather_current,공항 기온
+airport_weather_current,공항 습도
+airport_weather_current,공항 풍속
+airport_weather_current,공항 시정
+airport_weather_current,공항 강수량
+airport_weather_current,기상 예보
+airport_weather_current,날씨
+airport_weather_current,기상
+airport_weather_current,바람
+airport_weather_current,비
+airport_weather_current,날씨 예보
+arrival_congestion_prediction,입국장 혼잡 예측
+arrival_congestion_prediction,실시간 혼잡도
+arrival_congestion_prediction,입국장
+arrival_congestion_prediction,입국장 예측
+arrival_congestion_prediction,입국장 혼잡도
+arrival_congestion_prediction,입국장 미래
+arrival_congestion_prediction,입국장 승객
+arrival_congestion_prediction,예상 소요시간
+arrival_congestion_query,입국장 혼잡
+arrival_congestion_query,대기 시간
+arrival_congestion_query,대기 줄
+arrival_congestion_query,혼잡 상태
+arrival_congestion_query,출국장 혼잡
+arrival_congestion_query,주차장 혼잡
+arrival_congestion_query,실시간 혼잡
+arrival_policy_info,입국 절차
+arrival_policy_info,입국 심사
+arrival_policy_info,세관 신고
+arrival_policy_info,반입 금지
+arrival_policy_info,면세 한도
+arrival_policy_info,비자 발급
+baggage_claim_info,수하물 수취
+baggage_claim_info,수하물 찾는 곳
+baggage_claim_info,컨베이어 벨트
+baggage_claim_info,수하물 분실
+baggage_claim_info,수하물 파손
+baggage_claim_info,수취대
+baggage_claim_info,수취대 위치
+baggage_claim_info,수취대 도착
+baggage_claim_info,특수 수하물
+baggage_rule_query,수하물 규정
+baggage_rule_query,위탁 수하물
+baggage_rule_query,기내 반입
+baggage_rule_query,초과 수하물
+baggage_rule_query,수하물 요금
+baggage_rule_query,수하물
+baggage_rule_query,수하물 무게
+baggage_rule_query,수하물 크기
+baggage_rule_query,수하물 금지
+baggage_rule_query,수하물 허용
+baggage_rule_query,반입 금지 물품
+default_greeting,안녕하세요
+default_greeting,반가워요
+default_greeting,도와주세요
+default_greeting,안녕
+default_greeting,도와줘
+default_greeting,챗봇
+default_greeting,처음입니다
+departure_congestion_prediction,출국장
+departure_congestion_prediction,출국장 예측
+departure_congestion_prediction,출국장 혼잡도
+departure_congestion_prediction,출국장 미래
+departure_congestion_prediction,출국장 승객
+departure_policy_info,출국 절차
+departure_policy_info,출국 심사
+departure_policy_info,반출 금지
+departure_policy_info,출국
+departure_policy_info,여권 발급
+facility_guide,편의시설 안내
+facility_guide,약국
+facility_guide,은행
+facility_guide,환전소
+facility_guide,식당가
+facility_guide,카페
+facility_guide,흡연실
+facility_guide,기도실
+facility_guide,유아휴게실 위치
+facility_guide,어린이 놀이시설
+facility_guide,화장실
+facility_guide,면세점
+facility_guide,식당
+facility_guide,흡연실
+facility_guide,라운지
+facility_guide,상업 시설
+facility_guide,음식점
+facility_guide,카페
+facility_guide,편의 시설
+facility_guide,시설
+facility_guide,셔틀버스
+flight_info,항공편
+flight_info,게이트
+flight_info,항공편 터미널
+flight_info,운항 정보
+flight_info,항공편 정보
+flight_info,출발 시간
+flight_info,도착 시간
+flight_info,항공편 지연
+flight_info,항공편 결항
+flight_info,운항 스케줄
+parking_availability_query,주차장 현황
+parking_availability_query,주차 가능
+parking_availability_query,주차 공간
+parking_availability_query,만차 여부
+parking_availability_query,주차장 이용
+parking_availability_query,주차장
+parking_congestion_prediction,주차장 이따가
+parking_congestion_prediction,주차장 혼잡도
+parking_congestion_prediction,주말 주차장
+parking_congestion_prediction,연휴 주차장
+parking_congestion_prediction,주차장 예측
+parking_congestion_prediction,주차장 미래
+parking_fee_info,주차 요금
+parking_fee_info,주차비
+parking_fee_info,주차 요금 할인
+parking_fee_info,주차 요금 결제
+parking_fee_info,요금
+parking_fee_info,주차 할인
+parking_fee_info,주차 감면
+parking_fee_info,주차 비용
+parking_location_recommendation,주차장 추천
+parking_location_recommendation,가까운 주차장
+parking_location_recommendation,저렴한 주차장
+parking_location_recommendation,장기 주차장
+parking_location_recommendation,단기 주차장
+parking_location_recommendation,주차장 위치
+parking_location_recommendation,주차장 거리
+parking_location_recommendation,주차장 터미널
+parking_walk_time_info,도보
+parking_walk_time_info,도보 시간
+parking_walk_time_info,도보 거리
+parking_walk_time_info,주차장 도보
+parking_walk_time_info,주차장 카운터 도보
+regular_schedule_query,정기 운항
+regular_schedule_query,정기 항공편
+regular_schedule_query,매일 운항
+regular_schedule_query,정기 운항 시간
+regular_schedule_query,정기 스케줄
+transfer_info,환승 정보
+transfer_info,환승 절차
+transfer_info,환승 시간
+transfer_info,환승객
+transfer_info,환승
+transfer_info,환승 심사
+transfer_route_guide,환승 경로
+transfer_route_guide,환승 방법
+transfer_route_guide,셔틀트레인
+transfer_route_guide,환승 게이트
+transfer_route_guide,셔틀
+transfer_route_guide,환승
+airport_info,공항 정보
+airport_info,공항 코드
+airport_info,공항 이름
+airport_info,공항 위치
+airport_info,어느 나라
+parking_availability_query,주차장 혼잡도
+facility_guide,시설
+parking_walk_time_info,주차장 도보시간
+parking_walk_time_info,도보시간
+baggage_rule_query,세관
+parking_location_recommendation,주차할 곳
+parking_location_recommendation,주차
+regular_schedule_query,정기
+regular_schedule_query,정기편
+parking_availability_query,주차할
+parking_fee_info,주차료
+,
