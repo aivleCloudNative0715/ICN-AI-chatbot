@@ -31,8 +31,8 @@ EXCEL_FILES_DIR = SCRIPT_DIR
 
 # --- 업데이트할 파일 경로 활성화 ---
 # visa_file = os.path.join(EXCEL_FILES_DIR, "visa.xlsx")
-# restricted_item_file = os.path.join(EXCEL_FILES_DIR, "restricted_item.xlsx")
-min_transit_time_file = os.path.join(EXCEL_FILES_DIR, "최소 환승 시간.xlsx") # 활성화
+restricted_item_file = os.path.join(EXCEL_FILES_DIR, "restricted_item.xlsx")
+# min_transit_time_file = os.path.join(EXCEL_FILES_DIR, "최소 환승 시간.xlsx") # 활성화
 airport_procedure_file = os.path.join(EXCEL_FILES_DIR, "공항 절차.xlsx")
 transit_path_file = os.path.join(EXCEL_FILES_DIR, "환승 경로.xlsx") # 활성화
 
@@ -79,7 +79,7 @@ def upload_restricted_item_data(file_path, db):
             df[col] = df[col].apply(lambda x: None if pd.isna(x) else str(x))
         data = df.to_dict(orient="records")
         collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
+        collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
         collection.insert_many(data)
         print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
     except FileNotFoundError:
@@ -177,7 +177,7 @@ def upload_transit_path_data(file_path, db):
 
 print("\n--- MongoDB 컬렉션 업데이트 시작 (기존 데이터 삭제 후) ---")
 
-upload_minimum_connection_time_data(min_transit_time_file, db) # 최소 환승 시간 업데이트
+upload_restricted_item_data(restricted_item_file, db) # 최소 환승 시간 업데이트
 upload_airport_procedure_data(airport_procedure_file, db) # 공항 절차 업데이트
 upload_transit_path_data(transit_path_file, db) # 환승 경로 업데이트
 
