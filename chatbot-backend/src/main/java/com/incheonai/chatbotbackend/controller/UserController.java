@@ -27,10 +27,4 @@ public class UserController {
         // 상태 코드 201 Created와 함께 응답 바디에 토큰을 담아 반환
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto requestDto) {
-        LoginResponseDto response = userService.login(requestDto);
-        return ResponseEntity.ok(response);
-    }
 }
