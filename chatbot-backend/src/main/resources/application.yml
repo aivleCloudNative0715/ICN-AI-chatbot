@@ -21,8 +21,9 @@ spring:
       uri: ${MONGO_DB_URI}
 
     redis:
-      host: ${REDIS_DB}
-      port: 6379
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      database: ${REDIS_DB}
 
   security:
     oauth2:

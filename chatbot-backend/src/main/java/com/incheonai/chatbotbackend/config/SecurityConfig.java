@@ -33,7 +33,7 @@ public class SecurityConfig {
                 // HTTP 요청에 대한 접근 권한 설정
                 .authorizeHttpRequests(authz -> authz
                         // 회원가입 및 로그인 API 경로는 인증 없이 허용
-                        .requestMatchers("/api/users/signup", "/api/users/login").permitAll()
+                        .requestMatchers("/api/auth/check-id", "/api/auth/login", "/api/users/signup").permitAll()
                         // Swagger UI 관련 경로들은 인증 없이 허용
                         .requestMatchers(SWAGGER_URL_PATTERNS).permitAll()
                         // 그 외 모든 요청은 인증 필요

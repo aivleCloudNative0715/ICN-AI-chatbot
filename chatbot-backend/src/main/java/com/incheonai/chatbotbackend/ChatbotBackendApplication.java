@@ -24,6 +24,11 @@ public class ChatbotBackendApplication {
 		System.setProperty("JWT_SECRET_KEY", dotenv.get("JWT_SECRET_KEY"));
 		System.setProperty("GOOGLE_CLIENT_ID", dotenv.get("GOOGLE_CLIENT_ID"));
 		System.setProperty("GOOGLE_CLIENT_SECRET", dotenv.get("GOOGLE_CLIENT_SECRET"));
+
+		// Redis 관련 변수 추가
+		System.setProperty("REDIS_HOST", dotenv.get("REDIS_HOST"));
+		System.setProperty("REDIS_PORT", dotenv.get("REDIS_PORT"));
+		System.setProperty("REDIS_DB", dotenv.get("REDIS_DB"));
 		// --------------------------
 
 		SpringApplication.run(ChatbotBackendApplication.class, args);
