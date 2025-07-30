@@ -1,6 +1,5 @@
 from ai.chatbot.graph.state import ChatState
 
-from ai.chatbot.graph.state import ChatState
 from ai.chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
 from ai.chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
 
