@@ -57,4 +57,8 @@ public class Admin {
         this.adminName = adminName;
         this.role = role;
     }
+
+    public void updateLastLogin() {
+        this.lastLoginAt = LocalDateTime.now();
+    }
 }
