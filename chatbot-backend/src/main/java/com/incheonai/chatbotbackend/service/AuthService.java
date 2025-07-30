@@ -13,6 +13,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.concurrent.TimeUnit;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -82,5 +84,17 @@ public class AuthService {
 
         // 3. 어디에도 아이디가 없는 경우
         throw new IllegalArgumentException("가입되지 않은 아이디입니다.");
+    }
+
+    public void logout(String accessToken) {
+        // 1. 토큰 유효성 검증
+        if (!jwtTokenProvider.validateToken(accessToken)) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
+
+        // 2. Redis에 로그아웃된 토큰으로 저장
+        String redisKey = "logout:token:" + accessToken;
+        Long expiration = jwtTokenProvider.getExpiration(accessToken); // 남은 유효시간
+        redisTemplate.opsForValue().set(redisKey, "logout", expiration, TimeUnit.MILLISECONDS);
     }
 }
