@@ -2,3 +2,6 @@
 
 *.pt
 *.pkl
+
+venv
+.venv

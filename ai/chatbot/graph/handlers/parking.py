@@ -185,36 +185,3 @@ def parking_walk_time_info_handler(state: ChatState) -> ChatState:
         error_msg = f"죄송합니다. 정보를 검색하는 중 오류가 발생했습니다: {e}"
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
-
-
-if __name__ == "__main__":
-    print("--- handlers.py 단독 테스트 모드 실행 ---")
-
-    # parking_fee_info_handler 테스트
-    # 가상의 ChatState 객체 생성
-    # 실제 의도 분류기를 거쳤다는 가정 하에 intent를 직접 지정합니다.
-    test_parking_state = ChatState(
-        user_input="2터미널 장기 주차 P2에 주차할 건데, 주차 요금 사전 정산 시 모바일로도 가능한지 궁금합니다.",
-        intent="parking_fee_info",
-        response="" # 초기 응답은 비워둠
-    )
-
-    print(f"\n[테스트 시나리오] 사용자 쿼리: '{test_parking_state['user_input']}'")
-    
-    # parking_fee_info_handler 호출
-    updated_state = parking_fee_info_handler(test_parking_state)
-
-    print("\n--- parking_fee_info_handler 결과 ---")
-    print(f"최종 응답: {updated_state.get('response', '응답 없음')}")
-    print("--------------------------------------")
-
-    # 테스트 후 MongoDB 클라이언트 연결 종료 (필요하다면)
-    # 이 부분은 테스트의 종류에 따라 선택적입니다.
-    # 만약 연결이 계속 유지되어야 한다면 주석 처리하거나 필요에 따라 호출 위치를 조절하세요.
-    try:
-        close_mongo_client()
-        print("디버그: MongoDB 클라이언트 연결 종료.")
-    except Exception as e:
-        print(f"디버그: MongoDB 클라이언트 종료 중 오류 발생: {e}")
-
-    print("\n--- 단독 테스트 완료 ---")

@@ -7,7 +7,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # ai/
 MODEL_DIR = BASE_DIR / "intent_classifier" / "best_models" / "intent-kobert-v1"
 MODEL_PATH = MODEL_DIR / "best_kobert_model.pt"
-LABEL_ENCODER_PATH = MODEL_DIR / "label_encoder.pkl"
+LABEL_ENCODER_PATH = MODEL_DIR / "intent2idx.pkl"
 
 # KoBERT 분류기 인스턴스 생성
 my_kobert_classifier = KoBERTPredictor(
