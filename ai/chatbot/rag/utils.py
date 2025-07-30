@@ -8,8 +8,8 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-env_path = Path(__file__).resolve().parents[2] / ".env"
-load_dotenv(dotenv_path=env_path)  # ✅ 조건 없이 수행
+env_path = Path(__file__).resolve().parents[3] / ".env"
+load_dotenv(dotenv_path=env_path, override=True)  # ✅ 조건 없이 수행
 
 # 이제 안전하게 환경변수 사용 가능
 MONGO_URI = os.getenv("MONGO_URI")

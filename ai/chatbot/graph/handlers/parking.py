@@ -113,7 +113,7 @@ def parking_location_recommendation_handler(state: ChatState) -> ChatState:
         context_for_llm = "\n\n".join(retrieved_docs_text)
         
         # 4. 공통 LLM 호출 함수를 사용하여 최종 답변 생성
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description)
+        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
         
         return {**state, "response": final_response}
 
@@ -177,7 +177,7 @@ def parking_walk_time_info_handler(state: ChatState) -> ChatState:
         print(f"디버그: LLM에 전달될 최종 컨텍스트 길이: {len(context_for_llm)}자.")
 
         # 4. 공통 LLM 호출 함수를 사용하여 최종 답변 생성
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description)
+        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
 
         return {**state, "response": final_response}
 
