@@ -27,15 +27,10 @@ chatbot/
 - 챗봇의 RAG(Retrieval Augmented Generation) 기능 구현을 위한 공통 설정과 유틸리티 함수들을 모아둔 곳입니다.
 
 - config.py:
-
-RAG 검색에 필요한 설정 정보를 정의합니다.
-
-각 핸들러(의도)가 어떤 MongoDB 컬렉션(collection_name), 어떤 벡터 인덱스(vector_index_name)를 사용해야 하는지, 그리고 어떤 추가 필터링(query_filter)이 필요한지 등을 매핑해 둡니다.
-
-common_llm_rag_caller와 같이 모든 RAG 핸들러에서 공통으로 사용할 LLM 호출 함수의 기본적인 로직을 포함합니다.
+    - RAG 검색에 필요한 설정 정보를 정의합니다.
+    - 각 핸들러(의도)가 어떤 MongoDB 컬렉션(collection_name), 어떤 벡터 인덱스(vector_index_name)를 사용해야 하는지, 그리고 어떤 추가 필터링(query_filter)이 필요한지 등을 매핑해 둡니다.
+    - common_llm_rag_caller와 같이 모든 RAG 핸들러에서 공통으로 사용할 LLM 호출 함수의 기본적인 로직을 포함합니다.
 
 - utils.py:
-
-RAG 검색 프로세스에서 필요한 하위 레벨의 공통 유틸리티 함수들을 제공합니다.
-
-MongoDB 연결 관리(get_mongo_client, get_mongo_collection, close_mongo_client), 임베딩 모델 로딩(get_embedding_model), 사용자 쿼리 임베딩 생성(get_query_embedding), 그리고 MongoDB Atlas에서 벡터 검색을 수행하는(perform_vector_search, perform_multi_collection_search) 핵심 기능들이 이곳에 구현되어 있습니다.
+    - RAG 검색 프로세스에서 필요한 하위 레벨의 공통 유틸리티 함수들을 제공합니다.
+    - MongoDB 연결 관리(get_mongo_client, get_mongo_collection, close_mongo_client), 임베딩 모델 로딩(get_embedding_model), 사용자 쿼리 임베딩 생성(get_query_embedding), 그리고 MongoDB Atlas에서 벡터 검색을 수행하는(perform_vector_search, perform_multi_collection_search) 핵심 기능들이 이곳에 구현되어 있습니다.
