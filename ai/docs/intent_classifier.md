@@ -45,7 +45,38 @@ python preprocess_intent_data.py
 
 ---
 
-## 2. `train_kobert.ipynb`
+## 2. `create_slot_dataset.py`
+
+이 스크립트는 슬롯 태깅 모델 학습에 사용될 데이터를 생성합니다.
+
+### 주요 기능
+
+- **데이터셋 생성:** 주어진 의도와 질문 쌍을 기반으로 슬롯 태깅을 위한 데이터셋을 생성합니다.
+
+
+### 함수 설명
+
+#### `create_slot_data(intent, question)`
+
+- **입력:**
+    - `intent`: 의도 문자열 (예: '날씨')
+    - `question`: 질문 문자열 (예: '오늘 날씨 어때?')
+- **기능:**
+    1. 질문을 단어 단위로 분리합니다.
+    2. 질문 내에서 특정 키워드나 패턴을 기반으로 슬롯 정보를 추출합니다.
+- **반환:** 추출된 슬롯 정보 (딕셔너리 형태)
+
+### 실행
+
+스크립트를 직접 실행하면 슬롯 태깅 데이터셋을 생성하고 저장합니다.
+
+```bash
+python create_slot_dataset.py
+```
+
+---
+
+## 3. `train_kobert.ipynb`
 
 이 Jupyter Notebook은 전처리된 데이터를 사용하여 KoBERT 기반의 의도 분류 모델을 학습하고 평가합니다. 기존 `kobert_intent_trainer.py`에서 데이터 보강 및 균형 조정 기능이 추가되었습니다.
 
