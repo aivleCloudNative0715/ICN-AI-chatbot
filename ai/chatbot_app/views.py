@@ -80,14 +80,14 @@ class GenerateAPIView(APIView):
             # 최종 답변은 LangGraph 핸들러에서 messages 리스트에 추가한 마지막 메시지
             final_message = new_state["response"]
             answer = final_message
-            metadata = new_state.get("metadata", {"source": "retrieval", "confidence": 0.0})
+            #metadata = new_state.get("metadata", {"source": "retrieval", "confidence": 0.0})
 
             # 6. 업데이트된 상태를 캐시에 다시 저장
             cache.set(cache_key, new_state, timeout=1800)
             
             response_data = {
                 "answer": answer,
-                "metadata": metadata
+                #"metadata": metadata
             }    
             
             # response_data = {
