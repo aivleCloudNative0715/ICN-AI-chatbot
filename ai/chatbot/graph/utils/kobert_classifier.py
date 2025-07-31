@@ -9,12 +9,12 @@ class KoBERTClassifier(nn.Module):
         super(KoBERTClassifier, self).__init__()
         self.bert = BertModel.from_pretrained("skt/kobert-base-v1")
         self.dropout = nn.Dropout(0.3)
-        self.classifier = nn.Linear(self.bert.config.hidden_size, num_labels)
+        self.intent_classifier = nn.Linear(self.bert.config.hidden_size, num_labels)
 
     def forward(self, input_ids, attention_mask, token_type_ids=None):
         outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
         pooled_output = outputs.pooler_output
-        return self.classifier(self.dropout(pooled_output))
+        return self.intent_classifier(self.dropout(pooled_output))
 
 
 class KoBERTPredictor:
@@ -22,19 +22,21 @@ class KoBERTPredictor:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained("skt/kobert-base-v1", use_fast=False)
 
-        # 가중치 로드
         state_dict = torch.load(model_path, map_location=self.device)
-        num_labels = state_dict["classifier.weight"].shape[0]
+        filtered_state_dict = {k: v for k, v in state_dict.items() if k.startswith("bert") or k.startswith("intent_classifier")}
+        num_labels = filtered_state_dict["intent_classifier.weight"].shape[0]
 
-        # 모델 구성
         self.model = KoBERTClassifier(num_labels)
-        self.model.load_state_dict(state_dict)
+        self.model.load_state_dict(filtered_state_dict, strict=False)
         self.model.to(self.device)
         self.model.eval()
 
-        # 라벨 인코더 로드
+        # label_encoder가 dict로 로드됨을 가정
         with open(label_encoder_path, "rb") as f:
             self.label_encoder = pickle.load(f)
+
+        # dict가 {label: idx} 형태면 역매핑 dict 생성
+        self.idx2label = {v: k for k, v in self.label_encoder.items()}
 
     def predict(self, text: str) -> str:
         inputs = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True)
@@ -44,4 +46,4 @@ class KoBERTPredictor:
             logits = self.model(**inputs)
             predicted_idx = logits.argmax(dim=-1).item()
 
-        return self.label_encoder.inverse_transform([predicted_idx])[0]
+        return self.idx2label[predicted_idx]

@@ -6,7 +6,7 @@ from pathlib import Path
 # 모델 및 라벨 인코더 경로 설정
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent  # ai/
 MODEL_DIR = BASE_DIR / "intent_classifier" / "best_models" / "intent-kobert-v1"
-MODEL_PATH = MODEL_DIR / "best_kobert_model.pt"
+MODEL_PATH = MODEL_DIR / "best_model.pt"
 LABEL_ENCODER_PATH = MODEL_DIR / "intent2idx.pkl"
 
 # KoBERT 분류기 인스턴스 생성
