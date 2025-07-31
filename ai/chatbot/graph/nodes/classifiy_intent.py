@@ -17,5 +17,10 @@ my_kobert_classifier = KoBERTPredictor(
 
 def classify_intent(state: ChatState) -> ChatState:
     user_input = state["user_input"]
-    predicted_intent = my_kobert_classifier.predict(user_input)
-    return {**state, "intent": predicted_intent}
+    result = my_kobert_classifier.predict(user_input)
+    print(f"[DEBUG] predict 결과: {result}")
+    return {
+        **state,
+        "intent": result["intent"],
+        "confidence": result["confidence"]
+    }

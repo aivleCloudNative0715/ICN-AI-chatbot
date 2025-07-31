@@ -66,13 +66,13 @@ def airline_info_query_handler(state: ChatState) -> ChatState:
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
 
-def airport_info_query_handler(state: ChatState) -> ChatState:
+def airport_info_handler(state: ChatState) -> ChatState:
     """
-    'airport_info_query' 의도에 대한 RAG 기반 핸들러.
+    'airport_info' 의도에 대한 RAG 기반 핸들러.
     사용자 쿼리를 기반으로 MongoDB에서 공항 코드, 이름, 위치 정보를 검색하고 답변을 생성합니다.
     """
     user_query = state.get("user_input", "")
-    intent_name = state.get("intent", "airport_info_query")
+    intent_name = state.get("intent", "airport_info")
 
     if not user_query:
         print("디버그: 사용자 쿼리가 비어 있습니다.")

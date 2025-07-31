@@ -38,12 +38,20 @@ class KoBERTPredictor:
         # dict가 {label: idx} 형태면 역매핑 dict 생성
         self.idx2label = {v: k for k, v in self.label_encoder.items()}
 
-    def predict(self, text: str) -> str:
+    def predict(self, text: str) -> dict:
+        self.model.eval()
         inputs = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True)
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
         with torch.no_grad():
             logits = self.model(**inputs)
-            predicted_idx = logits.argmax(dim=-1).item()
+            probabilities = torch.softmax(logits, dim=1)
+            confidence_score, predicted_idx = torch.max(probabilities, dim=1)
 
-        return self.idx2label[predicted_idx]
+        intent = self.idx2label[predicted_idx.item()]
+        confidence = confidence_score.item()
+
+        return {
+            "intent": intent,
+            "confidence": confidence
+        }
