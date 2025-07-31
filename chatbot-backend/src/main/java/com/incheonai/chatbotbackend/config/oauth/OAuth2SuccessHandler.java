@@ -37,7 +37,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String token = jwtTokenProvider.createToken(userId);
 
         // 프론트엔드로 리다이렉트할 URL 생성 (토큰을 쿼리 파라미터로 포함)
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth/redirect") // 프론트엔드 리다이렉트 주소
+        String targetUrl = UriComponentsBuilder.fromUriString("https://localhost:3000/oauth/redirect") // 프론트엔드 리다이렉트 주소
                 .queryParam("token", token)
                 .build()
                 .encode(StandardCharsets.UTF_8)

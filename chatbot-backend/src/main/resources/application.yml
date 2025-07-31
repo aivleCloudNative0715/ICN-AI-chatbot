@@ -49,8 +49,20 @@ jwt:
   access-token-validity: 3600000
   refresh-token-validity: 1209600000
 
+---
+spring:
+  config:
+    activate:
+      on-profile: local-ssl
+
 server:
-  port: 8080
+  port: 8443  # HTTPS는 보통 443, 8443 포트를 사용
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12  # resources 폴더의 인증서 파일 경로
+    key-store-password: qwer1234        # keytool에서 설정한 비밀번호
+    key-store-type: PKCS12
+    key-alias: tomcat                # keytool에서 설정한 별칭
 
 logging:
   level:
