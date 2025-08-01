@@ -34,3 +34,48 @@ chatbot/
 - utils.py:
     - RAG 검색 프로세스에서 필요한 하위 레벨의 공통 유틸리티 함수들을 제공합니다.
     - MongoDB 연결 관리(get_mongo_client, get_mongo_collection, close_mongo_client), 임베딩 모델 로딩(get_embedding_model), 사용자 쿼리 임베딩 생성(get_query_embedding), 그리고 MongoDB Atlas에서 벡터 검색을 수행하는(perform_vector_search, perform_multi_collection_search) 핵심 기능들이 이곳에 구현되어 있습니다.
+---
+
+## 동작 흐름
+사용자 질문은 다음과 같은 단계를 거쳐 최종 답변으로 변환됩니다.
+
+1. 사용자 입력: main 파일로 사용자의 질문이 들어옵니다.
+2. 의도 및 슬롯 감지: 입력된 질문의 의도(Intent)와 핵심 정보(Slots)를 분석합니다.
+3. 라우팅: flow.py의 라우터가 분석된 정보를 바탕으로 질문이 단일 의도인지 복합 의도인지 판단합니다.
+4. 핸들러 실행: 라우터의 결정에 따라 각 의도에 맞는 핸들러(단일 또는 복합)가 실행됩니다.
+5. 답변 생성: 핸들러는 RAG(검색 증강 생성) 시스템을 통해 최종 답변을 생성하고 사용자에게 반환합니다.
+
+### 핵심 구성 요소
+- `main.py`
+챗봇의 실행 진입점입니다. 사용자의 질문을 받아 LangGraph 상태(State)를 초기화하고, 정의된 그래프를 실행하는 역할을 합니다.
+
+- `flow.py`
+챗봇의 가장 중요한 라우터(Router) 로직을 담고 있습니다. route_to_complex_or_single 함수가 핵심이며, 이 함수는 의도 및 슬롯 분석 결과를 기반으로 다음 실행 노드를 결정합니다.
+- 동작 방식: 슬롯에 감지된 슬롯 그룹의 개수를 기준으로 판단합니다.
+    - 단일 의도: parking, flight_info 등 특정 슬롯 그룹이 하나만 감지되면, 해당 의도에 맞는 단일 핸들러(예: parking_fee_info_handler)로 바로 라우팅합니다.
+    - 복합 의도: parking과 facility_info처럼 두 개 이상의 특정 슬롯 그룹이 감지되면, handle_complex_intent 노드로 라우팅합니다.
+
+- `complex_handler.py`
+복합 의도 질문을 처리하는 노드입니다. 라우터가 복합 의도로 판단했을 때만 실행됩니다.
+    - handle_complex_intent 함수:
+        1. 질문 분해: _split_intents 함수를 호출하여 "주차 요금이랑 카페 위치 알려줘" 같은 질문을 "주차 요금 알려줘", "카페 위치 알려줘"와 같이 독립적인 하위 질문으로 분해합니다.
+        2. 서브그래프 실행: 분해된 각 하위 질문을 LangGraph의 서브그래프로 보내어 다시 처음부터 의도 분류 및 단일 핸들러 실행 과정을 거치게 합니다.
+        3. 답변 종합: 각 하위 질문에 대한 답변을 모아 하나의 최종 답변으로 종합하여 반환합니다.
+
+### 상세 동작 시나리오
+- **시나리오 1: 단일 의도 질문 (주차 요금이 얼마인지 알려줘)**
+이 질문은 parking 슬롯 그룹만 감지되므로 단일 의도로 처리됩니다.
+1. 입력: main.py에 "주차 요금이 얼마인지 알려줘" 입력.
+2. 의도/슬롯 감지: parking_fee_info 의도와 B-parking_type, B-parking_lot 등의 슬롯이 감지됩니다.
+3. 라우팅: flow.py의 라우터가 parking 슬롯 그룹만 있음을 확인하고 **parking_fee_info_handler**로 라우팅합니다.
+4. 핸들러 실행: parking_fee_info_handler가 직접 RAG 시스템을 통해 주차 요금 정보를 검색하고 답변을 생성합니다.
+
+- **시나리오 2: 복합 의도 질문 (주차 요금이랑 카페 위치 알려줘)**
+이 질문은 parking과 facility_info 두 슬롯 그룹이 감지되므로 복합 의도로 처리됩니다.
+1. 입력: main.py에 "주차 요금이랑 카페 위치 알려줘" 입력.
+2. 의도/슬롯 감지: parking_fee_info와 facility_info 관련 슬롯이 감지됩니다.
+3. 라우팅: flow.py의 라우터가 두 개 이상의 슬롯 그룹을 확인하고 handle_complex_intent 노드로 라우팅합니다.
+4. 핸들러 실행:
+    - complex_handler.py의 _split_intents가 질문을 "주차 요금 알려줘", "카페 위치 알려줘"로 분해합니다.
+    - 각 질문은 다시 classify_intent부터 시작하는 서브그래프를 통해 parking_fee_info_handler, facility_info_handler로 각각 전달됩니다.
+    - 두 핸들러의 답변이 생성되면, complex_handler가 이 답변들을 종합하여 하나의 최종 응답을 만듭니다.

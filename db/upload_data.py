@@ -31,10 +31,10 @@ EXCEL_FILES_DIR = SCRIPT_DIR
 
 # --- 업데이트할 파일 경로 활성화 ---
 # visa_file = os.path.join(EXCEL_FILES_DIR, "visa.xlsx")
-restricted_item_file = os.path.join(EXCEL_FILES_DIR, "restricted_item.xlsx")
+# restricted_item_file = os.path.join(EXCEL_FILES_DIR, "restricted_item.xlsx")
 # min_transit_time_file = os.path.join(EXCEL_FILES_DIR, "최소 환승 시간.xlsx") # 활성화
 airport_procedure_file = os.path.join(EXCEL_FILES_DIR, "공항 절차.xlsx")
-transit_path_file = os.path.join(EXCEL_FILES_DIR, "환승 경로.xlsx") # 활성화
+# transit_path_file = os.path.join(EXCEL_FILES_DIR, "환승 경로.xlsx") # 활성화
 
 
 # --- 각 컬렉션별 데이터 업로드 함수 정의 ---
@@ -177,9 +177,9 @@ def upload_transit_path_data(file_path, db):
 
 print("\n--- MongoDB 컬렉션 업데이트 시작 (기존 데이터 삭제 후) ---")
 
-upload_restricted_item_data(restricted_item_file, db) # 최소 환승 시간 업데이트
+# upload_restricted_item_data(restricted_item_file, db) # 최소 환승 시간 업데이트
 upload_airport_procedure_data(airport_procedure_file, db) # 공항 절차 업데이트
-upload_transit_path_data(transit_path_file, db) # 환승 경로 업데이트
+# upload_transit_path_data(transit_path_file, db) # 환승 경로 업데이트
 
 # --- MongoDB 연결 종료 ---
 client.close()
