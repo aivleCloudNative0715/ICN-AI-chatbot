@@ -1,30 +1,33 @@
-spring.application.name: chatbot-backend
-
+# ======================================================
+# == 모든 프로필에 공통으로 적용되는 기본 설정 ==
+# ======================================================
 spring:
+  application:
+    name: chatbot-backend
+  
+  # --- 데이터 소스 (JPA, MongoDB, Redis) ---
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  
+  data:
+    mongodb:
+      uri: ${MONGO_DB_URI}
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
+  # --- JPA 상세 설정 ---
   jpa:
-    hibernate:
-      ddl-auto: update  # dev ??? update / ??? validate ?? none
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
-  data:
-    mongodb:
-      uri: ${MONGO_DB_URI}
-
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      database: ${REDIS_DB}
-
+  # --- OAuth2 클라이언트 공통 설정 ---
   security:
     oauth2:
       client:
@@ -43,27 +46,14 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
+# --- JWT 공통 설정 ---
 jwt:
   secret:
     key: ${JWT_SECRET_KEY}
   access-token-validity: 3600000
   refresh-token-validity: 1209600000
 
----
-spring:
-  config:
-    activate:
-      on-profile: local-ssl
-
-server:
-  port: 8443  # HTTPS는 보통 443, 8443 포트를 사용
-  ssl:
-    enabled: true
-    key-store: classpath:keystore.p12  # resources 폴더의 인증서 파일 경로
-    key-store-password: qwer1234        # keytool에서 설정한 비밀번호
-    key-store-type: PKCS12
-    key-alias: tomcat                # keytool에서 설정한 별칭
-
+# --- 로깅 및 Swagger 공통 설정 ---
 logging:
   level:
     root: info
@@ -76,3 +66,46 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     display-request-duration: true
+
+# ======================================================
+---
+# ======================================================
+# == 프로필별 특화 설정 ==
+# ======================================================
+
+# --- 기본(default) 프로필: 로컬 HTTP 개발 환경 ---
+spring:
+  config:
+    activate:
+      on-profile: default
+  jpa:
+    hibernate:
+      ddl-auto: update # 개발 시에는 엔티티 변경사항을 DB에 자동 반영
+
+---
+# --- SSL 프로필: 로컬 HTTPS 개발 환경 ---
+spring:
+  config:
+    activate:
+      on-profile: local-ssl
+  jpa:
+    hibernate:
+      ddl-auto: update # 개발 시에는 엔티티 변경사항을 DB에 자동 반영
+  server:
+    port: 8443
+    ssl:
+      enabled: true
+      key-store: classpath:keystore.p12
+      key-store-password: ${PASSWORD} # .env로 관리하는 것을 권장
+      key-store-type: PKCS12
+      key-alias: tomcat
+
+---
+# --- 운영(prod) 프로필: 클라우드 배포 환경 ---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: validate # 운영 환경에서는 스키마를 검증만 하고 자동으로 변경하지 않음

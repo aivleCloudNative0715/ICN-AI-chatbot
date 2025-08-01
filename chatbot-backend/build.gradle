@@ -64,3 +64,12 @@ tasks.named('asciidoctor') {
 	inputs.dir snippetsDir
 	dependsOn test
 }
+
+jar {
+	enabled = false
+}
+
+bootJar {
+	archiveFileName = 'app.jar'
+}
+
