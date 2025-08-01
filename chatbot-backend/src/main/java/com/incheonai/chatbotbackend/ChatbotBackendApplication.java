@@ -13,19 +13,16 @@ import org.springframework.core.env.Environment;
 public class ChatbotBackendApplication {
 
 	public static void main(String[] args) {
-		// .env 파일 로드를 Spring Boot의 Environment를 확인한 후에 수행하도록 변경
-		SpringApplication app = new SpringApplication(ChatbotBackendApplication.class);
-		Environment env = app.run(args).getEnvironment();
+		// Spring 애플리케이션을 실행하기 *전에* .env 파일을 먼저 로드합니다.
+		// ignoreIfMissing() 옵션 덕분에, .env 파일이 없는 클라우드 환경에서도 오류 없이 동작합니다.
+		Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+		loadEnv(dotenv);
 
-		// 활성화된 프로필이 없거나 'local-ssl'일 경우에만 .env 파일을 로드
-		if (env.getActiveProfiles().length == 0 || "local-ssl".equals(env.getActiveProfiles()[0])) {
-			loadEnv();
-		}
+		// 모든 환경 변수가 설정된 후에 Spring 애플리케이션을 실행합니다.
+		SpringApplication.run(ChatbotBackendApplication.class, args);
 	}
 
-	private static void loadEnv() {
-		Dotenv dotenv = Dotenv.load();
-
+	private static void loadEnv(Dotenv dotenv) {
 		// 시스템 속성 설정
 		System.setProperty("DB_URL", dotenv.get("DB_URL"));
 		System.setProperty("DB_USERNAME", dotenv.get("DB_USERNAME"));
