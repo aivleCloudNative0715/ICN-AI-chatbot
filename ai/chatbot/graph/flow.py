@@ -48,15 +48,13 @@ def build_chat_graph():
         print(f"Slots: {state.get('slots')}")
         print(f"-----------------------------------\n")
 
-        confidence = state.get("confidence")
-        top_k_intents = state.get("top_k_intents_and_probs", [])
         slots = state.get("slots", [])
 
         # 슬롯 태그 그룹 정의
         slot_groups = {
             'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
-            'facility_info': {'B-facility_name', 'B-location_keyword', 'B-gate', 'B-terminal'},
-            'flight_info': {'B-airline_flight', 'B-flight_status', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-arrival_type', 'B-departure_type', 'B-destination'},
+            'facility_info': {'B-facility_name', 'B-location_keyword'},
+            'flight_info': {'B-airline_flight', 'B-flight_status', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-arrival_type', 'B-departure_type', 'B-destination', 'B-gate', 'B-terminal'},
             'baggage_info': {'B-baggage_type', 'B-luggage_term'},
             'policy': {'B-document', 'B-organization', 'B-person_type', 'B-item', 'B-transfer_topic'},
             'weather': {'B-weather_topic'},
@@ -66,32 +64,33 @@ def build_chat_graph():
 
         found_groups = set()
         for _, tag in slots:
-            for group_name, tags in slot_groups.items():
-                if tag in tags:
-                    found_groups.add(group_name)
+            # "B-" 태그만 검사하여 주요 키워드만 파악
+            if tag.startswith('B-'):
+                for group_name, tags in slot_groups.items():
+                    if tag in tags:
+                        found_groups.add(group_name)
 
-        # 복수 개의 슬롯 그룹이 감지되면 복합 의도로 간주
-        if len(found_groups) > 1:
-            print("DEBUG: 슬롯 그룹 기반 복합 의도 감지")
+        # general_topic 그룹에 해당하는 슬롯이 있는지 확인
+        has_general_topic = 'general_topic' in found_groups
+
+        # general_topic을 제외한 다른 슬롯 그룹의 개수를 세기
+        specific_groups = found_groups - {'general_topic'}
+        
+        # 특정 슬롯 그룹이 2개 이상일 경우에만 복합 의도로 판단
+        if len(specific_groups) > 1:
+            print("DEBUG: 복수 슬롯 그룹 기반 복합 의도 감지")
             return "handle_complex_intent"
         
-        # 기존 확신도 기반 로직 (슬롯 감지에 실패했을 경우만 실행)
-        if not top_k_intents or len(top_k_intents) < 2:
-            print("DEBUG: Top-K 의도 정보가 불충분하여 단일 의도로 처리합니다.")
+        # 그렇지 않은 경우(specific_groups가 0개 또는 1개)는 단일 의도로 판단
+        else:
+            print("DEBUG: 단일 슬롯 그룹 기반 단일 의도 감지")
             return route_by_intent(state)
 
-        top1_intent, top1_prob = top_k_intents[0]
-        top2_intent, top2_prob = top_k_intents[1]
-
-        CONFIDENCE_THRESHOLD = 0.7
-        PROB_DIFF_THRESHOLD = 0.15
-
-        if top1_prob < CONFIDENCE_THRESHOLD or (top1_prob - top2_prob) < PROB_DIFF_THRESHOLD:
-            print(f"DEBUG: 확신도 기반 복합 의도 감지 - TOP1({top1_prob:.2f}), TOP2({top2_prob:.2f})")
-            return "handle_complex_intent"
-
-        print("DEBUG: 단일 의도 감지")
-        return route_by_intent(state)
+    # def route_by_intent(state: ChatState):
+    #     intent = state.get("intent")
+    #     if intent:
+    #         return f"{intent}_handler"
+    #     return "fallback_handler"
 
     builder.set_entry_point("classify_intent")
     
