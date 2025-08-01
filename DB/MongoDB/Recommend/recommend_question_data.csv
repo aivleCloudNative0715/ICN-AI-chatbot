@@ -14,31 +14,16 @@ airport_weather_current,공항 날씨 어떤가요?
 airport_weather_current,내일 공항 날씨 알려주세요
 airport_weather_current,지금 공항 바람 많이 부나요?
 airport_weather_current,아까 공항에 비 왔었나요?
-arrival_congestion_prediction,3시 입국장에 얼마나 사람들이 있을지 알려주세요
-arrival_congestion_prediction,내일 오후 사람이 가장 적은 입국 게이트는 어디에요?
-arrival_congestion_prediction,내일 공항 1층 사람 많을까요?
-arrival_congestion_prediction,오늘 오후에 가족이 귀국하는데 사람이 많을까요?
-arrival_congestion_prediction,1시간 뒤에 사람이 가장 적은 입국 게이트를 알려주세요
-departure_congestion_prediction,1시간 뒤 출국장 혼잡도는 어떤가요?
-departure_congestion_prediction,내일 출국하는 사람들이 얼마나 되나요?
-departure_congestion_prediction,"이따가 비행기 탈 때, 사람들 얼마나 있을까요?"
-departure_congestion_prediction,사람 몰리는 시간을 피하려면 내일 몇시쯤 도착하는게 좋을까요?
-departure_congestion_prediction,"4시에 비행기 타는데, 줄이 길까요?"
-arrival_congestion_query,지금 공항 입구 한산한가요?
-arrival_congestion_query,지금 입국장에 사람 많나요?
-arrival_congestion_query,입국장 라인에 대기인원 얼마나 있나요?
-arrival_congestion_query,지금 공항에 입국하는 사람들 많나요?
-arrival_congestion_query,공항 1층에 사람이 많나요?
-arrival_policy_info,해외에 장기 거주하다 돌아올 때도 비자가 필요한지 알고 싶어요
-arrival_policy_info,입국 심사는 내국인과 외국인이 따로 받나요?
-arrival_policy_info,QCODE는 뭔가요?
-arrival_policy_info,입국 심사에 걸리는 시간은 보통 어느 정도인가요?
-arrival_policy_info,면세 범위 안에 있어도 세관신고서를 작성해야 하나요?
-departure_policy_info,출국 절차에 대해 설명해 주세요
-departure_policy_info,기내 액체류 반입 규정이 어떻게 되나요?
-departure_policy_info,병역 미필자는 출국 시 어떤 절차를 따라야 하나요?
-departure_policy_info,스마트패스는 무엇인가요?
-departure_policy_info,출국 심사는 어디서 받나요?
+airport_congestion_prediction,1시간 뒤에 공항에 얼마나 사람이 있을까?
+airport_congestion_prediction,오늘 공항에 사람 얼마나 있어?
+airport_congestion_prediction,오늘 몇 시쯤 공항이 제일 한산할까?
+airport_congestion_prediction,오늘 공항 출국장 인파가 심할까?
+airport_congestion_prediction,공항 1층 지금 상태는?
+immigration_policy,QCODE가 뭔가요?
+immigration_policy,면세 범위 안에 있어도 세관신고서를 작성해야 하나요?
+immigration_policy,기내 액체류 반입 규정이 어떻게 되나요?
+immigration_policy,병역 미필자는 출국 시 어떤 절차를 따라야 하나요?
+immigration_policy,스마트패스는 무엇인가요?
 baggage_claim_info,수하물 수취대 번호를 확인하고 싶어요
 baggage_claim_info,국제선 도착 짐은 어디서 찾나요?
 baggage_claim_info,인천공항 수하물 찾는 곳이 어디예요?
