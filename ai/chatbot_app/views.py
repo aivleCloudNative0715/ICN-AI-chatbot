@@ -7,8 +7,21 @@ import sys
 from chatbot.graph.state import ChatState
 from django.core.cache import cache
 from chatbot.main import chat_graph
+from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
 
 from langchain_core.messages import HumanMessage, AIMessage
+
+from shared.predict_intent_and_slots import predict_top_k_intents_and_slots
+
+# .env 파일에서 환경변수 불러오기 (MONGO_URI)
+load_dotenv()
+mongo_uri = os.getenv("MONGO_URI")
+
+client = MongoClient(mongo_uri)
+db = client["AirBot"]
+airport_collection = db["RecommendQuestion"] 
 
 # ChatState의 초기 상태를 반환하는 함수
 def get_initial_state() -> ChatState:
@@ -16,6 +29,7 @@ def get_initial_state() -> ChatState:
 
 # 캐시 키를 위한 상수 정의
 CHATBOT_SESSION_CACHE_KEY = 'chatbot_session_{}'
+
 
 class GenerateAPIView(APIView):
     """
@@ -57,8 +71,11 @@ class GenerateAPIView(APIView):
         # 1. 캐시에서 기존 대화 상태를 가져옴
         cache_key = CHATBOT_SESSION_CACHE_KEY.format(session_id)
         current_state = cache.get(cache_key)
+        
+        print(f"[DEBUG] 캐시 조회 - Key: {cache_key}")
+        print(f"[DEBUG] 캐시 내용: {current_state}")
 
-        if not current_state:
+        if not current_state: 
             # 2. 상태가 없으면, 새로운 ChatState 객체를 생성
             print(f"디버그: 세션 ID '{session_id}'에 대한 새로운 대화 상태를 생성합니다.")
             # **(수정)** ChatState의 구조에 맞게 초기화
@@ -79,24 +96,21 @@ class GenerateAPIView(APIView):
             # 5. 새로운 상태에서 응답과 메타데이터를 추출
             # 최종 답변은 LangGraph 핸들러에서 messages 리스트에 추가한 마지막 메시지
             final_message = new_state["response"]
+            new_state["messages"].append(AIMessage(content=final_message))
             answer = final_message
             #metadata = new_state.get("metadata", {"source": "retrieval", "confidence": 0.0})
 
             # 6. 업데이트된 상태를 캐시에 다시 저장
             cache.set(cache_key, new_state, timeout=1800)
             
+            print(f"[DEBUG] 캐시 저장 완료 - Key: {cache_key}")
+            print(f"[DEBUG] 저장된 캐시 내용: {new_state}")
+            
             response_data = {
                 "answer": answer,
                 #"metadata": metadata
             }    
             
-            # response_data = {
-            #     "answer": "수하물은 도착층에서 찾을 수 있습니다.",  # 실제 챗봇 응답으로 변경
-            #     "metadata": {
-            #         "source": "retrieval",
-            #         "confidence": 0.92
-            #     }
-            # }
         
             return Response(response_data, status=status.HTTP_200_OK)
         
@@ -125,21 +139,25 @@ class RecommendAPIView(APIView):
                 {"error": "Missing required fields."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        # -------------------------------------------------------------
-        # 여기에 추천 질문을 생성하는 로직을 작성합니다.
-        # 예시:
-        # recommend_engine = RAG_RECOMMEND_ENGINE()
-        # recommended_questions = recommend_engine.get_recommendations(content)
-        # -------------------------------------------------------------
+            
+        intents, slots = predict_top_k_intents_and_slots(content, k=3) # 인텐트/슬롯 예측 실행
+        top_intent, prob = intents[0]
         
-        # 위 로직이 성공했다고 가정하고 응답 JSON을 구성합니다.
+        print(top_intent)      
+        # 분류된 의도를 가진 추천 질문 문서가져오기
+        matching_docs = airport_collection.find({"intent": top_intent})
+        
+        recommend_question = []
+        for doc in matching_docs:
+            questions = doc.get("recommend_question", [])
+            print(questions)
+            if isinstance(questions, list):
+                recommend_question.extend(questions)
+            elif isinstance(questions, str):
+                recommend_question.append(questions)
+        
         response_data = {
-            "recommended_questions": [
-                "수하물 분실 시 어떻게 하나요?",
-                "환승 시 수하물은 자동으로 옮겨지나요?",
-                "국내선 수하물 규정은 어떻게 되나요?"
-            ] # 실제 추천 질문 리스트로 변경
+            "recommend_question": recommend_question
         }
         
         return Response(response_data, status=status.HTTP_200_OK)

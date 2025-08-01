@@ -179,7 +179,7 @@ python manage.py runserver
 ---
 ### 수정한 것들
 - 챗봇의 대화 기록 저장을 위해서 `ChatState`에 `messages`라는 필드 추가
-- 최상위 디렉토리를 `ai`로 수정함에 따라서 `chatbot`내 파일들의 import를 ai.chatbot.에서 -> chatbot. 으로 변경함
+- 최상위 디렉토리를 `ai`로 수정함에 따라서 `chatbot`내 파일들의 import를 chatbot.에서 -> chatbot. 으로 변경함
 
 
 ---

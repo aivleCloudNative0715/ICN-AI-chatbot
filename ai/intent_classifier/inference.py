@@ -1,4 +1,4 @@
-from ai.shared.predict_intent_and_slots import predict_top_k_intents_and_slots
+from shared.predict_intent_and_slots import predict_top_k_intents_and_slots
 
 
 
