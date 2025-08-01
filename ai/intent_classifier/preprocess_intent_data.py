@@ -16,7 +16,7 @@ def preprocess_intent_csv(input_path: str, output_path: str):
     df = pd.read_csv(input_path)
 
     # 필수 컬럼 확인 및 NaN 제거
-    df.dropna(subset=['intent', 'question'], inplace=True)
+    df.dropna(subset=['intent', 'question', 'slots'], inplace=True)
 
     # 문자열로 변환 후 전처리
     df['question'] = df['question'].astype(str).apply(clean_text)
@@ -30,5 +30,5 @@ def preprocess_intent_csv(input_path: str, output_path: str):
 
 # 실행 예시
 if __name__ == "__main__":
-    preprocess_intent_csv("intent_dataset.csv", "intent_dataset_cleaned.csv")
+    preprocess_intent_csv("intent_slot_dataset.csv", "intent_slot_dataset_cleaned.csv")
 
