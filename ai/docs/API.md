@@ -74,13 +74,31 @@ ai
 ```
 ---
 ## 사용법
-1. 다음의 코드 실행
+0. 가상환경 활성화 및 의존성 설치
+```bash
+.venv\Scripts\activate
+pip install -r RAG_requirements.txt
+```
+
+1. 로컬 Redis 서버 설치
+WSL 안에서
+```bash
+sudo apt update
+sudo apt install redis-server
+sudo service redis-server start
+redis-cli
+```
+
+1.5 (필요시) redis-cli로 나오는 주소가 127.0.0.1:6379가 아니라면
+`ai/chatbot_core/settings.py`의 CACHES 파라미터 중 LOCATION을 자신의 redis-cli 주소/1로 변경  
+
+2. 다음의 코드 실행
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
 ```
-2. http://127.0.0.1:8000/chatbot/generate 로 챗봇 응답 POST 요청
+3. http://127.0.0.1:8000/chatbot/generate 로 챗봇 응답 POST 요청
     - Body 예시
     ```bash
     {
@@ -102,7 +120,7 @@ python manage.py runserver
     }
     }
     ```
-3. http://127.0.0.1:8000/chatbot/recommend 로 추천 질문 POST 요청
+4. http://127.0.0.1:8000/chatbot/recommend 로 추천 질문 POST 요청
     - Body 예시
     ```bash
     {
@@ -179,7 +197,7 @@ python manage.py runserver
 ---
 ### 수정한 것들
 - 챗봇의 대화 기록 저장을 위해서 `ChatState`에 `messages`라는 필드 추가
-- 최상위 디렉토리를 `ai`로 수정함에 따라서 `chatbot`내 파일들의 import를 chatbot.에서 -> chatbot. 으로 변경함
+- 최상위 디렉토리를 `ai`로 수정함에 따라서 `chatbot`내 파일들의 import를 ai.chatbot.에서 -> chatbot. 으로 변경함
 
 
 ---
@@ -200,7 +218,7 @@ python manage.py runserver
 
 ---
 ### 현재 상황
-- view는 `main.py`에서 `chat_graph`를 받아서 사용하는데, 이때 user_input이 "주차 요금 안내해줘"로 고정
-- 의도 분류 및 mongoDB에서 문서 검색까지, 자동으로 처음부터 실행되고 있음(`main.py`의 위 원인으로 인해서)
-- LLM이 추가되지 않았으므로 응답 대신, 검색된 MongoDB 문서를 content로 보내고 있음
-- `ChatState`에 `metadata` 필드가 현재 없어서 활용하지 못함. 사용하려면 핸들러에서도 `metadata`를 적절히 추가하는 로직이 필요
+- LLM이 없어서 의도분류기만 동작 확인
+- 질문의 의도를 분류해서, 추천질문 DB에서 가져와 응답하는 로직 추가
+- 로컬 Redis 캐시 서버를 사용하도록 변경
+- LLM 및 State와 연동 예정(차주)
