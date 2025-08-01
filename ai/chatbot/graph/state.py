@@ -7,4 +7,5 @@ class ChatState(TypedDict, total=False):
     intent: str
     slots: list
     response: str
+    pre_message_id: str
     messages: list[BaseMessage]

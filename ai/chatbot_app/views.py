@@ -39,6 +39,8 @@ class GenerateAPIView(APIView):
     
     def post(self, request, *args, **kwargs):
         
+        re = 0
+        
         session_id = request.data.get("session_id")
         message_id = request.data.get("message_id", '') # 새로운 메시지의 ID
         parent_id = request.data.get("parent_id") # 수정/재생성일 경우 이전 메시지 ID(없으면 null)
@@ -74,6 +76,7 @@ class GenerateAPIView(APIView):
         
         print(f"[DEBUG] 캐시 조회 - Key: {cache_key}")
         print(f"[DEBUG] 캐시 내용: {current_state}")
+        
 
         if not current_state: 
             # 2. 상태가 없으면, 새로운 ChatState 객체를 생성
@@ -81,10 +84,28 @@ class GenerateAPIView(APIView):
             # **(수정)** ChatState의 구조에 맞게 초기화
             current_state = get_initial_state()
 
-        
+
+        if parent_id and current_state.get("pre_message_id") == parent_id:
+            re = 1
+
+            
         # 3. 사용자 질문(content)을 메시지 객체로 만들어 상태에 추가합니다.
         # **(수정)** 새로운 사용자 메시지를 기존 messages 리스트에 추가
-        current_state["messages"].append(HumanMessage(content=user_message))
+        # 만약 이전 메시지가 HumanMessage이고 마지막 메시지가 AIMessage인 경우,
+        # 마지막 두 메시지를 제거하고 새로운 HumanMessage를 추가합니다.
+        # 그렇지 않으면, 단순히 새로운 HumanMessage를 추가합니다.
+        if re == 1:
+            if (len(current_state["messages"]) >= 2 and
+                isinstance(current_state["messages"][-2], HumanMessage) and
+                isinstance(current_state["messages"][-1], AIMessage)):
+                current_state["messages"] = current_state["messages"][:-2]
+            
+                # 새로운 사용자 메시지 추가
+            current_state["messages"].append(HumanMessage(content=user_message))
+
+        else:
+            current_state["messages"].append(HumanMessage(content=user_message))
+        
         current_state["user_input"] = user_message # 현재 질문도 state에 업데이트
         
 
@@ -97,8 +118,9 @@ class GenerateAPIView(APIView):
             # 최종 답변은 LangGraph 핸들러에서 messages 리스트에 추가한 마지막 메시지
             final_message = new_state["response"]
             new_state["messages"].append(AIMessage(content=final_message))
+            new_state["pre_message_id"] = message_id # 현재 메시지 ID를 pre_message_id로 저장
+            
             answer = final_message
-            #metadata = new_state.get("metadata", {"source": "retrieval", "confidence": 0.0})
 
             # 6. 업데이트된 상태를 캐시에 다시 저장
             cache.set(cache_key, new_state, timeout=1800)
@@ -108,6 +130,7 @@ class GenerateAPIView(APIView):
             
             response_data = {
                 "answer": answer,
+                "re": re,
                 #"metadata": metadata
             }    
             
