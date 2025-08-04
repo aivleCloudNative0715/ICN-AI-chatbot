@@ -6,6 +6,7 @@ import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { API_BASE_URL } from '@/lib/api';
 
 interface RegisterFormProps {
   onRegisterSuccess: () => void;
@@ -13,22 +14,22 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ onRegisterSuccess, onOpenLoginModal }: RegisterFormProps) {
-  const [email, setEmail] = useState('');
+   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState<{
-    email?: string;
+    userId?: string;
     password?: string;
     confirmPassword?: string;
   }>({});
 
   const validate = () => {
-    const newErrors: { email?: string; password?: string; confirmPassword?: string } = {};
+    const newErrors: { userId?: string; password?: string; confirmPassword?: string } = {};
 
-    if (!email) newErrors.email = '아이디를 입력해주세요.';
+    if (!userId) newErrors.userId = '아이디를 입력해주세요.';
     // 영문(대소문자), 숫자 조합으로 6~12자
-    else if (!/^[a-zA-Z0-9]{6,12}$/.test(email))
-      newErrors.email = '영문(대소문자), 숫자 조합으로 6~12자';
+    else if (!/^[a-zA-Z0-9]{6,12}$/.test(userId))
+      newErrors.userId = '영문(대소문자), 숫자 조합으로 6~12자';
     // TODO: API-11-24028 아이디 중복 확인 기능 구현 필요
 
     if (!password) newErrors.password = '비밀번호를 입력해주세요.';
@@ -47,73 +48,78 @@ export default function RegisterForm({ onRegisterSuccess, onOpenLoginModal }: Re
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
+      console.log('회원가입 시도:', { userId, password });
       // TODO: API 호출 로직 (API-11-24027)
-      console.log('회원가입 시도:', { email, password });
-      // 실제 API 호출이 성공했다고 가정
-      try {
-        // const response = await fetch('/api/register', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({ email, password }),
-        // });
-        // if (response.ok) {
-            onRegisterSuccess(); // 회원가입 모달 닫기
-            onOpenLoginModal(); // 로그인 모달 열기
-        // } else {
-        //   const errorData = await response.json();
-        //   setErrors(prev => ({ ...prev, general: errorData.message || '회원가입 실패' }));
-        // }
-      } catch (error) {
-        console.error('회원가입 중 오류 발생:', error);
-        setErrors(prev => ({ ...prev, general: '네트워크 오류가 발생했습니다.' }));
-      }
+      onRegisterSuccess();
+      onOpenLoginModal();
     }
   };
 
-  const handleEmailCheck = () => {
-    if (!email) {
-      setErrors((prev) => ({ ...prev, email: '아이디를 입력해주세요.' }));
+  const handleIdCheck = async () => {
+    // 유효성 검사
+    if (!userId) {
+      setErrors((prev) => ({ ...prev, userId: '아이디를 입력해주세요.' }));
       return;
     }
-    if (!/^[a-zA-Z0-9]{6,12}$/.test(email)) {
-      setErrors((prev) => ({ ...prev, email: '영문(대소문자), 숫자 조합으로 6~12자' }));
+    if (!/^[a-zA-Z0-9]{6,12}$/.test(userId)) {
+      setErrors((prev) => ({ ...prev, userId: '영문(대소문자), 숫자 조합으로 6~12자' }));
       return;
     }
-    // TODO: API-11-24028 아이디 중복 확인 API 호출
-    // 임시 로직:
-    const isDuplicate = email === 'testuser'; // 예시
-    if (isDuplicate) {
-      setErrors((prev) => ({ ...prev, email: '이미 사용중인 아이디입니다.' }));
-    } else {
-      alert('사용 가능한 아이디입니다.');
-      setErrors((prev) => ({ ...prev, email: undefined }));
+    // 에러 메시지 초기화
+    setErrors((prev) => ({ ...prev, userId: undefined }));
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/check-id`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: userId }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // API가 에러 응답을 보낼 경우 (예: 4xx, 5xx 상태 코드)
+        setErrors((prev) => ({ ...prev, userId: data.message || '아이디 확인 중 오류가 발생했습니다.' }));
+        return;
+      }
+
+      if (data.isAvailable) {
+        alert('사용 가능한 아이디입니다.');
+      } else {
+        setErrors((prev) => ({ ...prev, userId: '이미 사용중인 아이디입니다.' }));
+      }
+    } catch (error) {
+      console.error('아이디 중복 확인 API 호출 오류:', error);
+      alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }
   };
 
   return (
     <form onSubmit={handleRegister} className="p-fluid">
       <div className="field">
-        <label htmlFor="reg-email" className="sr-only">아이디/이메일</label>
+        <label htmlFor="reg-userId" className="sr-only">아이디/이메일</label>
         <div className="p-inputgroup flex gap-4 items-center border-b-2 border-gray-300 focus-within:border-blue-500 transition-all duration-300">
           <span className="p-inputgroup-addon bg-white px-0 py-2">
             <UserIcon className="h-5 w-5 text-gray-400" />
           </span>
           <InputText
-            id="reg-email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            id="reg-userId"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
             placeholder="아이디를 입력해주세요"
-            className={errors.email ? 'p-invalid' : ''}
+            className={errors.userId ? 'p-invalid' : ''}
             pt={{
                 root: {
-                    className: `!w-full !py-2.5 !text-base focus:shadow-none !border-none ${errors.email ? 'p-invalid' : ''}`
+                    className: `!w-full !py-2.5 !text-base focus:shadow-none !border-none ${errors.userId ? 'p-invalid' : ''}`
                 }
             }}
           />
           <Button
             label="확인"
             type="button"
-            onClick={handleEmailCheck}
+            onClick={handleIdCheck}
             pt={{
                 root: {
                     className: '!bg-white !text-blue-500 !border !border-blue-500 !rounded-md !px-4 !py-2 !h-auto !text-sm !font-semibold !shadow-none !whitespace-nowrap !min-w-fit'
@@ -124,12 +130,12 @@ export default function RegisterForm({ onRegisterSuccess, onOpenLoginModal }: Re
             }}
           />
         </div>
-        {errors.email && (
+        {errors.userId && (
           <div className="flex items-center mt-1 text-red-500 text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <small className="p-error block">{errors.email}</small>
+            <small className="p-error block">{errors.userId}</small>
           </div>
         )}
       </div>
@@ -213,16 +219,12 @@ export default function RegisterForm({ onRegisterSuccess, onOpenLoginModal }: Re
       />
 
       <Button
-        // pt.root에 테두리 및 그림자 관련 클래스만 남기고,
-        // 나머지 시각적 스타일은 내부 div에 그대로 적용
         pt={{
             root: {
                 className: 'w-full !shadow-none !border-none'
-                // !border-width-[1px]는 Tailwind 기본이 아니므로 제거 또는 custom config 필요
             }
         }}
       >
-        {/* 이 div에 버튼의 배경, 패딩, 텍스트 색상, 테두리, 둥근 모서리, 그림자 등 모든 스타일을 적용합니다. */}
         <div className="flex items-center justify-center w-full mt-3 py-3 bg-white text-gray-700 border border-gray-300 rounded-full text-base font-semibold shadow-sm hover:bg-gray-50 transition-colors duration-200">
           <img src="/google-logo.svg" alt="Google" className="h-5 w-5 mr-2" />
           <span>Google로 계속하기</span>

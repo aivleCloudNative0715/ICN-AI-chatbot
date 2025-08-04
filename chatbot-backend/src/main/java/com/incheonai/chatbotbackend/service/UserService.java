@@ -5,10 +5,12 @@ import com.incheonai.chatbotbackend.domain.jpa.LoginProvider;
 import com.incheonai.chatbotbackend.domain.jpa.User;
 import com.incheonai.chatbotbackend.dto.LoginResponseDto;
 import com.incheonai.chatbotbackend.dto.SignUpRequestDto;
+import com.incheonai.chatbotbackend.exception.BusinessException;
 import com.incheonai.chatbotbackend.repository.jpa.AdminRepository;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +27,14 @@ public class UserService {
 
     @Transactional
     public LoginResponseDto signup(SignUpRequestDto requestDto) {
+        // 비밀번호, 비밀번호 재확인 일치 확인
+        if (!requestDto.password().equals(requestDto.passwordConfirm())) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+        }
+
         // 1. 최종적으로 아이디 중복 확인 (DB 동시성 문제 방지)
         if (userRepository.findByUserId(requestDto.userId()).isPresent() || adminRepository.findByAdminId(requestDto.userId()).isPresent()) {
-            throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
+            throw new BusinessException(HttpStatus.CONFLICT, "이미 사용 중인 아이디입니다.");
         }
 
         // 2. 비밀번호 암호화

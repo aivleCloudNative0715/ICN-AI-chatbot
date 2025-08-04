@@ -6,10 +6,12 @@ import com.incheonai.chatbotbackend.domain.jpa.User;
 import com.incheonai.chatbotbackend.dto.AdminLoginResponseDto;
 import com.incheonai.chatbotbackend.dto.LoginRequestDto;
 import com.incheonai.chatbotbackend.dto.LoginResponseDto;
+import com.incheonai.chatbotbackend.exception.BusinessException;
 import com.incheonai.chatbotbackend.repository.jpa.AdminRepository;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +60,7 @@ public class AuthService {
             User user = userOptional.get();
             // 비밀번호 확인
             if (!passwordEncoder.matches(requestDto.password(), user.getPassword())) {
-                throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+                throw new BusinessException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
             }
             // 마지막 로그인 시간 업데이트 및 토큰 생성
             user.updateLastLogin();
@@ -73,7 +75,7 @@ public class AuthService {
             Admin admin = adminOptional.get();
             // 비밀번호 확인
             if (!passwordEncoder.matches(requestDto.password(), admin.getPassword())) {
-                throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+                throw new BusinessException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
             }
             // 마지막 로그인 시간 업데이트 및 토큰 생성
             admin.updateLastLogin();
@@ -83,13 +85,13 @@ public class AuthService {
         }
 
         // 3. 어디에도 아이디가 없는 경우
-        throw new IllegalArgumentException("가입되지 않은 아이디입니다.");
+        throw new BusinessException(HttpStatus.UNAUTHORIZED, "가입되지 않은 아이디입니다.");
     }
 
     public void logout(String accessToken) {
         // 1. 토큰 유효성 검증
         if (!jwtTokenProvider.validateToken(accessToken)) {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
         }
 
         // 2. Redis에 로그아웃된 토큰으로 저장
