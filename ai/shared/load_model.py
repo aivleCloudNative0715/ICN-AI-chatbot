@@ -1,6 +1,8 @@
 import torch
 import pickle
 
+from transformers import AutoTokenizer
+
 from ai.shared.config import INTENT2IDX_PATH, SLOT2IDX_PATH, MODEL_PATH
 from ai.shared.model import KoBERTIntentSlotModel
 from ai.shared.utils import device
@@ -20,3 +22,5 @@ model = KoBERTIntentSlotModel(num_intents=len(intent2idx), num_slots=len(slot2id
 model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
 model.to(device)
 model.eval()
+
+tokenizer = AutoTokenizer.from_pretrained("skt/kobert-base-v1", use_fast=False)
