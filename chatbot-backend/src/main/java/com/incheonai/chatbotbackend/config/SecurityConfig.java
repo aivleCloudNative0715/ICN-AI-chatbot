@@ -100,6 +100,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configure(http))
                 .csrf(csrf -> csrf.disable())
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
@@ -118,6 +119,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/users/signup",
                                 "/api/auth/check-id",
+                                "/api/auth/login",
                                 "/oauth2/authorization/**",
                                 "/login/oauth2/code/**",
                                 "/v3/api-docs/**",
