@@ -117,7 +117,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
                                 "/api/users/signup",
-                                "/api/users/logout",
+                                "/api/auth/check-id",
                                 "/oauth2/authorization/**",
                                 "/login/oauth2/code/**",
                                 "/v3/api-docs/**",
