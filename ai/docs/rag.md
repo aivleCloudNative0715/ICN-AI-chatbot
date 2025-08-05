@@ -1,83 +1,62 @@
-## 동작 흐름
-사용자 질문은 다음과 같은 단계를 거쳐 최종 답변으로 변환됩니다.
+#### 1. 전체 아키텍처 개요
+- 사용자의 질문이 들어오면, 챗봇은 다음과 같은 단계로 답변을 생성합니다.
 
-1. 사용자 입력: main 파일로 사용자의 질문이 들어옵니다.
-2. 의도 및 슬롯 감지: 입력된 질문의 의도(Intent)와 핵심 정보(Slots)를 분석합니다.
-3. 라우팅: flow.py의 라우터가 분석된 정보를 바탕으로 질문이 단일 의도인지 복합 의도인지 판단합니다.
-4. 핸들러 실행: 라우터의 결정에 따라 각 의도에 맞는 핸들러(단일 또는 복합)가 실행됩니다.
-5. 답변 생성: 핸들러는 RAG(검색 증강 생성) 시스템을 통해 최종 답변을 생성하고 사용자에게 반환합니다.
+1. **상태 초기화**: ChatState 객체를 생성하여 사용자 입력, 의도, 슬롯 등 대화 정보를 저장
+2. **의도 분류 및 라우팅**: classifier를 통해 사용자의 의도를 파악하고, router를 통해 해당 의도에 맞는 핸들러(Handler)로 대화 흐름을 전환
+3. **핸들러 실행**: 특정 의도에 맞는 핸들러(예: congestion.py, facility.py)가 실행/ 이 핸들러는 RAG(검색 증강 생성) 기술을 활용하여 답변을 만듭니다.
+4. **RAG 파이프라인**: 핸들러는 쿼리 임베딩, 벡터 검색, LLM 호출 과정을 거쳐 최종 답변을 생성
+5. **상태 업데이트**: 핸들러가 생성한 답변으로 ChatState를 업데이트하고, 사용자에게 응답을 보냄
 
-### 핵심 구성 요소
-- `main.py`
-챗봇의 실행 진입점입니다. 사용자의 질문을 받아 LangGraph 상태(State)를 초기화하고, 정의된 그래프를 실행하는 역할을 합니다.
+<br/>
 
-- `flow.py`
-챗봇의 가장 중요한 라우터(Router) 로직을 담고 있습니다. route_to_complex_or_single 함수가 핵심이며, 이 함수는 의도 및 슬롯 분석 결과를 기반으로 다음 실행 노드를 결정합니다.
-- 동작 방식: 슬롯에 감지된 슬롯 그룹의 개수를 기준으로 판단합니다.
-    - 단일 의도: parking, flight_info 등 특정 슬롯 그룹이 하나만 감지되면, 해당 의도에 맞는 단일 핸들러(예: parking_fee_info_handler)로 바로 라우팅합니다.
-    - 복합 의도: parking과 facility_info처럼 두 개 이상의 특정 슬롯 그룹이 감지되면, handle_complex_intent 노드로 라우팅합니다.
+#### 2. 주요 컴포넌트 및 로직 흐름 상세
+`main.py`
+- 역할: 챗봇의 시작점입니다.
+- 로직:
+  - ChatState를 초기화합니다.
+  - router와 flow를 호출하여 사용자 입력을 처리합니다.
+---
+**의도 분류 및 슬롯 추출 로직**
+- `graph/nodes/classifiy_intent.py`: 이 파일은 챗봇이 사용자의 질문을 처음 받았을 때, 질문의 의도(예: 항공편, 혼잡도)를 예측하고, 질문에 포함된 중요한 정보(예: 터미널 번호, 항공사 이름)를 슬롯(Slot)으로 추출하는 역할을 합니다.
 
-- `complex_handler.py`
-복합 의도 질문을 처리하는 노드입니다. 라우터가 복합 의도로 판단했을 때만 실행됩니다.
-    - handle_complex_intent 함수:
-        1. 질문 분해: _split_intents 함수를 호출하여 "주차 요금이랑 카페 위치 알려줘" 같은 질문을 "주차 요금 알려줘", "카페 위치 알려줘"와 같이 독립적인 하위 질문으로 분해합니다.
-        2. 서브그래프 실행: 분해된 각 하위 질문을 LangGraph의 서브그래프로 보내어 다시 처음부터 의도 분류 및 단일 핸들러 실행 과정을 거치게 합니다.
-        3. 답변 종합: 각 하위 질문에 대한 답변을 모아 하나의 최종 답변으로 종합하여 반환합니다.
+- `graph/utils/kobert_classifier.py`: classifiy_intent.py가 사용하는 실제 의도 분류 모델이 정의된 파일입니다. KoBERT 모델을 사용하여 한국어 텍스트를 분석하고, 의도와 슬롯 정보를 반환하는 기능을 수행합니다.
 
-### 상세 동작 시나리오
-- **시나리오 1: 단일 의도 질문 (주차 요금이 얼마인지 알려줘)**
-이 질문은 parking 슬롯 그룹만 감지되므로 단일 의도로 처리됩니다.
-1. 입력: main.py에 "주차 요금이 얼마인지 알려줘" 입력.
-2. 의도/슬롯 감지: parking_fee_info 의도와 B-parking_type, B-parking_lot 등의 슬롯이 감지됩니다.
-3. 라우팅: flow.py의 라우터가 parking 슬롯 그룹만 있음을 확인하고 **parking_fee_info_handler**로 라우팅합니다.
-4. 핸들러 실행: parking_fee_info_handler가 직접 RAG 시스템을 통해 주차 요금 정보를 검색하고 답변을 생성합니다.
+- 이 두 파일은 함께 작동하여 사용자의 의도를 정확히 파악하고, 이어질 핸들러가 질문의 핵심 정보를 활용할 수 있도록 준비하는 역할을 합니다.
+---
+**복합 질문 처리 로직**
+- `graph/nodes/complex_handler.py`: 이 파일은 하나의 쿼리에 여러 의도나 질문이 포함된 경우를 처리하는 로직을 담고 있습니다. 
+  - 예를 들어, "대한항공 전화번호랑 인천공항 혼잡도 알려줘"와 같은 질문을 받았을 때, complex_handler.py가 이를 두 개의 개별 질문으로 분리하고, 각각의 핸들러(e.g., airline_info_handler, congestion_handler)를 호출하여 답변을 통합하는 역할을 할 수 있습니다.
+---
+`graph/router.py`
+- 역할: classifiy_intent의 결과를 바탕으로 대화의 다음 단계(즉, 어떤 핸들러를 호출할지)를 결정합니다.
+- 로직:
+  - ChatState에 저장된 의도(intent)에 따라 미리 정의된 핸들러 함수(예: facility_guide_handler, airport_info_handler)를 호출합니다.
+---
+`graph/handlers/` 디렉토리
+- 역할: 각 의도에 대한 구체적인 답변 생성 로직을 담당합니다.
+- 핵심 로직:
+  - 대부분의 핸들러는 RAG(검색 증강 생성)를 사용합니다.
+  - 복합 질문 처리: 특히 `facility.py`와 `congestion.py` 핸들러는 classifiy_intent에서 추출된 슬롯(예: 여러 시설명, 터미널 번호)을 활용하여 단일 의도 내의 여러 질문을 개별적으로 처리하도록 설계되었습니다.
+    - 예: "1터미널과 2터미널 혼잡도 알려줘" -> slots에서 '1터미널'과 '2터미널'을 추출 -> 각 터미널에 대한 혼잡도 정보를 따로 검색 -> 두 결과를 하나의 응답으로 통합합니다.
+  - 외부 API 연동: congestion.py 핸들러는 외부 공공 데이터 API를 호출하여 실시간 혼잡도 예측 데이터를 가져옵니다.
 
-- **시나리오 2: 복합 의도 질문 (주차 요금이랑 카페 위치 알려줘)**
-이 질문은 parking과 facility_info 두 슬롯 그룹이 감지되므로 복합 의도로 처리됩니다.
-1. 입력: main.py에 "주차 요금이랑 카페 위치 알려줘" 입력.
-2. 의도/슬롯 감지: parking_fee_info와 facility_info 관련 슬롯이 감지됩니다.
-3. 라우팅: flow.py의 라우터가 두 개 이상의 슬롯 그룹을 확인하고 handle_complex_intent 노드로 라우팅합니다.
-4. 핸들러 실행:
-    - complex_handler.py의 _split_intents가 질문을 "주차 요금 알려줘", "카페 위치 알려줘"로 분해합니다.
-    - 각 질문은 다시 classify_intent부터 시작하는 서브그래프를 통해 parking_fee_info_handler, facility_info_handler로 각각 전달됩니다.
-    - 두 핸들러의 답변이 생성되면, complex_handler가 이 답변들을 종합하여 하나의 최종 응답을 만듭니다.
+(추후 복합 질문 처리와 외부 API 하나씩 연동해야됨)
 
 ---
-
-## 디렉토리 구조
-```
-chatbot/
-├── main.py                   # 챗봇 애플리케이션의 메인 진입점
-├── graph/                    # 챗봇의 대화 흐름(LangGraph) 및 의도별 핸들러 관리
-│   ├── handlers/             # 각 사용자 의도를 처리하는 핸들러 함수 모음
-│   │   ├── parking.py        # 주차 핸들러
-│   │   ├── facility.py       # 시설 안내 핸들러
-│   │   ├── flight.py         # 항공편/항공사 핸들러
-│   │   ├── policy.py         # 입국/출국 정책 핸들러
-│   │   └── transfer.py       # 환승 절차 핸들러
-└── rag/ 
-    ├── config.py             # RAG 검색 설정 (컬렉션, 인덱스 매핑 등)
-    └── utils.py              # RAG 검색에 필요한 공통 유틸리티 (DB 연결, 임베딩, 벡터 검색 등)
-```
-
-### `handlers/ 폴더`
-- 각 핸들러는 주로 rag/ 폴더의 유틸리티를 활용하여 필요한 데이터를 검색하고 가공하여 사용자에게 답변을 제공합니다.
-
-- parking.py: 주차 요금, 주차장 위치 추천, 주차장-터미널 간 도보 시간 등 주차 관련 사용자 질의를 처리합니다.
-- facility.py: 공항 내 특정 시설(식당, 약국, 라운지 등)의 위치, 운영 시간, 제공 서비스 등 시설 안내 관련 질의를 처리합니다.
-- flight.py: 항공편 정보(운항 스케줄, 지연/결항 여부)나 항공사 고객센터 연락처 등 항공편 및 항공사 관련 질의를 처리합니다.
-- policy.py: 공항의 입국 절차, 출국 절차, 수하물 규정(제한 물품 등) 등 공항 정책 관련 질의를 처리합니다.
-- transfer.py: 공항 내 환승 경로, 환승 절차, 최소 환승 시간 등 환승 절차 관련 질의를 처리합니다.
+`rag/ `디렉토리
+- 역할: RAG 파이프라인의 핵심 기능을 제공합니다.
+- 주요 파일:
+  - `config.py`: MongoDB, OpenAI API 키 등 RAG에 필요한 각종 설정과 LLM 호출을 위한 공통 함수(common_llm_rag_caller)를 정의합니다.
+  - `utils.py`: 쿼리 임베딩(get_query_embedding) 및 MongoDB 벡터 검색(perform_vector_search)과 같은 핵심적인 기능을 수행합니다.
+  - `llm_tools.py`: RAG 파이프라인 내에서 특정 정보를 추출하기 위해 LLM을 호출하는 보조 함수(예: extract_location_with_llm)를 포함합니다.
 ---
-### `rag/ 폴더`
-- 챗봇의 RAG(Retrieval Augmented Generation) 기능 구현을 위한 공통 설정과 유틸리티 함수들을 모아둔 곳입니다.
-
-- config.py:
-    - RAG 검색에 필요한 설정 정보를 정의합니다.
-    - 각 핸들러(의도)가 어떤 MongoDB 컬렉션(collection_name), 어떤 벡터 인덱스(vector_index_name)를 사용해야 하는지, 그리고 어떤 추가 필터링(query_filter)이 필요한지 등을 매핑해 둡니다.
-    - common_llm_rag_caller와 같이 모든 RAG 핸들러에서 공통으로 사용할 LLM 호출 함수의 기본적인 로직을 포함합니다.
-
-- utils.py:
-    - RAG 검색 프로세스에서 필요한 하위 레벨의 공통 유틸리티 함수들을 제공합니다.
-    - MongoDB 연결 관리(get_mongo_client, get_mongo_collection, close_mongo_client), 임베딩 모델 로딩(get_embedding_model), 사용자 쿼리 임베딩 생성(get_query_embedding), 그리고 MongoDB Atlas에서 벡터 검색을 수행하는(perform_vector_search, perform_multi_collection_search) 핵심 기능들이 이곳에 구현되어 있습니다.
----
+#### 3. 전체 로직 흐름 요약
+1. 사용자 입력 발생 (main.py)
+2. router.py에서 kobert_classifier.py를 호출하여 의도(intent)와 슬롯(slots)을 파악 
+3. router.py가 의도에 맞는 핸들러 함수(예: facility_guide_handler in facility.py)로 라우팅
+4. 핸들러는 slots 정보를 바탕으로 rag/ 디렉토리의 함수를 호출
+- rag/utils.py로 쿼리를 임베딩
+- rag/utils.py로 MongoDB에서 관련 문서 검색
+- rag/config.py의 common_llm_rag_caller로 최종 답변 생성
+5. 핸들러가 생성한 답변을 ChatState에 담아 반환
+6. main.py가 최종 답변을 사용자에게 전달
