@@ -56,14 +56,18 @@ def _split_intents(user_input: str, supported_intents: List[str]) -> List[str]:
 
     ### 지시사항
     1. 사용자의 질문이 하나 이상의 독립적인 질문으로 분리될 수 있는지 판단하세요.
-    2. 만약 질문이 분리될 수 있다면, 각 질문을 독립적인 문장으로 분리하고 쉼표(,)로 구분하여 한 줄로 반환하세요.
-    3. 질문이 분리될 수 없다면 (단일 의도라면), 원래 질문을 그대로 반환하세요.
-    4. 절대 다른 설명이나 문장은 추가하지 말고, 오직 분리된 질문들만 반환하세요.
-    5. 지원되는 의도 목록은 {', '.join(supported_intents)}입니다.
+    2. 질문을 분리할 때, 주차장(주차, 주차요금), 시설(카페, 식당, 라운지), 비행(도착, 출발, 항공편) 등의 키워드를 기준으로 분리하세요.
+    3. 분리된 각 질문은 완전한 문장 형태여야 하며, 쉼표(,)로 구분하여 한 줄로 반환하세요.
+    4. 질문이 분리될 수 없다면 (단일 의도라면), 원래 질문을 그대로 반환하세요.
+    5. 절대 다른 설명이나 문장은 추가하지 말고, 오직 분리된 질문들만 반환하세요.
+    6. 지원되는 의도 목록은 {', '.join(supported_intents)}입니다.
 
     ### 예시
     사용자 질문: "주차 요금이랑 카페 위치 알려줘"
     출력: 주차 요금 알려줘, 카페 위치 알려줘
+
+    사용자 질문: "도착하자마자 카페가고싶은데 어디에 주차하는게 좋아?"
+    출력: 카페 위치 알려줘, 도착하자마자 어디에 주차하는게 좋아?
 
     사용자 질문: "제1터미널 주차장 요금 알려줘"
     출력: 제1터미널 주차장 요금 알려줘
@@ -85,7 +89,6 @@ def _split_intents(user_input: str, supported_intents: List[str]) -> List[str]:
     split_questions = [q.strip() for q in result_text.split(',') if q.strip()]
     print("분리된 질문 :", split_questions)
     
-    # LLM이 간혹 아무것도 반환하지 않는 경우를 대비한 안전장치
     if not split_questions:
         return [user_input]
         
@@ -97,9 +100,15 @@ def _combine_responses(original_question: str, responses: List[str]) -> str:
         return "죄송합니다. 요청하신 정보에 대한 답변을 찾을 수 없습니다."
         
     prompt = f"""
-    사용자의 원래 질문은 '{original_question}'입니다. 아래의 정보들을 종합하여 하나의 자연스럽고 간결한 답변을 만들어 주세요.
-    
-    제공된 정보:
+    당신은 사용자의 원래 질문 '{original_question}'과 그에 대한 여러 정보를 종합하여 하나의 자연스러운 답변을 만듭니다.
+
+    ### 지시사항
+    1. 제공된 정보들을 분석하여 두 답변 간에 공통된 터미널이나 위치 정보가 있는지 확인하세요.
+    2. 만약 공통된 정보(예: '제1여객터미널')가 있다면, 이를 바탕으로 두 정보를 논리적으로 연결하여 하나의 통합 답변을 만드세요.
+    3. 공통된 정보가 없다면, 두 답변을 각각 명확하게 분리하여 나열하되, 답변이 자연스럽게 이어지도록 정리하세요.
+    4. 제공된 정보에 없는 내용은 절대로 추가하거나 추론하지 마세요.
+
+    ### 제공된 정보:
     {'- ' + '\n- '.join(responses)}
     """
     
@@ -109,7 +118,7 @@ def _combine_responses(original_question: str, responses: List[str]) -> str:
             {"role": "system", "content": "당신은 사용자의 질문에 대해 가장 핵심적인 정보를 바탕으로 간결하고 정확하게 답변을 종합하는 전문가입니다."},
             {"role": "user", "content": prompt}
         ],
-        temperature=0.0
+        temperature=0.2
     )
     
     combined_response_text = response.choices[0].message.content

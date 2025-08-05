@@ -10,7 +10,7 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 
 # 모델 파일이 위치한 실제 경로로 수정합니다.
 # 의도 분류 모델이 intent_classifier 디렉토리 내에 있으므로 해당 경로를 추가합니다.
-INTENT_SLOT_MODEL_DIR = os.path.join(ROOT_DIR, "ai", "intent_classifier", "best_models", "intent-kobert-v1")
+INTENT_SLOT_MODEL_DIR = os.path.join(ROOT_DIR, "ai", "intent_classifier", "best_models", "intent-kobert-v2")
 
 # 개별 파일 경로
 MODEL_PATH = os.path.join(INTENT_SLOT_MODEL_DIR, "best_model.pt")

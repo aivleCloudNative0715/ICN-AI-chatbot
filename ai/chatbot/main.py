@@ -3,7 +3,7 @@ from ai.chatbot.graph.flow import build_chat_graph
 chat_graph = build_chat_graph()
 
 result = chat_graph.invoke({
-    "user_input": "제1터미널 단기 주차장 지하 1층에 2시간 주차할 경우 주차 요금이 대략 얼마 정도 나오는지 알려주실 수 있나요"
+    "user_input": "출국장 A 혼잡도가 어떻게 돼?"
 })
 
 print("📌 예측 인텐트:", result.get("intent"))
