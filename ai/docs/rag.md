@@ -60,3 +60,32 @@
 - rag/config.py의 common_llm_rag_caller로 최종 답변 생성
 5. 핸들러가 생성한 답변을 ChatState에 담아 반환
 6. main.py가 최종 답변을 사용자에게 전달
+
+---
+##### 실행 과정
+가상 환경 생성 및 활성화
+```
+# 가상 환경 생성
+python -m venv .venv
+
+# 가상 환경 활성화 (macOS/Linux)
+source .venv/bin/activate
+
+# 가상 환경 활성화 (Windows)
+.venv\Scripts\activate
+```
+필요한 패키지 설치
+
+```
+pip install -r requirements.txt
+```
+환경 변수 설정
+- 프로젝트 루트 디렉토리에 .env 파일을 생성, 필요 API 키와 정보 입력
+
+```
+MONGO_URI = "MONGO_URI 넣기"
+MONGO_DB_NAME="AirBot"
+EMBEDDING_MODEL_PATH="dragonkue/snowflake-arctic-embed-l-v2.0-ko"
+OPENAI_API_KEY="노션에 올라가있는 api key 넣기"
+SERVICE_KEY = "공공데이터 활용 신청 후 decoding key 넣기"
+```
