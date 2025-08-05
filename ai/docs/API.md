@@ -74,6 +74,10 @@ ai
 ```
 ---
 ## 사용법
+
+주의
+gunicorn와 nginx를 위해서 Linux환경이어야 한다
+
 0. 가상환경 활성화 및 의존성 설치
 ```bash
 .venv\Scripts\activate
@@ -94,9 +98,7 @@ redis-cli
 
 2. 다음의 코드 실행
 ```bash
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
+gunicorn chatbot_core.wsgi:application --bind 127.0.0.1:8000
 ```
 3. http://127.0.0.1:8000/chatbot/generate 로 챗봇 응답 POST 요청
     - Body 예시
@@ -139,7 +141,40 @@ python manage.py runserver
     ]
     }
     ```
+5. nginx 서버 설정 및 실행
+```bash
+sudo nano /etc/nginx/sites-available/airbot
+```
+다음 내용을 넣고 crt + o, 엔터, crt + x 
 
+```bash
+server {
+    listen 80;
+    server_name localhost 127.0.0.1 _;
+
+    location /static/ {
+        root /home/meatcarrot/ICN-AI-chatbot/ai;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://127.0.0.1:8000;
+    }
+}
+```
+현재는 테스트 단계이기 때문에 호스트 헤더를 127.0.0.1로 설정
+
+
+```bash
+sudo rm /etc/nginx/sites-enabled/airbot
+sudo ln -s /etc/nginx/sites-available/airbot /etc/nginx/sites-enabled/
+sudo systemctl restart nginx
+```
+
+6. curl로 nginx 테스트
+```bash
+curl -X POST http://127.0.0.1/chatbot/recommend -d '{"message_id": "1", "user_id": "1234", "content":"DL이 어떤 항공사인가요?"}' -H "Content-Type: application/json" 
+```
 
 
 ### `manage.py`
@@ -221,4 +256,5 @@ python manage.py runserver
 - LLM이 없어서 의도분류기만 동작 확인
 - 질문의 의도를 분류해서, 추천질문 DB에서 가져와 응답하는 로직 추가
 - 로컬 Redis 캐시 서버를 사용하도록 변경
-- LLM 및 State와 연동 예정(차주)
+- Gunicorn 서버로 변경 및 ngnix 기본 설정
+- 

@@ -6,3 +6,5 @@ django
 djangorestframework
 redis 
 django-redis
+django-cors-headers
+gunicorn
