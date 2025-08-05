@@ -13,10 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.incheonai.chatbotbackend.dto.AdminCreateRequestDto;
+import com.incheonai.chatbotbackend.dto.AdminAddRequestDto;
 import com.incheonai.chatbotbackend.dto.AdminDto;
-import com.incheonai.chatbotbackend.dto.AdminLoginRequestDto;
-import com.incheonai.chatbotbackend.dto.AdminLoginResponseDto;
 import com.incheonai.chatbotbackend.dto.InquiryAnswerRequestDto;
 import com.incheonai.chatbotbackend.dto.InquiryAnswerResponseDto;
 import com.incheonai.chatbotbackend.dto.InquiryDetailDto;
@@ -46,18 +44,13 @@ public class AdminController {
         this.knowledgeFileService = knowledgeFileService;
     }
 
-    /** 관리자 로그인 */
-    @PostMapping("/login")
-    public ResponseEntity<AdminLoginResponseDto> login(
-            @RequestBody AdminLoginRequestDto request) {
-        return ResponseEntity.ok(adminService.login(request));
-    }
-
-    /** 관리자 등록 */
+    /** 관리자 추가 */
     @PostMapping("/users")
-    public ResponseEntity<AdminDto> createAdmin(
-            @RequestBody AdminCreateRequestDto request) {
-        return ResponseEntity.ok(adminService.createAdmin(request));
+    public ResponseEntity<AdminDto> addAdmin(
+            @RequestBody AdminAddRequestDto request) {
+        return ResponseEntity.ok(
+                adminService.addAdmin(request)
+        );
     }
 
     /** 관리자 목록 조회 */
@@ -66,9 +59,9 @@ public class AdminController {
             @RequestParam int page,
             @RequestParam int size,
             @RequestParam(name = "is_active") boolean isActive) {
-        Page<AdminDto> result = adminService.getAdmins(
-                PageRequest.of(page, size), isActive);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(
+                adminService.getAdmins(PageRequest.of(page, size), isActive)
+        );
     }
 
     /** 관리자 삭제 */
@@ -116,7 +109,7 @@ public class AdminController {
     public ResponseEntity<Void> updateUrgency(
             @PathVariable("inquiry_id") Integer inquiryId,
             @RequestBody UrgencyUpdateRequestDto request) {
-        inquiryService.updateUrgency(inquiryId.toString(), request.getUrgency());
+        inquiryService.updateUrgency(inquiryId.toString(), request.urgency());
         return ResponseEntity.noContent().build();
     }
 
@@ -125,7 +118,7 @@ public class AdminController {
     public ResponseEntity<Void> updateStatus(
             @PathVariable("inquiry_id") Integer inquiryId,
             @RequestBody StatusUpdateRequestDto request) {
-        inquiryService.updateStatus(inquiryId.toString(), request.getStatus());
+        inquiryService.updateStatus(inquiryId.toString(), request.status());
         return ResponseEntity.noContent().build();
     }
 
