@@ -5,8 +5,8 @@ import ChatBotScreen from '@/components/chat/ChatBotScreen';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 import Header from '@/components/common/Header';
 import AuthModal from '@/components/auth/AuthModal';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
 
 // User와 Admin 타입을 정의합니다.
@@ -35,23 +35,83 @@ function isAdminData(data: LoginData): data is AdminLoginData {
 
 export default function HomePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('jwt_token');
-    const userRole = localStorage.getItem('user_role');
+  const handleLoginSuccess = useCallback((data: LoginData) => {
+    console.log("handleLoginSuccess 호출됨. Local Storage에 정보를 저장합니다.");
+    localStorage.setItem('jwt_token', data.accessToken);
+    localStorage.setItem('user_id', String(data.id));
 
-    if (token) {
-      setIsLoggedIn(true);
-      if (userRole === 'ADMIN' || userRole === 'SUPER') {
-        setIsAdmin(true);
+    if (isAdminData(data)) {
+      localStorage.setItem('user_role', data.role);
+      localStorage.setItem('admin_id', data.adminId);
+      localStorage.setItem('admin_name', data.adminName);
+      setIsAdmin(true);
+      router.push('/admin');
+    } else {
+      localStorage.setItem('user_role', 'USER');
+      localStorage.setItem('user_login_id', data.userId);
+      localStorage.setItem('login_provider', data.loginProvider);
+      setIsAdmin(false);
+    }
+    
+    setIsLoggedIn(true);
+    setIsAuthModalOpen(false);
+  }, [router]);
+
+
+  useEffect(() => {
+    const oauthToken = searchParams.get('token');
+
+    if (oauthToken) {
+      console.log("URL에서 OAuth 토큰을 발견했습니다:", oauthToken);
+      const fetchUserInfo = async (token: string) => {
+        try {
+          console.log("토큰으로 사용자 정보 조회를 시작합니다...");
+          const response = await fetch(`${API_BASE_URL}/users/me`, {
+            headers: {
+              // 이 부분은 문제가 없습니다.
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            console.log("사용자 정보를 성공적으로 가져왔습니다:", userData);
+            handleLoginSuccess({ ...userData, accessToken: token });
+            console.log("로그인 처리가 완료되어 URL을 정리합니다.");
+            router.replace('/');
+          } else {
+            const errorData = await response.json();
+            console.error('사용자 정보 조회 실패:', errorData);
+            alert(`로그인 처리 중 오류가 발생했습니다: ${errorData.message}`);
+            router.replace('/');
+          }
+        } catch (error) {
+          console.error('사용자 정보 조회 중 네트워크 오류 발생:', error);
+          alert('로그인 처리 중 네트워크 오류가 발생했습니다.');
+          router.replace('/');
+        }
+      };
+
+      fetchUserInfo(oauthToken);
+      
+    } else {
+      const localToken = localStorage.getItem('jwt_token');
+      if (localToken) {
+        setIsLoggedIn(true);
+        const userRole = localStorage.getItem('user_role');
+        if (userRole === 'ADMIN' || userRole === 'SUPER') {
+          setIsAdmin(true);
+        }
       }
     }
-  }, []);
+  }, [searchParams, handleLoginSuccess, router]);
 
   const openAuthModal = (mode: 'login' | 'register' = 'login') => {
     setAuthMode(mode);
@@ -59,34 +119,6 @@ export default function HomePage() {
   };
   
   const closeAuthModal = () => {
-    setIsAuthModalOpen(false);
-  };
-
-  // 로그인/회원가입 성공 시 최종적으로 호출되는 함수
-  const handleLoginSuccess = (data: LoginData) => {
-    // 공통적으로 토큰과 ID 저장
-    localStorage.setItem('jwt_token', data.accessToken);
-    localStorage.setItem('user_id', String(data.id));
-
-    // 타입 가드를 사용하여 관리자인지 일반 사용자인지 확인
-    if (isAdminData(data)) {
-      // 관리자일 경우
-      localStorage.setItem('user_role', data.role);
-      localStorage.setItem('admin_id', data.adminId);
-      localStorage.setItem('admin_name', data.adminName);
-      setIsAdmin(true);
-      // 관리자 페이지로 리디렉션
-      router.push('/admin');
-    } else {
-      // 일반 사용자일 경우
-      localStorage.setItem('user_role', 'USER'); // 기본 역할 'USER'로 저장
-      localStorage.setItem('user_login_id', data.userId);
-      localStorage.setItem('login_provider', data.loginProvider);
-      setIsAdmin(false);
-    }
-    
-    // 로그인 상태로 변경하고 모달을 닫습니다.
-    setIsLoggedIn(true);
     setIsAuthModalOpen(false);
   };
 

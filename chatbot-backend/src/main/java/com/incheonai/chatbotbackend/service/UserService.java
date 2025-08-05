@@ -11,6 +11,7 @@ import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,5 +58,20 @@ public class UserService {
         // 5. JWT 토큰 생성 및 반환 (자동 로그인)
         String token = jwtTokenProvider.createToken(user.getUserId());
         return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider());
+    }
+
+    /**
+     * 사용자 정보 조회 메서드
+     * @param userId (JWT 토큰에서 추출한 사용자 ID)
+     * @return LoginResponseDto (토큰은 제외하고 사용자 정보만 담음)
+     */
+    @Transactional(readOnly = true)
+    public LoginResponseDto getUserInfo(String userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."));
+
+        // User 엔티티를 LoginResponseDto로 변환하여 반환
+        // 프론트엔드에서 이미 토큰을 가지고 있으므로, 여기서는 null로 설정
+        return new LoginResponseDto(null, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider());
     }
 }

@@ -8,10 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import com.incheonai.chatbotbackend.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.StringUtils;
@@ -40,6 +38,19 @@ public class UserController {
         }
         authService.logout(token);
         return ResponseEntity.ok("로그아웃 되었습니다.");
+    }
+
+    /**
+     * 현재 로그인된 사용자 정보 조회 엔드포인트
+     * @param authentication (JwtAuthenticationFilter에서 SecurityContext에 저장한 인증 정보)
+     * @return ResponseEntity<LoginResponseDto>
+     */
+    @GetMapping("/me")
+    public ResponseEntity<LoginResponseDto> getMyInfo(Authentication authentication) {
+        // Authentication 객체의 getName()은 토큰 생성 시 넣었던 subject(userId)를 반환합니다.
+        String userId = authentication.getName();
+        LoginResponseDto userInfo = userService.getUserInfo(userId);
+        return ResponseEntity.ok(userInfo);
     }
 
     private String resolveToken(HttpServletRequest request) {

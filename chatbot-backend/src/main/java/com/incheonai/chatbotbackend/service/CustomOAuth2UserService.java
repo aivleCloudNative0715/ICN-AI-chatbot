@@ -2,8 +2,10 @@ package com.incheonai.chatbotbackend.service;
 
 import com.incheonai.chatbotbackend.domain.jpa.User;
 import com.incheonai.chatbotbackend.dto.oauth.OAuthAttributes;
+import com.incheonai.chatbotbackend.exception.BusinessException;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -43,18 +45,32 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         );
     }
 
-    // 구글 사용자 정보가 업데이트 되었을 수 있으므로, saveOrUpdate로 처리
+    /**
+     * OAuth 사용자를 저장하거나 업데이트합니다.
+     * 로컬 계정과의 연동은 허용하지 않습니다.
+     */
     private User saveOrUpdate(OAuthAttributes attributes) {
+        // 1. Google ID로 사용자 조회
         Optional<User> userOptional = userRepository.findByGoogleId(attributes.getGoogleId());
 
-        User user;
         if (userOptional.isPresent()) {
-            user = userOptional.get();
-            // 필요 시 여기서 사용자 정보 업데이트 로직 추가
-        } else {
-            user = attributes.toEntity();
-            userRepository.save(user);
+            // 이미 구글로 가입된 사용자. 마지막 로그인 시간 업데이트 후 반환
+            User user = userOptional.get();
+            user.updateLastLogin();
+            return userRepository.save(user);
         }
-        return user;
+
+        // 2. 계정 연동 방지: 같은 이메일(userId)로 가입된 계정이 있는지 확인
+        // OAuthAttributes에서 toEntity()는 email을 userId로 사용합니다.
+        Optional<User> userByEmailOptional = userRepository.findByUserId(attributes.getEmail());
+        if (userByEmailOptional.isPresent()) {
+            // 이미 해당 이메일을 아이디로 사용하는 계정이 존재하면 에러 발생
+            throw new BusinessException(HttpStatus.CONFLICT, "이미 가입된 이메일입니다. 아이디와 비밀번호로 로그인해주세요.");
+        }
+
+        // 3. 완전 신규 사용자인 경우, 새로 생성
+        User user = attributes.toEntity();
+        user.updateLastLogin(); // 최초 로그인 시간 기록
+        return userRepository.save(user);
     }
 }

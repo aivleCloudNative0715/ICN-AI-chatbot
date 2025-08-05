@@ -218,14 +218,24 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
         pt={{ root: { className: 'w-full mt-6 py-3 bg-[#FFC107] text-white rounded-md text-lg font-semibold shadow-md hover:bg-[#e6b000] transition-colors duration-200 !shadow-none !border-none' }}}
       />
 
-      <Button
-        pt={{ root: { className: 'w-full !shadow-none !border-none' }}}
-      >
-        <div className="flex items-center justify-center w-full mt-3 py-3 bg-white text-gray-700 border border-gray-300 rounded-full text-base font-semibold shadow-sm hover:bg-gray-50 transition-colors duration-200">
-          <img src="/google-logo.svg" alt="Google" className="h-5 w-5 mr-2" />
-          <span>Google로 계속하기</span>
-        </div>
-      </Button>
+      {/* "Google로 계속하기" 버튼 스타일 적용 */}
+      {/* a 태그로 감싸서 백엔드 OAuth2 로그인 URL로 이동시킵니다. */}
+      <a href={`${API_BASE_URL}/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
+        <Button
+          type="button" // form submit을 방지하기 위해 type="button"으로 설정
+          pt={{
+              root: {
+                  className: 'w-full !shadow-none !border-none' // 기본 버튼 스타일 제거
+              }
+          }}
+        >
+          {/* 내부 div에 모든 시각적 스타일을 적용 */}
+          <div className="flex items-center justify-center w-full mt-3 py-3 bg-white text-gray-700 border border-gray-300 rounded-full text-base font-semibold shadow-sm hover:bg-gray-50 transition-colors duration-200">
+            <img src="/google-logo.svg" alt="Google" className="h-5 w-5 mr-2" />
+            <span>Google로 계속하기</span>
+          </div>
+        </Button>
+      </a>
     </form>
   );
 }

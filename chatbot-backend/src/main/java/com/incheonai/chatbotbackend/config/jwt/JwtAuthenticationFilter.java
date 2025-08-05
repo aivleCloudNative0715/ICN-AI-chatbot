@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -21,23 +23,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // 1. Request Header에서 토큰 추출
         String token = resolveToken(request);
+        log.debug("Request URI: {}, Token: {}", request.getRequestURI(), token);
 
-        // 2. 토큰 유효성 검사
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // 2-1. Redis에 로그아웃된 토큰인지 확인
-            String redisKey = "logout:token:" + token;
-            if (redisTemplate.hasKey(redisKey)) {
-                // 로그아웃된 토큰이므로 요청을 거부
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+            // Redis에 해당 토큰(Key)이 존재하는지 확인 (로그인된 유효한 토큰인지)
+            if (Boolean.TRUE.equals(redisTemplate.hasKey(token))) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.debug("인증 정보 저장 완료: '{}'", authentication.getName());
+            } else {
+                log.warn("유효한 토큰이지만 Redis에 존재하지 않습니다. (로그아웃 또는 만료된 토큰) Token: {}", token);
             }
-
-            // 2-2. 토큰이 유효하면 인증 정보를 SecurityContext에 저장
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            log.debug("유효한 토큰이 없습니다.");
         }
+
         filterChain.doFilter(request, response);
     }
 

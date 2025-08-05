@@ -36,7 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return User.builder()
                 .username(user.getUserId())
-                .password(user.getPassword())
+                .password(user.getPassword() != null ? user.getPassword() : "")
                 .authorities(Collections.singletonList(authority)) // 수정된 부분
                 .build();
     }

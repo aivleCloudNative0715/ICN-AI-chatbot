@@ -111,6 +111,9 @@ public class SecurityConfig {
                 )
 
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authorization -> authorization
+                                .baseUri("/api/oauth2/authorization")
+                        )
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
@@ -120,7 +123,7 @@ public class SecurityConfig {
                                 "/api/users/signup",
                                 "/api/auth/check-id",
                                 "/api/auth/login",
-                                "/oauth2/authorization/**",
+                                "/api/oauth2/authorization/**",
                                 "/login/oauth2/code/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",

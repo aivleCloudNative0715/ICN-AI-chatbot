@@ -10,17 +10,17 @@ import com.incheonai.chatbotbackend.exception.BusinessException;
 import com.incheonai.chatbotbackend.repository.jpa.AdminRepository;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.concurrent.TimeUnit;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -65,6 +65,10 @@ public class AuthService {
             // 마지막 로그인 시간 업데이트 및 토큰 생성
             user.updateLastLogin();
             String token = jwtTokenProvider.createToken(user.getUserId());
+
+            redisTemplate.opsForValue().set(token, user.getUserId(), jwtTokenProvider.getTokenValidTime(), TimeUnit.MILLISECONDS);
+            log.info("로컬 로그인 성공. Redis에 토큰 저장. Key: {}", token);
+
             // 사용자용 응답 DTO 반환
             return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider());
         }
@@ -80,6 +84,9 @@ public class AuthService {
             // 마지막 로그인 시간 업데이트 및 토큰 생성
             admin.updateLastLogin();
             String token = jwtTokenProvider.createToken(admin.getAdminId());
+
+            redisTemplate.opsForValue().set(token, admin.getAdminId(), jwtTokenProvider.getTokenValidTime(), TimeUnit.MILLISECONDS);
+            log.info("관리자 로그인 성공. Redis에 토큰 저장. Key: {}", token);
             // 관리자용 응답 DTO 반환
             return new AdminLoginResponseDto(token, admin.getId(), admin.getAdminId(), admin.getAdminName(), admin.getRole());
         }
@@ -95,8 +102,11 @@ public class AuthService {
         }
 
         // 2. Redis에 로그아웃된 토큰으로 저장
-        String redisKey = "logout:token:" + accessToken;
-        Long expiration = jwtTokenProvider.getExpiration(accessToken); // 남은 유효시간
-        redisTemplate.opsForValue().set(redisKey, "logout", expiration, TimeUnit.MILLISECONDS);
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(accessToken))) {
+            redisTemplate.delete(accessToken);
+            log.info("로그아웃 처리 완료. Redis에서 토큰 삭제. Key: {}", accessToken);
+        } else {
+            log.warn("로그아웃 요청된 토큰이 Redis에 존재하지 않습니다. Key: {}", accessToken);
+        }
     }
 }
