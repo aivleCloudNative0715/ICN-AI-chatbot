@@ -8,3 +8,6 @@ redis
 django-redis
 django-cors-headers
 gunicorn
+pymupdf
+python-docx
+langchain

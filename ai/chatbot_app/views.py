@@ -1,9 +1,17 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
+
+import traceback
 import os
 import sys
+import tempfile # 임시 파일을 안전하게 저장하기 위한 모듈
+import fitz # PyMuPDF
+from docx import Document # Python-Docx
+import zipfile # ZIP 파일 처리
+import xml.etree.ElementTree as ET # XML 파일 처리
 from chatbot.graph.state import ChatState
 from django.core.cache import cache
 from chatbot.main import chat_graph
@@ -11,9 +19,12 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 
+from sentence_transformers import SentenceTransformer
 from langchain_core.messages import HumanMessage, AIMessage
-
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from shared.predict_intent_and_slots import predict_top_k_intents_and_slots
+
+embedding_model = SentenceTransformer('dragonkue/snowflake-arctic-embed-l-v2.0-ko')
 
 # .env 파일에서 환경변수 불러오기 (MONGO_URI)
 load_dotenv()
@@ -29,6 +40,91 @@ def get_initial_state() -> ChatState:
 
 # 캐시 키를 위한 상수 정의
 CHATBOT_SESSION_CACHE_KEY = 'chatbot_session_{}'
+
+
+# PDF, DOCX 파일에서 텍스트를 추출하는 함수
+def extract_text_from_file(file_path: str) -> str:
+    ext = os.path.splitext(file_path)[1].lower()
+
+    if ext == ".pdf":
+        doc = fitz.open(file_path)
+        text = "\n".join(page.get_text() for page in doc)
+        doc.close()
+        return text
+
+    elif ext == ".docx":
+        doc = Document(file_path)
+        return "\n".join(p.text for p in doc.paragraphs if p.text.strip())
+
+    elif ext == ".hwpx":
+        try:
+            texts = []
+            
+            with zipfile.ZipFile(file_path, 'r') as zipf:
+                section_files = [f for f in zipf.namelist() if f.startswith('Contents/section') and f.endswith('.xml')]
+
+                for section_file in section_files:
+                    with zipf.open(section_file) as xml_file:
+                        tree = ET.parse(xml_file)
+                        root = tree.getroot()
+
+                        # 네임스페이스 정의
+                        ns = {
+                            'hp': 'http://www.hancom.co.kr/hwpml/2011/paragraph',
+                            'hs': 'http://www.hancom.co.kr/hwpml/2011/section',
+                        }
+
+                        # <hp:p> → <hp:run> → <hp:t>
+                        for para in root.findall('.//hp:p', ns):
+                            for run in para.findall('hp:run', ns):
+                                for text_elem in run.findall('hp:t', ns):
+                                    if text_elem.text:
+                                        texts.append(text_elem.text.strip())
+
+            return "\n".join(texts)
+        except Exception as e:
+            raise ValueError(f"HWPX 처리 오류: {str(e)}")
+    
+ 
+ # RAG 처리 함수
+# 추출된 텍스트를 벡터 컬렉션에 삽입   
+def perform_rag(extracted_text: str, category: str):
+    # 카테고리에 따른 벡터 컬렉션 선택
+    if category == "airport_info":
+        target_collection = db["AirportVector"]
+    elif category == "airline_info":
+        target_collection = db["AirlineVector"]
+    elif category == "facility_info":
+        target_collection = db["AirportFacilityVector"]
+    elif category == "connection_time":
+        target_collection = db["ConnectionTimeVector"]
+    elif category == "transit_path":
+        target_collection = db["TransitPathVector"]
+    elif category == "parking_lot":
+        target_collection = db["ParkingLotVector"]
+    elif category == "parking_lot_policy":
+        target_collection = db["ParkingLotPolicyVector"]
+    elif category == "airport_policy":
+        target_collection = db["AirportPolicyVector"]
+    else:
+        raise ValueError("지원하지 않는 category.")
+
+    # 텍스트 청크 분할
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=500,       # 한 청크의 최대 길이
+        chunk_overlap=100,    # 문맥 유지를 위한 오버랩
+        separators=["\n\n", "\n", ". ", " "]  # 문단 → 줄바꿈 → 문장 → 단어 순서로 분할
+    )
+    split_texts = text_splitter.split_text(extracted_text)
+    embeddings = embedding_model.encode(split_texts).tolist()
+
+    documents = [
+        {"text_content": text, "embedding": vector}
+        for text, vector in zip(split_texts, embeddings)
+    ]
+
+    target_collection.insert_many(documents)
+
 
 
 class GenerateAPIView(APIView):
@@ -184,3 +280,51 @@ class RecommendAPIView(APIView):
         }
         
         return Response(response_data, status=status.HTTP_200_OK)
+    
+class FileUploadAPIView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, format=None):
+        
+        category = request.data.get("category", "")
+        file_obj = request.FILES.get('file')
+        
+        print("request.data:", request.data)
+        print("request.FILES:", request.FILES)
+        print("category:", category)
+        print("file_obj.name:", file_obj.name if file_obj else "파일 없음")
+        if not file_obj:
+            return Response({"error": "No file uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        # # 임시로 파일 저장(Linux/MacOS 환경에서)
+        # file_path = os.path.join('/tmp', file_obj.name)
+        # with open(file_path, 'wb+') as f:
+        #     for chunk in file_obj.chunks():
+        #         f.write(chunk)        
+
+        # 안전한 임시 파일 저장
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file_obj.name)[1]) as tmp_file:
+                for chunk in file_obj.chunks():
+                    tmp_file.write(chunk)
+                file_path = tmp_file.name
+
+            # 텍스트 추출
+            extracted_text = extract_text_from_file(file_path)
+            if not extracted_text.strip():
+                print(f"[경고] 파일에서 텍스트를 추출하지 못했습니다: {file_path}")
+
+            # RAG 처리 (예시)
+            perform_rag(extracted_text, category)
+
+        except Exception as e:
+            traceback_str = traceback.format_exc()
+            print(traceback_str)  # 콘솔에 전체 스택 출력
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        finally:
+            # 임시 파일 삭제
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+        return Response({"message": "File processed"}, status=status.HTTP_200_OK)
