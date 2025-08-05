@@ -70,4 +70,20 @@ public class Inquiry {
         this.urgency = urgency;
         this.status = status;
     }
+    // Setters for mutable fields
+    public void setUrgency(Integer urgency) {
+        this.urgency = urgency;
+    }
+
+    public void setStatus(InquiryStatus status) {
+        this.status = status;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public void setAdminId(String adminId) {
+        this.adminId = adminId;
+    }
 }
