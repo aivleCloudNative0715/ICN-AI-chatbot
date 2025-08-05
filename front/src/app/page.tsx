@@ -66,6 +66,15 @@ export default function HomePage() {
 
 
   useEffect(() => {
+    // 1. OAuth2 로그인 실패 시 전달된 에러 메시지를 먼저 확인합니다.
+    const oauthError = searchParams.get('error');
+    if (oauthError) {
+      alert(oauthError); // 백엔드에서 보낸 에러 메시지를 그대로 alert 창에 띄웁니다.
+      router.replace('/'); // URL에서 에러 파라미터를 제거합니다.
+      return; // 에러가 있으면 더 이상 진행하지 않습니다.
+    }
+
+    // 2. OAuth2 로그인 성공 시 전달된 토큰을 확인합니다.
     const oauthToken = searchParams.get('token');
 
     if (oauthToken) {
@@ -124,6 +133,17 @@ export default function HomePage() {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  /**
+   * 클라이언트(브라우저)의 세션 정보와 상태를 정리하는 함수
+   * API 호출 없이 Local Storage를 비우고, 상태를 초기화하며, 홈으로 리디렉션합니다.
+   */
+  const cleanupClientSession = useCallback(() => {
+    localStorage.clear();
+    setIsLoggedIn(false);
+    setIsAdmin(false);
+    router.push('/');
+  }, [router]);
+
   const handleLogout = async () => {
     const token = localStorage.getItem('jwt_token');
 
@@ -166,6 +186,41 @@ export default function HomePage() {
     router.push('/');
   };
 
+  const handleDeleteAccount = async () => {
+    if (!window.confirm('정말로 계정을 삭제하시겠습니까?\n삭제된 계정은 복구할 수 없습니다.')) {
+      return;
+    }
+
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      alert('로그인 정보가 없습니다. 다시 로그인해주세요.');
+      cleanupClientSession();
+      return;
+    }
+
+    try {
+      // 1. 백엔드에 계정 삭제 API를 호출합니다. (이 API가 서버의 토큰도 무효화합니다)
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        alert('계정이 성공적으로 삭제되었습니다.');
+        // 2. 성공 시, API 호출 없이 클라이언트 세션만 정리합니다.
+        cleanupClientSession();
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || '계정 삭제에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('계정 삭제 중 오류 발생:', error);
+      alert(error instanceof Error ? error.message : '계정 삭제 중 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 w-full h-full">
       <Header
@@ -184,7 +239,7 @@ export default function HomePage() {
       </div>
       
       {isSidebarOpen && (
-        <ChatSidebar isLoggedIn={isLoggedIn} onClose={toggleSidebar} />
+        <ChatSidebar isLoggedIn={isLoggedIn} onClose={toggleSidebar} onDeleteAccount={handleDeleteAccount} />
       )}
 
       {isAuthModalOpen && (

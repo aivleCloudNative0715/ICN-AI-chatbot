@@ -24,10 +24,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 데이터베이스의 auto-increment 설정을 따름
     private Integer id;
 
-    @Column(name = "user_id", unique = true) // 로컬 로그인 사용자의 아이디 (유니크 제약조건)
+    @Column(name = "user_id")
     private String userId;
 
-    @Column(name = "google_id", unique = true) // 구글 계정의 고유 ID (유니크 제약조건)
+    @Column(name = "google_id")
     private String googleId;
 
     @Column
@@ -62,5 +62,10 @@ public class User {
     // 마지막 로그인 시간을 업데이트하는 편의 메서드
     public void updateLastLogin() {
         this.lastLoginAt = LocalDateTime.now();
+    }
+
+    public void processDeletion() {
+        this.password = null;
+        // userId와 googleId는 재가입 방지 기간 체크를 위해 유지합니다.
     }
 }

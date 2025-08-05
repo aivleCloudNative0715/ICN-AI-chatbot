@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -31,25 +33,43 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
+    /**
+     * 아이디 중복을 확인합니다. (재가입 정책, 관리자 계정, Redis 임시 ID 확인 포함)
+     */
     public boolean checkIdDuplication(String userId) {
-        // User 테이블 또는 Admin 테이블에 아이디가 이미 존재하는지 확인
-        boolean isUserExists = userRepository.findByUserId(userId).isPresent();
-        boolean isAdminExists = adminRepository.findByAdminId(userId).isPresent();
+        // 1. Redis에 다른 사용자가 확인 중인 임시 아이디인지 확인
+        String redisKey = "temp:userId:" + userId;
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
+            throw new BusinessException(HttpStatus.CONFLICT, "다른 사용자가 확인 중인 아이디입니다.");
+        }
 
-        if (isUserExists || isAdminExists) {
+        // 2. Admin 테이블에 활성 관리자 계정이 있는지 확인
+        if (adminRepository.findByAdminId(userId).isPresent()) {
             return false; // 중복된 아이디가 존재함
         }
 
-        // Redis에 임시 아이디로 저장되어 있는지 확인
-        String redisKey = "temp:userId:" + userId;
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(redisKey))) {
-            return false; // 다른 사용자가 확인 중인 아이디임
+        // 3. User 테이블에서 탈퇴한 회원을 포함하여 가장 최근 기록 조회
+        Optional<User> lastUserOptional = userRepository.findLastByUserIdWithDeleted(userId);
+
+        if (lastUserOptional.isPresent()) {
+            User lastUser = lastUserOptional.get();
+            // 3-1. 활성 계정이면 사용 불가
+            if (lastUser.getDeletedAt() == null) {
+                return false;
+            }
+            // 3-2. 탈퇴한 계정이면 30일 경과 여부 확인
+            long daysSinceDeletion = ChronoUnit.DAYS.between(lastUser.getDeletedAt(), LocalDateTime.now());
+            if (daysSinceDeletion < 30) {
+                long daysLeft = 30 - daysSinceDeletion;
+                throw new BusinessException(HttpStatus.CONFLICT, "탈퇴 후 30일이 지나지 않은 아이디입니다. (" + daysLeft + "일 후 사용 가능)");
+            }
         }
 
-        // 중복이 없으면 1분간 임시 아이디로 Redis에 저장
+        // 4. 모든 중복 검사를 통과했으면 1분간 임시 아이디로 Redis에 저장
         redisTemplate.opsForValue().set(redisKey, "true", 1, TimeUnit.MINUTES);
 
-        return true; // 사용 가능한 아이디임
+        // 최종적으로 사용 가능한 아이디임
+        return true;
     }
 
     @Transactional
@@ -92,7 +112,7 @@ public class AuthService {
         }
 
         // 3. 어디에도 아이디가 없는 경우
-        throw new BusinessException(HttpStatus.UNAUTHORIZED, "가입되지 않은 아이디입니다.");
+        throw new BusinessException(HttpStatus.NOT_FOUND, "아이디 또는 비밀번호가 일치하지 않습니다.");
     }
 
     public void logout(String accessToken) {

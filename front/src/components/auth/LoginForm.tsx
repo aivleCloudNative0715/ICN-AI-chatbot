@@ -57,9 +57,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     if (validate()) {
       setErrors({}); // 이전 에러 초기화
       try {
-        // API 엔드포인트는 백엔드에 맞게 조정해야 합니다.
-        // DTO 이름이 LoginResponseDto인 것으로 보아 /login 엔드포인트일 가능성이 높습니다.
-        const response = await fetch(`${API_BASE_URL}/auth/login`, { // 로그인 API로 수정
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId, password }),
@@ -68,13 +66,18 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
         const data = await response.json();
 
         if (response.ok) {
-          onLoginSuccess(data); // 성공 시 받은 데이터 전체를 전달
+          onLoginSuccess(data);
         } else {
-          setErrors(prev => ({ ...prev, general: data.message || '로그인에 실패했습니다. 아이디 또는 비밀번호를 확인해주세요.' }));
+          // [수정된 부분] 로그인 실패 시 alert 창을 띄웁니다.
+          const errorMessage = data.message || '로그인에 실패했습니다. 아이디 또는 비밀번호를 확인해주세요.';
+          alert(errorMessage); // alert 창 추가
+          setErrors(prev => ({ ...prev, general: errorMessage }));
         }
       } catch (error) {
         console.error('로그인 중 오류 발생:', error);
-        setErrors(prev => ({ ...prev, general: '네트워크 오류가 발생했습니다.' }));
+        const networkErrorMessage = '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+        alert(networkErrorMessage); // 네트워크 에러 시 alert 창 추가
+        setErrors(prev => ({ ...prev, general: networkErrorMessage }));
       }
     }
   };
