@@ -1,5 +1,5 @@
 import torch.nn as nn
-from transformers import BertModel, AutoTokenizer
+from transformers import BertModel
 
 class KoBERTIntentSlotModel(nn.Module):
     def __init__(self, num_intents, num_slots):

@@ -14,8 +14,14 @@ __pycache__/
 *.csv
 *.log
 
+.env
+
 # IDE 설정
 .vscode/
 .idea/
 
 .env
+# 모델 파일 (PyTorch 등)
+*.pt
+*.pth
+best_model.pt

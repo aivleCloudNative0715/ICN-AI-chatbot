@@ -37,7 +37,7 @@ RAG_SEARCH_CONFIG = {
         "vector_index_name": "parkingLot_vector_index",
         "description": "주차장 위치 추천"
     },
-    "immigration_policy": {
+    "immigration_policy_info": {
         "collection_name": "AirportPolicyVector",
         "vector_index_name": "airportPolicy_vector_index",
         "description": "입출국 절차 및 정책",
@@ -75,7 +75,7 @@ RAG_SEARCH_CONFIG = {
         "collection_name": "AirportVector",
         "vector_index_name": "airport_vector_index",
         "description": "공항 코드, 이름, 위치 등 일반 공항 정보"
-    },
+    }
     # 여기에 다른 RAG 의도에 대한 설정을 추가할 수 있습니다.
 }
 

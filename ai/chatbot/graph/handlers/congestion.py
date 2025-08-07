@@ -4,133 +4,17 @@ from datetime import datetime
 import re
 from chatbot.graph.state import ChatState
 from dotenv import load_dotenv
-import json
 
-# ai/chatbot/rag/config.py 파일에서 OpenAI 클라이언트를 직접 임포트합니다.
-from chatbot.rag.config import client
+from chatbot.rag.airport_congestion_helpers import _get_congestion_level, VALID_AREAS, _parse_query_with_llm
 
 load_dotenv()
 
-# 환경 변수에서 서비스 키를 가져옵니다.
 SERVICE_KEY = os.getenv("SERVICE_KEY")
 if not SERVICE_KEY:
     raise ValueError("SERVICE_KEY 환경 변수가 설정되지 않았습니다.")
 
-# 혼잡도 예측 API URL
 API_URL = "http://apis.data.go.kr/B551177/PassengerNoticeKR/getfPassengerNoticeIKR"
-
-# 유효한 터미널 및 구역 정보를 정의합니다.
-VALID_AREAS = {
-    1: {
-        "입국장": {"A", "B", "C", "D", "E", "F"},
-        "출국장": {"1", "2", "3", "4", "5", "6"}
-    },
-    2: {
-        "입국장": {"A", "B"},
-        "출국장": {"1", "2"}
-    }
-}
-
-def _get_congestion_level(terminal: int, passenger_count: float) -> str:
-    """
-    터미널과 승객 수에 따라 혼잡도 수준을 판단하는 헬퍼 함수.
-    """
-    if terminal == 1:
-        if passenger_count <= 7000:
-            return "원활"
-        elif passenger_count <= 7600:
-            return "보통"
-        elif passenger_count <= 8200:
-            return "약간혼잡"
-        elif passenger_count <= 8600:
-            return "혼잡"
-        else:
-            return "매우혼잡"
-    elif terminal == 2:
-        if passenger_count <= 3200:
-            return "원활"
-        elif passenger_count <= 3500:
-            return "보통"
-        elif passenger_count <= 3800:
-            return "약간혼잡"
-        elif passenger_count <= 4000:
-            return "혼잡"
-        else:
-            return "매우혼잡"
-    return "정보 없음"
-
-def _parse_query_with_llm(user_query: str) -> dict | None:
-    """
-    LLM을 사용하여 사용자 쿼리에서 날짜, 시간, 터미널, 구역 정보를 JSON 형식으로 추출하는 함수.
-    단일 질문이든 복합 질문이든, 'requests' 리스트에 담아 반환하도록 프롬프트 수정.
-    """
-    
-    prompt_content = (
-        "사용자 쿼리에서 인천국제공항의 혼잡도 예측 정보를 추출해줘."
-        "오늘, 내일 외의 날짜는 'unsupported'로 응답해줘. 날짜가 언급되지 않으면 오늘로 간주해줘."
-        "시간이 언급되지 않으면 null로 추출해줘. 시간은 0부터 23까지의 정수여야 해."
-        "터미널 번호는 1 또는 2 중 하나야. '1'처럼 터미널과 출국장 모두에 해당되는 모호한 숫자가 있으면 터미널을 0으로 추출해줘. 터미널 정보가 없으면 null로 추출해줘."
-        "구역은 '입국장' 또는 '출국장'과 알파벳/숫자를 포함해야 해."
-        "**중요: 입국장은 알파벳(A-F)과 함께, 출국장은 숫자(1-6)와 함께 사용되어야 합니다.**"
-        "유효하지 않은 구역 조합(예: '출국장'과 알파벳, '입국장'과 숫자)이 발견되면 'area'는 null로 추출해줘."
-        "만약 쿼리에 '입국장' 또는 '출국장'에 대한 언급 없이 'C', 'D', 'E', 'F', '3', '4', '5', '6'이 언급되면, 제1터미널의 해당 구역으로 가정해줘."
-        "질문이 혼잡도 전체에 대한 내용이면 'requests' 리스트는 비워줘."
-        "만약 여러 터미널이나 구역에 대한 질문이라면, 'requests' 리스트에 여러 객체를 만들어줘."
-        "날짜가 'unsupported'이면 'requests' 필드를 포함하지 말고 다른 필드는 모두 null로 추출해줘."
-        "**응답 시 다른 설명 없이 오직 JSON 객체만 반환해야 해.**"
-        
-        "\n\n응답 형식: "
-        "```json"
-        "{{"
-        "  \"date\": \"[today|tomorrow|unsupported]\", "
-        "  \"time\": [시간 (0~23 정수), 없으면 null], "
-        "  \"requests\": ["
-        "    {{"
-        "      \"terminal\": [터미널 번호 (1, 2), 겹치면 0, 없으면 null], "
-        "      \"area\": \"[구역명 (string), 없으면 null]\""
-        "    }}"
-        "  ]"
-        "}}"
-        "```"
-        "\n\n예시: "
-        "사용자: 내일 11시 1출국장 혼잡해?"
-        "응답: ```json\n{{\"date\": \"tomorrow\", \"time\": 11, \"requests\": [{{\"terminal\": 0, \"area\": \"출국장1\"}}]}}```"
-        "사용자: 1터미널과 2터미널 혼잡도 알려줘"
-        "응답: ```json\n{{\"date\": \"today\", \"time\": null, \"requests\": [{{\"terminal\": 1, \"area\": null}}, {{\"terminal\": 2, \"area\": null}}]}}```"
-        "사용자: 1터미널 입국장C, 2터미널 입국장A 혼잡해?"
-        "응답: ```json\n{{\"date\": \"today\", \"time\": null, \"requests\": [{{\"terminal\": 1, \"area\": \"입국장C\"}}, {{\"terminal\": 2, \"area\": \"입국장A\"}}]}}```"
-        "사용자: 출국장 A 혼잡도가 어떻게 돼?"
-        "응답: ```json\n{{\"date\": \"today\", \"time\": null, \"requests\": []}}```"
-        "사용자: 혼잡도 알려줘"
-        "응답: ```json\n{{\"date\": \"today\", \"time\": null, \"requests\": []}}```"
-    )
-
-    messages = [
-        {"role": "system", "content": prompt_content},
-        {"role": "user", "content": user_query}
-    ]
-
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages,
-        temperature=0.0
-    )
-    
-    llm_output = response.choices[0].message.content.strip()
-
-    try:
-        if llm_output.startswith("```json") and llm_output.endswith("```"):
-            llm_output = llm_output[7:-3].strip()
-        
-        llm_output = llm_output.replace('{{', '{').replace('}}', '}')
-
-        parsed_data = json.loads(llm_output)
-        return parsed_data
-    except json.JSONDecodeError:
-        print("디버그: LLM 응답이 올바른 JSON 형식이 아닙니다.")
-        print(f"디버그: LLM 원본 응답 -> {llm_output}")
-    
-    return None
+API_URL_ARRIVAL = "http://apis.data.go.kr/B551177/StatusOfArrivals/getArrivalsCongestion"
 
 def airport_congestion_prediction_handler(state: ChatState) -> ChatState:
     """
@@ -285,8 +169,8 @@ def airport_congestion_prediction_handler(state: ChatState) -> ChatState:
 
         final_response_text = (
             f"{date_label} {current_hour}시 기준, 공항 혼잡도 예측 정보입니다.\n\n" +
-            "\n\n---\n\n".join(response_parts) + 
-            "\n\n⚠️ 주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
+            "\n\n".join(response_parts) + 
+            "\n\n ⚠️ 주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다. "
             "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트에 직접 확인하시기 바랍니다."
         )
 
