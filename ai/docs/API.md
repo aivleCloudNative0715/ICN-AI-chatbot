@@ -118,7 +118,7 @@ redis-cli
 
 2. 다음의 코드 실행
 ```bash
-gunicorn chatbot_core.wsgi:application --bind 127.0.0.1:8000
+gunicorn chatbot_core.wsgi:application --bind 127.0.0.1:8000 --timeout 120
 ```
 3. http://127.0.0.1:8000/chatbot/generate 로 챗봇 응답 POST 요청
     - Body 예시
