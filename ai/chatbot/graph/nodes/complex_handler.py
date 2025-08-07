@@ -1,9 +1,7 @@
-# ai/chatbot/graph/nodes/complex_handler.py
-
 from typing import Dict, Any, List
 from langgraph.graph import StateGraph, END
-from ai.chatbot.graph.state import ChatState
-from ai.chatbot.graph.nodes.classifiy_intent import classify_intent
+from chatbot.graph.state import ChatState
+from chatbot.graph.nodes.classifiy_intent import classify_intent
 
 # 환경 변수를 로드합니다.
 from dotenv import load_dotenv

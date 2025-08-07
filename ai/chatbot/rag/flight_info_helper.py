@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-from ai.chatbot.rag.config import client
+from chatbot.rag.config import client
 
 load_dotenv()
 

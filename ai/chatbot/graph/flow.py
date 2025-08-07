@@ -3,11 +3,11 @@ import pkgutil
 from functools import partial
 from langgraph.graph import StateGraph, END
 
-from ai.chatbot.graph.state import ChatState
-from ai.chatbot.graph.router import route_by_intent
-from ai.chatbot.graph.nodes.classifiy_intent import classify_intent
-from ai.chatbot.graph.nodes.complex_handler import handle_complex_intent
-import ai.chatbot.graph.handlers
+from chatbot.graph.state import ChatState
+from chatbot.graph.router import route_by_intent
+from chatbot.graph.nodes.classifiy_intent import classify_intent
+from chatbot.graph.nodes.complex_handler import handle_complex_intent
+import chatbot.graph.handlers
 
 
 def build_chat_graph():
@@ -19,11 +19,11 @@ def build_chat_graph():
     builder.add_node("classify_intent", classify_intent)
 
     # 핸들러 노드들을 동적으로 추가하고 엣지를 연결
-    for importer, modname, ispkg in pkgutil.iter_modules(ai.chatbot.graph.handlers.__path__):
+    for importer, modname, ispkg in pkgutil.iter_modules(chatbot.graph.handlers.__path__):
         if modname.startswith("__"):
             continue
         
-        module = importlib.import_module(f"ai.chatbot.graph.handlers.{modname}")
+        module = importlib.import_module(f"chatbot.graph.handlers.{modname}")
         for attribute_name in dir(module):
             attribute = getattr(module, attribute_name)
             if callable(attribute) and attribute_name.endswith("_handler"):

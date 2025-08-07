@@ -1,8 +1,8 @@
 # C:\Users\User\Desktop\ICN-AI-chatbot\ai\chatbot\graph\handlers\facility.py
-from ai.chatbot.graph.state import ChatState
-from ai.chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
-from ai.chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
-from ai.chatbot.rag.llm_tools import extract_location_with_llm
+from chatbot.graph.state import ChatState
+from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
+from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
+from chatbot.rag.llm_tools import extract_location_with_llm
 
 def facility_guide_handler(state: ChatState) -> ChatState:
     """

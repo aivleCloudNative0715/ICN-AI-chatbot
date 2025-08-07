@@ -2,10 +2,10 @@ import os
 import requests
 from datetime import datetime
 import re
-from ai.chatbot.graph.state import ChatState
+from chatbot.graph.state import ChatState
 from dotenv import load_dotenv
 
-from ai.chatbot.rag.airport_congestion_helpers import _get_congestion_level, VALID_AREAS, _parse_query_with_llm
+from chatbot.rag.airport_congestion_helpers import _get_congestion_level, VALID_AREAS, _parse_query_with_llm
 
 load_dotenv()
 

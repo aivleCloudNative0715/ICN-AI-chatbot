@@ -1,5 +1,5 @@
-from ai.shared.normalize_with_morph import normalize_with_morph
-from ai.shared.predict_intent_and_slots import predict_top_k_intents_and_slots
+from shared.normalize_with_morph import normalize_with_morph
+from shared.predict_intent_and_slots import predict_top_k_intents_and_slots
 
 # 🧪 실행 루프
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 import json
-from ai.chatbot.rag.config import client
+from chatbot.rag.config import client
 
 # 유효한 터미널 및 구역 정보를 정의합니다.
 VALID_AREAS = {

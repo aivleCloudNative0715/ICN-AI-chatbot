@@ -1,13 +1,6 @@
-from ai.shared.config import MODEL_PATH, INTENT2IDX_PATH, SLOT2IDX_PATH
-from ai.intent_classifier.inference import predict_top_k_intents_and_slots
-from ai.chatbot.graph.utils.kobert_classifier import KoBERTPredictor
-
-# KoBERT 분류기 인스턴스 생성
-my_kobert_classifier = KoBERTPredictor(
-    model_path=MODEL_PATH,
-    intent2idx_path=INTENT2IDX_PATH,
-    slot2idx_path=SLOT2IDX_PATH
-)
+from chatbot.graph.state import ChatState
+from shared.config import MODEL_PATH, INTENT2IDX_PATH, SLOT2IDX_PATH
+from intent_classifier.inference import predict_top_k_intents_and_slots
 
 
 def classify_intent(state: ChatState) -> ChatState:
