@@ -309,6 +309,7 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
         )
         final_response_text = response.choices[0].message.content
         print(f"\n--- [GPT-4o-mini 응답] ---")
+        print(final_response_text)
 
         # 모든 답변에 공통적으로 추가될 주의 문구
         common_disclaimer = (

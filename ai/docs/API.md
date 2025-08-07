@@ -87,6 +87,17 @@ OPENAI_API_KEY="llm api 키"
 SERVICE_KEY="공공데이터 api 키"
 ```
 
+필요시(WSL에서) pip 업데이트 / ko_KR.UTF-8 로케일이 설치 / venv 모듈 설치
+```bash
+python3 -m pip install --upgrade pip
+
+sudo locale-gen ko_KR.UTF-8
+sudo update-locale
+
+sudo apt install python3-venv
+```
+
+
 0. 가상환경 활성화 및 의존성 설치
 ```bash
 .venv\Scripts\activate
