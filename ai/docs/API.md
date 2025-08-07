@@ -78,6 +78,15 @@ ai
 주의
 gunicorn와 nginx를 위해서 Linux환경이어야 한다
 
+`.env` 파일 구성(ai 디렉토리 내에 위치)
+```bash
+MONGO_URI="ai 데이터 몽고 아틀라스 url"
+MONGO_DB_NAME="AirBot"
+EMBEDDING_MODEL_PATH="dragonkue/snowflake-arctic-embed-l-v2.0-ko"
+OPENAI_API_KEY="llm api 키"
+SERVICE_KEY="공공데이터 api 키"
+```
+
 0. 가상환경 활성화 및 의존성 설치
 ```bash
 .venv\Scripts\activate
