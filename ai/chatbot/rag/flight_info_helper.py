@@ -1,194 +1,264 @@
-# ai/chatbot/rag/flight_info_helper.py
-
-import os
+# 기존 임포트
 import requests
+import os
 import json
 from datetime import datetime, timedelta
-from dotenv import load_dotenv
+from typing import List, Dict, Optional, Any
 
-from chatbot.rag.config import client
-
-load_dotenv()
-
+# 수정된 임포트: config.py의 common_llm_rag_caller를 직접 사용합니다.
+from ai.chatbot.rag.config import common_llm_rag_caller 
+from .config import client
+# 기존 코드는 그대로 유지합니다.
+BASE_URL = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp"
 SERVICE_KEY = os.getenv("SERVICE_KEY")
-if not SERVICE_KEY:
-    raise ValueError("SERVICE_KEY 환경 변수가 설정되지 않았습니다.")
 
-FLIGHT_API_BASE_URL = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp"
-FLIGHT_ARRIVAL_URL = f"{FLIGHT_API_BASE_URL}/getPassengerArrivalsDeOdp"
-FLIGHT_DEPARTURE_URL = f"{FLIGHT_API_BASE_URL}/getPassengerDeparturesDeOdp"
-
-def call_flight_api(params: dict, direction: str):
+def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
     """
-    항공편 API를 호출하고 결과를 파싱하는 내부 함수
+    LLM을 사용하여 사용자 쿼리에서 운항 정보를 파악하고 JSON 형식으로 추출합니다.
+    - 추출된 'flight_id'는 API 호출을 위해 대문자로 변환합니다.
+    - '파리행'과 같이 특정 항공편이 아닌 목적지를 묻는 경우 'airport_name'으로 추출합니다.
     """
-    params_with_key = {
-        "serviceKey": SERVICE_KEY,
-        "type": "json",
-        **params
-    }
-    
-    api_url = FLIGHT_ARRIVAL_URL if direction == "arrival" else FLIGHT_DEPARTURE_URL
-    
+    system_prompt = (
+        "사용자의 질문을 분석하여 항공편 정보에 대한 필수 정보를 JSON 형식으로 추출해줘. "
+        "응답은 반드시 'flights'라는 키를 가진 JSON 객체여야 해. "
+        "각 항공편 정보는 이 'flights' 리스트 안에 객체로 넣어줘. "
+        "각 객체는 'flight_id'(편명), 'direction'(출발 또는 도착), 'info_type'(요청 정보)를 포함해야 해. "
+        "만약 질문이 특정 항공편이 아닌 '파리' 또는 '프랑스'와 같이 목적지 도시나 국가를 묻는 경우, 'flight_id' 대신 'airport_name'으로 추출해줘. "
+        "방향을 알 수 없으면 'departure'를 기본값으로 사용해. "
+        "예시: {'flights': [{'airport_name': '파리', 'direction': 'departure'}]}"
+        "또한, '게이트'는 'gatenumber', '출구'는 'exitnumber', '체크인 카운터'는 'chkinrange'와 같이 구체적인 API 항목명으로 변환해줘."
+    )
     try:
-        response = requests.get(api_url, params=params_with_key)
-        response.raise_for_status()
-        response_data = response.json()
-        
-        body = response_data.get("response", {}).get("body", {})
-        total_count = body.get("totalCount", 0)
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_query}
+            ],
+            temperature=0.1,
+            response_format={"type": "json_object"}
+        )
+        parsed_json_str = response.choices[0].message.content
 
-        if total_count == 0:
-            return None
+        parsed_data = json.loads(parsed_json_str)
+        parsed_queries = parsed_data.get('flights', [])
+
+        if isinstance(parsed_queries, list):
+            for query in parsed_queries:
+                if 'flight_id' in query and query['flight_id']:
+                    query['flight_id'] = query['flight_id'].upper()
         
-        items = body.get("items", {})
-        
-        flight_info = None
-        if isinstance(items, dict) and "item" in items:
-            item_data = items["item"]
-            flight_info = item_data[0] if isinstance(item_data, list) else item_data
-        elif isinstance(items, list) and len(items) > 0:
-            flight_info = items[0]
-            
-        if not flight_info or not isinstance(flight_info, dict):
-            return None
-            
-        return flight_info
+        print(f"디버그: 최종 파싱 결과 (대문자 변환 후) - {parsed_queries}")
+        return parsed_queries
+
+    except (json.JSONDecodeError, Exception) as e:
+        print(f"디버그: LLM 응답 파싱 실패 - {e}")
+        return []
     
-    except requests.exceptions.RequestException as e:
-        print(f"디버그: API 호출 중 오류 발생 ({direction}) - {e}")
-        return "api_error"
-    except Exception as e:
-        print(f"디버그: 응답 처리 중 오류 발생 ({direction}) - {e}")
-        return "api_error"
-
-def _format_flight_info(flight_info, date_label, direction, requested_info_keywords=None):
+def _call_flight_api(
+    direction: str,
+    flight_id: Optional[str] = None,
+    f_id: Optional[str] = None,
+    airport_code: Optional[str] = None,
+    search_date: Optional[str] = None
+) -> Dict[str, Any]:
     """
-    항공편 정보를 보기 좋게 포맷팅하는 함수
+    항공편 운항 정보를 조회하는 공공 API를 호출합니다.
+    - 날짜가 명시되지 않은 경우, 오늘 날짜를 가장 먼저 검색합니다.
+    - 이후 D-3일 ~ D+6일 범위를 추가로 검색합니다.
     """
-    if requested_info_keywords is None:
-        requested_info_keywords = []
-
-    airline = flight_info.get("airline", "정보 없음")
-    flight_id_res = flight_info.get("flightId", "정보 없음")
-    terminal = flight_info.get("terminalid", "정보 없음")
-    gate = flight_info.get("gatenumber", "정보 없음")
-    remark = flight_info.get("remark", "정보 없음")
-    schedule_time_str = flight_info.get("scheduleDateTime", "")
-    estimated_time_str = flight_info.get("estimatedDateTime", "")
-    airport_name = flight_info.get("airport", "정보 없음")
-    chkinrange = flight_info.get("chkinrange", "정보 없음")
-    
-    schedule_time = datetime.strptime(schedule_time_str, "%Y%m%d%H%M").strftime("%H시 %M분") if schedule_time_str else "정보 없음"
-    estimated_time = datetime.strptime(estimated_time_str, "%Y%m%d%H%M").strftime("%H시 %M분") if estimated_time_str else "정보 없음"
-
-    terminal_map = {
-        "P01": "제1여객터미널", "P02": "제1여객터미널 (탑승동)", "P03": "제2여객터미널",
-        "C01": "화물터미널 남측", "C02": "화물터미널 북측", "C03": "제2 화물터미널"
-    }
-    terminal_name = terminal_map.get(terminal, "정보 없음")
-    
-    # 1. 사용자가 요청한 정보 먼저 제공
-    primary_info = []
-    if any(kw in requested_info_keywords for kw in ["게이트", "탑승구"]) and gate:
-        primary_info.append(f"📌 **{airline} {flight_id_res}편 게이트 번호:** {gate}")
-    if any(kw in requested_info_keywords for kw in ["체크인", "카운터"]) and chkinrange:
-        primary_info.append(f"📌 **{airline} {flight_id_res}편 체크인 카운터:** {chkinrange}")
-    
-    # 2. 전체 운항 정보 추가
-    full_info = []
-    if primary_info:
-        full_info.extend(primary_info)
-        full_info.append("\n**운항 현황 상세 정보:**")
+    if direction == "departure":
+        url = f"{BASE_URL}/getPassengerDeparturesDeOdp"
+    elif direction == "arrival":
+        url = f"{BASE_URL}/getPassengerArrivalsDeOdp"
     else:
-        full_info.append(f"**{airline} {flight_id_res}편 운항 정보입니다.**")
+        return {"error": "Invalid direction"}
+
+    today = datetime.now().strftime("%Y%m%d")
+    date_to_search = []
     
-    full_info.append(f" - {date_label} {schedule_time} 예정 ({estimated_time} 변경)")
-    full_info.append(f" - 현황: {remark}")
-    full_info.append(f" - {'출발' if direction == 'arrival' else '도착'}지 공항: {airport_name}")
-    full_info.append(f" - 터미널: {terminal_name}")
-    if gate:
-        full_info.append(f" - 게이트 번호: {gate}")
-    if direction == "departure" and chkinrange:
-        full_info.append(f" - 체크인 카운터: {chkinrange}")
+    # 1. 날짜가 명시되지 않은 경우, 오늘 날짜를 최우선으로 추가
+    if not search_date:
+        date_to_search.append(today)
+        # 2. 이후 D-3일 ~ D+6일 범위를 추가
+        for i in range(-3, 7):
+            search_day = datetime.now() + timedelta(days=i)
+            search_day_str = search_day.strftime("%Y%m%d")
+            if search_day_str != today:
+                date_to_search.append(search_day_str)
+    else:
+        date_to_search.append(search_date)
 
-    return full_info
+    for date in date_to_search:
+        params = {
+            "serviceKey": SERVICE_KEY,
+            "type": "json",
+            "numOfRows": 10,
+            "pageNo": 1,
+            "searchday": date,
+            "flight_id": flight_id,
+            "f_id": f_id,
+            "airport_code": airport_code,
+        }
 
-def _parse_flight_query_with_llm(user_query: str) -> list | None:
+        try:
+            print(f"디버그: '{flight_id}'에 대해 {date} 날짜로 API 호출 시도...")
+            response = requests.get(url, params=params, timeout=5)
+            response.raise_for_status()
+            data = response.json()
+
+            items = data.get("response", {}).get("body", {}).get("items", {})
+            results = items.get("item", []) if isinstance(items, dict) else items
+            
+            if results:
+                print(f"디버그: {date} 날짜에서 '{flight_id}' 정보 발견!")
+                return {"data": results, "found_date": date, "total_count": len(results)}
+
+        except requests.exceptions.RequestException as e:
+            print(f"API 호출 오류 (날짜: {date}): {e}")
+            continue
+
+    print(f"디버그: {direction} 방향으로 모든 날짜에서 '{flight_id}'를 찾을 수 없습니다.")
+    return {"data": [], "total_count": 0}
+
+def _extract_flight_info_from_response(
+    api_response: Dict[str, Any], 
+    info_type: Optional[str] = None, 
+    found_date: Optional[str] = None,
+    airport_name: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """
-    LLM을 사용하여 사용자 쿼리에서 항공편 운항 정보를 JSON 리스트 형식으로 추출하는 함수.
+    API 응답에서 필요한 정보를 추출하고 포맷합니다.
+    - 'airport_name'이 제공될 경우, 해당 공항과 관련된 정보만 LLM을 활용해 필터링합니다.
     """
-    prompt_content = (
-        "사용자 쿼리에서 항공편 운항 정보를 추출하여 JSON 배열 형태로 반환해줘."
-        "각 배열 요소는 하나의 항공편에 대한 정보를 담고 있어야 해. "
-        "조회일 기준 -3일과 +6일 이내의 날짜만 지원하며, 범위를 벗어나면 'unsupported'로 응답해줘. 날짜가 언급되지 않으면 오늘로 간주해줘."
-        "운항 방향은 '도착' 또는 '출발' 중 하나여야 해. 쿼리에 정보가 없으면 null로 추출해줘."
-        "편명은 'OZ704'와 같이 항공사 코드와 숫자가 조합된 형태여야 해. "
-        "도착지/출발지 공항명(한글)이 있다면 추출해줘. 없으면 null로 추출해줘."
-        "사용자가 요청한 구체적인 정보 키워드(예: '체크인 카운터', '게이트')가 있다면 리스트로 추출해줘. '수하물 수취대'나 '출구'는 추출 대상이 아니야. 없으면 null로 추출해줘."
-        "응답 시 다른 설명 없이 오직 JSON 배열만 반환해야 해."
+    flight_data = api_response.get("data", [])
+    if not flight_data:
+        return []
 
-        "\n\n응답 형식: "
-        "```json"
-        "["
-        "  {{"
-        "    \"date_offset\": \"[오늘=0, 내일=1, 3일 전=-3, 6일 뒤=6, 범위를 벗어나면 'unsupported']\", "
-        "    \"flight_id\": \"[편명 (string)]\", "
-        "    \"direction\": \"[arrival|departure|null]\", "
-        "    \"requested_info_keywords\": \"[요청 정보 키워드 리스트, 없으면 null]\""
-        "  }},"
-        "  {{"
-        "    \"date_offset\": \"[오늘=0, 내일=1, 3일 전=-3, 6일 뒤=6, 범위를 벗어나면 'unsupported']\", "
-        "    \"flight_id\": \"[편명 (string)]\", "
-        "    \"direction\": \"[arrival|departure|null]\", "
-        "    \"requested_info_keywords\": \"[요청 정보 키워드 리스트, 없으면 null]\""
-        "  }}"
-        "]"
-        "```"
-        "\n\n예시: "
-        "사용자: TW281 게이트랑 LJ262 체크인 카운터 좀"
-        "응답: ```json\n[{{\"date_offset\": 0, \"flight_id\": \"TW281\", \"direction\": null, \"requested_info_keywords\": [\"게이트\"]}}, {{\"date_offset\": 0, \"flight_id\": \"LJ262\", \"direction\": null, \"requested_info_keywords\": [\"체크인 카운터\"]}}]```"
-        "사용자: 3일 전 OZ704편 도착 정보 알려줘"
-        "응답: ```json\n[{{\"date_offset\": -3, \"flight_id\": \"OZ704\", \"direction\": \"arrival\", \"requested_info_keywords\": null}}]```"
-    )
+    if isinstance(flight_data, dict):
+        flight_data = [flight_data]
 
-    messages = [
-        {"role": "system", "content": prompt_content},
-        {"role": "user", "content": user_query}
-    ]
-
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages,
-        temperature=0.0
-    )
-    
-    llm_output = response.choices[0].message.content.strip()
-
-    try:
-        if llm_output.startswith("```json") and llm_output.endswith("```"):
-            llm_output = llm_output[7:-3].strip()
+    # 공항명 필터링이 필요할 경우 LLM 사용
+    if airport_name:
+        # API 응답 데이터를 문자열로 변환하여 LLM에 전달
+        data_to_filter = json.dumps(flight_data, ensure_ascii=False)
         
-        parsed_data = json.loads(llm_output)
+        system_prompt = (
+        f"주어진 JSON 데이터는 인천공항의 항공편 운항 정보 리스트입니다. 이 리스트에서 "
+        f"도착/출발 공항명이 '{airport_name}'과(와) 관련된 모든 객체를 찾아 JSON 리스트로 반환해주세요. "
+        f"필터링 조건에 맞지 않는 객체는 모두 제거해야 합니다. "
+        f"결과는 반드시 유효한 JSON 리스트 형식이어야 합니다. "
+        f"예시: [{{'airport': '도쿄', 'flightId': 'KE123'}}, ...]"
+        )
+        
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": data_to_filter}
+                ],
+                temperature=0.1,
+                response_format={"type": "json_object"} # JSON 형식 응답 요청
+            )
+            filtered_json_str = response.choices[0].message.content
+            filtered_data = json.loads(filtered_json_str)
+
+            print(f"디버그: LLM으로 '{airport_name}' 관련 정보 필터링 완료.")
+            flight_data = filtered_data.get('flights', []) if isinstance(filtered_data, dict) else filtered_data
             
-        # 요청 정보 키워드가 문자열로 반환되는 경우 리스트로 변환하고,
-        # 'null'이거나 키가 없는 경우 빈 리스트로 초기화합니다.
-        for item in parsed_data:
-            if "requested_info_keywords" not in item or item["requested_info_keywords"] is None:
-                item["requested_info_keywords"] = []
-            elif isinstance(item["requested_info_keywords"], str):
-                item["requested_info_keywords"] = [item["requested_info_keywords"]]
+        except (json.JSONDecodeError, Exception) as e:
+            print(f"디버그: LLM 필터링 실패 - {e}")
+            # 필터링 실패 시, 원본 데이터를 그대로 사용하거나 빈 리스트 반환
+            return []
+
+    extracted_info = []
+
+    for item in flight_data:
+        info_map = {
+            "gatenumber": "탑승구",
+            "chkinrange": "체크인카운터",
+            "exitnumber": "출구",
+            "remark": "운항현황",
+            "terminalid": "터미널",
+            "scheduleDateTime": "예정시간",
+            "estimatedDateTime": "변경시간"
+        }
+        
+        info = {
+            "flightId": item.get("flightId"),
+            "direction": "도착" if "carousel" in item else "출발",
+            "airline": item.get("airline"),
+            "airport": item.get("airport"),
+            "airportCode": item.get("airportCode"),
+        }
+        
+        if found_date:
+            info["운항날짜"] = found_date
+
+        if info_type:
+            if info_type == '운항정보':
+                api_key = 'remark'
+            else:
+                api_key = info_type
             
-            # 날짜 오프셋이 문자열일 경우 정수로 변환
-            if "date_offset" in item and isinstance(item["date_offset"], str):
-                try:
-                    item["date_offset"] = int(item["date_offset"])
-                except (ValueError, TypeError):
-                    item["date_offset"] = 0
-                
-        return parsed_data
-    except json.JSONDecodeError:
-        print("디버그: LLM 응답이 올바른 JSON 형식이 아닙니다.")
-        print(f"디버그: LLM 원본 응답 -> {llm_output}")
+            display_name = info_map.get(api_key, api_key)
+            info[display_name] = item.get(api_key, "정보 없음")
+            
+            specific_info = {
+                "flightId": info["flightId"],
+                "direction": info["direction"],
+                "airline": info["airline"],
+                "airport": info["airport"],
+                "airportCode": info["airportCode"],
+                display_name: info[display_name],
+            }
+            if found_date:
+                specific_info["운항날짜"] = found_date
+            
+            extracted_info.append(specific_info)
+        else:
+            info["예정시간"] = item.get("scheduleDateTime")
+            info["변경시간"] = item.get("estimatedDateTime")
+            info["운항현황"] = item.get("remark")
+            info["탑승구"] = item.get("gatenumber")
+            info["출구"] = item.get("exitnumber")
+            info["체크인카운터"] = item.get("chkinrange")
+            info["터미널"] = item.get("terminalid")
+            extracted_info.append(info)
     
-    return None
+    return extracted_info
+
+def _get_airport_code_with_llm(airport_name: str) -> Optional[str]:
+    """
+    LLM을 사용하여 주어진 공항명의 IATA 코드를 추출합니다.
+    """
+    system_prompt = (
+        f"'{airport_name}'과(와) 관련된 공항의 IATA 코드를 찾아줘. "
+        f"만약 국가 이름이라면 해당 국가의 가장 주요한 국제공항 코드를 찾아줘. "
+        f"예를 들어, '파리' 또는 '프랑스'는 'CDG'야. '일본'은 'NRT' 또는 'HND' 중 'NRT'를 선택해줘. "
+        "오직 공항 코드만 답변해야 하며, 다른 설명은 포함하지 마."
+    )
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": airport_name}
+            ],
+            temperature=0.1
+        )
+        airport_code = response.choices[0].message.content.strip()
+        
+        # LLM 응답이 너무 길거나 예상치 못한 형식일 경우를 대비해 간단한 유효성 검사
+        if 2 <= len(airport_code) <= 5 and airport_code.isupper() and airport_code.isalnum():
+            print(f"디버그: LLM이 '{airport_name}'에 대한 공항 코드로 '{airport_code}'를 반환했습니다.")
+            return airport_code
+        else:
+            print(f"디버그: LLM이 반환한 공항 코드 '{airport_code}'가 유효하지 않습니다.")
+            return None
+    
+    except Exception as e:
+        print(f"디버그: LLM을 사용한 공항 코드 추출 실패 - {e}")
+        return None

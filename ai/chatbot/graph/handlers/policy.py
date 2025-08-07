@@ -3,7 +3,7 @@ from chatbot.graph.state import ChatState
 from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
 
-def immigration_policy_info_handler(state: ChatState) -> ChatState:
+def immigration_policy_handler(state: ChatState) -> ChatState:
     """
     'immigration_policy_info' 의도에 대한 RAG 기반 핸들러.
     사용자 쿼리를 기반으로 MongoDB에서 입출국 정책 정보를 검색하고 답변을 생성합니다.

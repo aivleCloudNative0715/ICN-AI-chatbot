@@ -1,115 +1,146 @@
-from chatbot.graph.state import ChatState
+from ai.chatbot.graph.state import ChatState
 
-from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client # utils에서 필요한 함수 임포트
-from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller # config에서 설정 및 공통 LLM 호출 함수 임포트
+from ai.chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client # utils에서 필요한 함수 임포트
+from ai.chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller # config에서 설정 및 공통 LLM 호출 함수 임포트
 
-from chatbot.rag.flight_info_helper import call_flight_api, _format_flight_info, _parse_flight_query_with_llm
-from chatbot.rag.regular_schedule_helper import _parse_schedule_query_with_llm, _get_day_of_week_field
-from chatbot.rag.utils import get_mongo_collection
+from ai.chatbot.rag.regular_schedule_helper import (
+    _parse_schedule_query_with_llm,
+    _call_schedule_api,
+    _get_day_of_week_field,
+)
+from ai.chatbot.rag.flight_info_helper import (
+    _parse_flight_query_with_llm,
+    _call_flight_api,
+    _extract_flight_info_from_response,
+    _get_airport_code_with_llm
+)
+from ai.chatbot.rag.utils import get_mongo_collection
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
 SERVICE_KEY = os.getenv("SERVICE_KEY")
 
 def flight_info_handler(state: ChatState) -> ChatState:
-    """
-    여객기 운항 현황 상세 조회 서비스 API를 호출하여 답변을 생성하는 핸들러.
-    """
-    print(f"\n--- 항공편 정보 핸들러 실행 ---")
     user_query = state.get("user_input", "")
+    intent_name = state.get("intent", "flight_info_query")
+
+    if not user_query:
+        return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
+
+    print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
+    print(f"디버그: 사용자 쿼리 - '{user_query}'")
 
     parsed_queries = _parse_flight_query_with_llm(user_query)
 
-    if not parsed_queries or not isinstance(parsed_queries, list):
-        response_text = "죄송합니다. 요청을 처리하는 중 문제가 발생했습니다. 다시 시도해 주세요."
-        return {**state, "response": response_text}
+    if not parsed_queries or not any(q.get("flight_id") or q.get("airport_name") for q in parsed_queries):
+        return {**state, "response": "죄송합니다. 요청하신 항공편 정보를 찾을 수 없습니다."}
 
-    final_responses = []
-
-    # 도착 관련 키워드 목록
-    arrival_keywords = ["출구"]
-    # 출발 관련 키워드 목록
-    departure_keywords = ["체크인", "카운터", "게이트"]
+    all_flight_results = []
 
     for query in parsed_queries:
-        date_offset = query.get("date_offset", 0)
-        direction = query.get("direction")
-        flight_id = query.get("flight_id", "").upper()
+        flight_id = query.get("flight_id")
+        airport_name = query.get("airport_name")
+        direction = query.get("direction", "departure")
+        info_type = query.get("info_type")
         
-        # --- 이 부분을 수정하세요. ---
-        # query.get() 메서드를 사용하여 키가 없을 때 기본값으로 빈 리스트를 반환합니다.
-        requested_info_keywords = query.get("requested_info_keywords", [])
-
-        if date_offset == "unsupported" or not isinstance(date_offset, (int, float)) or not (-3 <= date_offset <= 6):
-            final_responses.append(f"죄송합니다. 항공편 정보는 조회일 기준 -3일부터 +6일까지만 조회가 가능합니다.")
-            continue
-        
-        if not flight_id:
-            final_responses.append(f"죄송합니다. 운항 정보를 확인하려면 항공편명을 알려주세요.")
-            continue
-        
-        search_date = datetime.now() + timedelta(days=date_offset)
-        search_day = search_date.strftime("%Y%m%d")
-        date_label = f"{(abs(date_offset))}일 전" if date_offset < 0 else (f"{date_offset}일 뒤" if date_offset > 0 else "오늘")
-        
-        is_arrival_info_requested = any(kw in requested_info_keywords for kw in arrival_keywords)
-        is_departure_info_requested = any(kw in requested_info_keywords for kw in departure_keywords)
-        
-        # 방향과 요청 정보의 불일치 확인 및 안내
-        if is_arrival_info_requested and is_departure_info_requested:
-            pass # 둘 다 요청한 경우, 일단 API를 호출하여 정보를 모두 제공
-        elif direction == "departure" and is_arrival_info_requested:
-            final_responses.append(f"{flight_id}편은 출발편입니다. 출구 정보는 도착편에만 제공됩니다.")
-            continue
-        elif direction == "arrival" and is_departure_info_requested:
-            final_responses.append(f"{flight_id}편은 도착편입니다. 체크인 카운터나 게이트 정보는 출발편에만 제공됩니다.")
-            continue
-
-        # API 호출
-        if direction is None:
-            # 방향이 명확하지 않은 경우 도착과 출발 모두 조회
-            arrival_info = call_flight_api({"searchday": search_day, "flight_id": flight_id}, "arrival")
-            departure_info = call_flight_api({"searchday": search_day, "flight_id": flight_id}, "departure")
-
-            response_parts = []
-            if arrival_info and arrival_info != "api_error":
-                response_parts.extend(_format_flight_info(arrival_info, date_label, "arrival", requested_info_keywords))
-            if departure_info and departure_info != "api_error":
-                if response_parts:
-                    response_parts.append("\n- - -")
-                response_parts.extend(_format_flight_info(departure_info, date_label, "departure", requested_info_keywords))
+        # `airport_name`이 있으면 LLM을 사용해 공항 코드를 먼저 가져온 후 API 호출
+        if airport_name:
+            print(f"디버그: 도착지 '{airport_name}'에 대한 API 호출 준비")
+            airport_code = _get_airport_code_with_llm(airport_name)
             
-            if response_parts:
-                final_responses.append("\n".join(response_parts))
+            if airport_code:
+                # `airport_code` 파라미터를 사용하여 API를 호출
+                api_result_dep = _call_flight_api("departure", airport_code=airport_code)
+                if not api_result_dep.get("error") and api_result_dep.get("data"):
+                    # `_extract_flight_info_from_response`는 이제 필터링 로직 없이 응답을 처리
+                    retrieved_info = _extract_flight_info_from_response(
+                        api_result_dep, info_type, api_result_dep.get("found_date")
+                    )
+                    all_flight_results.extend(retrieved_info)
+                else:
+                    all_flight_results.append({
+                        "query": query,
+                        "info": f"'{airport_code}' 공항 정보를 찾을 수 없습니다."
+                    })
             else:
-                final_responses.append(f"죄송합니다. {date_label}에 해당하는 항공편 ({flight_id}) 운항 정보를 찾을 수 없습니다.")
+                 all_flight_results.append({
+                     "query": query,
+                     "info": f"'{airport_name}'에 대한 공항 코드를 찾을 수 없습니다."
+                 })
+            continue
 
-        else:
-            # 방향이 지정된 경우 해당 방향만 조회
-            flight_info = call_flight_api({"searchday": search_day, "flight_id": flight_id}, direction)
+        # `flight_id`가 존재할 경우, 기존 로직 유지
+        if not flight_id:
+            continue
 
-            if flight_info and flight_info != "api_error":
-                response_parts = _format_flight_info(flight_info, date_label, direction, requested_info_keywords)
-                final_responses.append("\n".join(response_parts))
-            else:
-                final_responses.append(f"죄송합니다. {date_label}에 해당하는 {direction}편 ({flight_id}) 운항 정보를 찾을 수 없습니다.")
+        retrieved_info = None
+        found_date = None
+
+        if direction != "unknown":
+            print(f"디버그: API 호출 준비 - 항공편 '{flight_id}' ({direction}), 요청 정보 '{info_type}'")
+            api_result = _call_flight_api(direction, flight_id=flight_id)
+            if not api_result.get("error") and api_result.get("data"):
+                retrieved_info = _extract_flight_info_from_response(api_result, info_type, api_result.get("found_date"))
+                found_date = api_result.get("found_date")
+
+        if not retrieved_info:
+            print(f"디버그: '{flight_id}'에 대한 정보가 없어, 출/도착 정보를 모두 확인합니다.")
+            
+            api_result_dep = _call_flight_api("departure", flight_id=flight_id)
+            if not api_result_dep.get("error") and api_result_dep.get("data"):
+                retrieved_info = _extract_flight_info_from_response(api_result_dep, info_type, api_result_dep.get("found_date"))
+                found_date = api_result_dep.get("found_date")
+
+            if not retrieved_info:
+                api_result_arr = _call_flight_api("arrival", flight_id=flight_id)
+                if not api_result_arr.get("error") and api_result_arr.get("data"):
+                    retrieved_info = _extract_flight_info_from_response(api_result_arr, info_type, api_result_arr.get("found_date"))
+                    found_date = api_result_arr.get("found_date")
+
+        if not retrieved_info:
+            all_flight_results.append({
+                "query": query,
+                "info": "찾을 수 없습니다."
+            })
+            continue
+
+        for info in retrieved_info:
+            info["운항날짜"] = found_date if found_date else "알 수 없음"
+
+        all_flight_results.extend(retrieved_info)
     
-    if not final_responses:
-        response_text = f"죄송합니다. {date_label}에 해당하는 항공편들의 운항 정보를 찾을 수 없습니다."
+    if not all_flight_results:
+        final_response = "죄송합니다. 요청하신 항공편 정보를 찾을 수 없습니다."
     else:
-        response_text = "\n\n" + "\n\n".join(final_responses) + "\n"
+        # 1. 불필요한 "정보 없음" 항목을 필터링하여 새로운 리스트 생성
+        cleaned_results = []
+        for result in all_flight_results:
+            cleaned_item = {k: v for k, v in result.items() if v and v != "정보 없음"}
+            if cleaned_item:
+                cleaned_results.append(cleaned_item)
+
+        # 2. 결과를 최대 2개로 제한
+        truncated_flight_results = cleaned_results[:2]
+
+        context_for_llm = json.dumps(truncated_flight_results, ensure_ascii=False, indent=2)
+
+        intent_description = (
+            "사용자가 요청한 항공편에 대한 운항 현황입니다. 다음 검색 결과를 종합하여 "
+            "친절하고 명확하게 답변해주세요. "
+            "응답에는 찾은 정보만 포함하고, 정보가 없는 항목은 언급하지 마세요. "
+        )
         
-    disclaimer = (
-        "\n\n"  # 시각적 구분을 위한 줄바꿈
-        "⚠️ 주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다.\n"
-        "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
-    )
-    response_text += disclaimer
-    
-    return {**state, "response": response_text}
+        if len(all_flight_results) > 2:
+            intent_description += "또한, 더 많은 결과가 있지만 2개만 보여주고 있다는 메시지를 추가해 주세요."
+
+        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+
+    return {**state, "response": final_response}
+
 
 def regular_schedule_query_handler(state: ChatState) -> ChatState:
     user_query = state.get("user_input", "")
@@ -125,81 +156,79 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
     if not parsed_queries:
         return {**state, "response": "죄송합니다. 스케줄 정보를 파악하는 중 문제가 발생했습니다. 다시 시도해 주세요."}
     
-    all_retrieved_docs = []
+    # API 호출은 한 번만 수행 (도착/출발은 첫 번째 쿼리 방향을 따름)
+    direction = parsed_queries[0].get('direction', 'departure')
     
+    api_result = _call_schedule_api(direction)
+    if isinstance(api_result, str):
+      return {**state, "response": f"API 호출 중 오류가 발생했습니다: {api_result}"}
+    
+    retrieved_api_docs = api_result
+
+    # 여러 쿼리 결과를 저장할 딕셔너리
+    consolidated_results = {}
+
     for parsed_query in parsed_queries:
         airline_name = parsed_query.get("airline_name")
-        airport_name = parsed_query.get("airport_name")
+        airport_name = parsed_query.get("airport_name", "목적지")
+        airport_codes = parsed_query.get("airport_codes", [])
         day_name = parsed_query.get("day_of_week")
-        direction = parsed_query.get("direction")
         time_period = parsed_query.get("time_period")
         
-        query_filter = {}
-        day_field = _get_day_of_week_field(day_name)
-        query_filter[day_field] = True
+        filtered_docs = []
+        day_field_name = _get_day_of_week_field(day_name)
         
-        if airline_name:
-            query_filter["airline_name_kor"] = airline_name
-        
-        if airport_name:
-            query_filter["airport_name_kor"] = airport_name
-        
-        if direction:
-            if direction == 'arrival':
-                query_filter["direction"] = "도착"
-            elif direction == 'departure':
-                query_filter["direction"] = "출발"
-
-        # 시즌 정보(운항 기간)는 first_date와 last_date 필터로만 처리
-        today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-        
-        day_of_week_number = {'월요일': 0, '화요일': 1, '수요일': 2, '목요일': 3, '금요일': 4, '토요일': 5, '일요일': 6, '오늘': today.weekday()}
-        target_day_number = day_of_week_number.get(day_name, today.weekday())
-        
-        target_date = today
-        days_to_add = (target_day_number - today.weekday() + 7) % 7
-        target_date += timedelta(days=days_to_add)
-        
-        query_filter["first_date"] = {"$lte": target_date}
-        query_filter["last_date"] = {"$gte": target_date}
-        
-        # 시간대별 검색 로직
-        if time_period:
-            time_filter = {}
-            if time_period == '오전':
-                time_filter["$gte"] = "06:00"
-                time_filter["$lt"] = "12:00"
-            elif time_period == '오후':
-                time_filter["$gte"] = "12:00"
-                time_filter["$lt"] = "18:00"
-            elif time_period == '저녁':
-                time_filter["$gte"] = "18:00"
-                time_filter["$lt"] = "24:00"
+        for doc in retrieved_api_docs:
+            if not isinstance(doc, dict):
+                continue
             
-            if time_filter:
-                query_filter["scheduled_time"] = time_filter
+            # 도착지 공항 코드(IATA) 필터링
+            if airport_codes and doc.get("airportcode") not in airport_codes:
+                continue
+
+            # 요일 필터링
+            if day_field_name and doc.get(day_field_name, 'N') != 'Y':
+                continue
+
+            # 시간대 필터링
+            if time_period:
+                scheduled_time_str = doc.get("st", "0000")
+                if time_period == '오전' and not ('0600' <= scheduled_time_str < '1200'):
+                    continue
+                if time_period == '오후' and not ('1200' <= scheduled_time_str < '1800'):
+                    continue
+                if time_period == '저녁' and not ('1800' <= scheduled_time_str <= '2359'):
+                    continue
+                if time_period == '새벽' and not ('0000' <= scheduled_time_str < '0600'):
+                    continue
+
+            # 항공사명 필터링
+            normalized_airline_name = airline_name.replace(' ', '') if airline_name else None
+            normalized_doc_airline = doc.get("airline", "").replace(' ', '')
+            
+            if normalized_airline_name and normalized_airline_name not in normalized_doc_airline:
+                continue
+
+            filtered_docs.append(doc)
         
-        try:
-            collection = get_mongo_collection(collection_name="FlightSchedule")
-            retrieved_docs = list(collection.find(query_filter).sort("scheduled_time"))
-            all_retrieved_docs.extend(retrieved_docs)
-            print(f"디버그: {parsed_query}에 대해 총 {len(retrieved_docs)}개 문서 검색 완료.")
-        except Exception as e:
-            error_msg = f"죄송합니다. DB 연결 또는 조회 중 오류가 발생했습니다: {e}"
-            print(f"디버그: {error_msg}")
-            return {**state, "response": error_msg}
-
-    print(f"디버그: MongoDB에서 총 {len(all_retrieved_docs)}개 문서 검색 완료.")
-
-    if not all_retrieved_docs:
-        response_text = "죄송합니다. 요청하신 조건에 맞는 정기 운항 스케줄 정보를 찾을 수 없습니다."
-        return {**state, "response": response_text}
+        filtered_docs.sort(key=lambda x: x.get("st", "9999"))
+        top_5_docs = filtered_docs[:5]
+        
+        query_key = f"{day_name} {airport_name}"
+        consolidated_results[query_key] = top_5_docs
     
-    context_for_llm = "\n".join([str(doc) for doc in all_retrieved_docs])
-    intent_description = "사용자가 요청한 정기 운항 스케줄 정보를 요약하여 친절하게 답변해줘. 여러 항공편 정보를 구조화된 목록 형태로 보기 좋게 정리해줘."
+    # 모든 쿼리 결과를 담을 하나의 컨텍스트 생성
+    context_for_llm = json.dumps(consolidated_results, ensure_ascii=False, indent=2)
     
+    # LLM에게 단일 답변을 요청하는 프롬프트
+    intent_description = (
+        "사용자가 여러 조건에 대한 정기 운항 스케줄 정보를 요청했습니다. "
+        "다음 검색 결과를 종합하여, 각 조건별로 구분하여 친절하고 명확하게 답변해주세요. "
+        "각 조건에 해당하는 항공편이 없을 경우, '찾을 수 없습니다'와 같은 명확한 메시지를 포함해 주세요."
+    )
+
     final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
-    
+
     return {**state, "response": final_response}
 
 def airline_info_query_handler(state: ChatState) -> ChatState:
