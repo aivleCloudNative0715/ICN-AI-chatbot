@@ -1,8 +1,8 @@
 import torch
 from torch.nn.functional import softmax
 
-from ai.shared.load_model import model, idx2intent, idx2slot
-from ai.shared.utils import tokenizer, device
+from shared.load_model import model, idx2intent, idx2slot
+from shared.utils import tokenizer, device
 
 # 🧱 토큰 → 단어 병합 + 슬롯 정렬
 def merge_tokens_and_slots(tokens, slot_ids, idx2slot):
@@ -62,3 +62,16 @@ def predict_top_k_intents_and_slots(text, k=3):
         merged = merge_tokens_and_slots(tokens, slot_pred_ids, idx2slot)
 
     return intents, merged
+
+# 🔮 예측 함수 (의도 top-1만 사용)
+def predict_intent(text):
+    encoding = tokenizer(text, return_tensors='pt', truncation=True, padding='max_length', max_length=64)
+    input_ids = encoding["input_ids"].to(device)
+    attention_mask = encoding["attention_mask"].to(device)
+
+    with torch.no_grad():
+        intent_logits, _ = model(input_ids, attention_mask)
+        intent_probs = softmax(intent_logits, dim=1)
+        top_prob, top_index = torch.max(intent_probs, dim=1)
+        predicted_intent = idx2intent[top_index.item()]
+        return predicted_intent, top_prob.item()

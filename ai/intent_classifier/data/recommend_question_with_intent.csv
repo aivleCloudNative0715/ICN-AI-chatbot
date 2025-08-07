@@ -1,0 +1,101 @@
+intent,recommend_question,predicted_intent,intent_prob
+airport_info,LHR은 무슨 공항인가요?,airport_info,0.9997898936271667
+airport_info,LAX가 뭔가요?,airport_info,0.999466598033905
+airport_info,공항 코드 SFO는 어디인가요?,airport_info,0.9998776912689209
+airport_info,서우두 국제공항의 공항 코드는 무엇인가요?,airport_info,0.9994949102401733
+airport_info,암스테르담 스키폴 공항은 어디에 있나요?,airport_info,0.9998076558113098
+airline_info_query,에어 홍콩 고객센터 전화번호는 뭔가요?,airline_info_query,0.9996507167816162
+airline_info_query,DL이 어떤 항공사인가요?,airline_info_query,0.999725878238678
+airline_info_query,인천공항에 취항하는 항공사는 뭐가 있나요?,airline_info_query,0.9997631907463074
+airline_info_query,가루다항공에 전화하려면 어디로 걸어야 하나요?,airline_info_query,0.9996676445007324
+airline_info_query,대한항공에 연락하고 싶어요.,airline_info_query,0.9996001124382019
+airport_weather_current,지금 인천공항 비 오나요?,airport_weather_current,0.9974090456962585
+airport_weather_current,공항 날씨 어떤가요?,airport_weather_current,0.9993103742599487
+airport_weather_current,내일 공항 날씨 알려주세요,airport_weather_current,0.9991212487220764
+airport_weather_current,지금 공항 바람 많이 부나요?,airport_weather_current,0.9993785619735718
+airport_weather_current,아까 공항에 비 왔었나요?,airport_weather_current,0.9993341565132141
+airport_congestion_prediction,3시 입국장에 얼마나 사람들이 있을지 알려주세요,airport_congestion_prediction,0.9998193383216858
+airport_congestion_prediction,내일 오후 사람이 가장 적은 입국 게이트는 어디에요?,airport_congestion_prediction,0.9997926354408264
+airport_congestion_prediction,내일 공항 1층 사람 많을까요?,airport_congestion_prediction,0.9998082518577576
+airport_congestion_prediction,오늘 오후에 가족이 귀국하는데 사람이 많을까요?,airport_congestion_prediction,0.9996477365493774
+airport_congestion_prediction,1시간 뒤에 사람이 가장 적은 입국 게이트를 알려주세요,airport_congestion_prediction,0.9997852444648743
+airport_congestion_prediction,1시간 뒤 출국장 혼잡도는 어떤가요?,airport_congestion_prediction,0.9997734427452087
+airport_congestion_prediction,내일 출국하는 사람들이 얼마나 되나요?,airport_congestion_prediction,0.9996243715286255
+airport_congestion_prediction,"이따가 비행기 탈 때, 사람들 얼마나 있을까요?",airport_congestion_prediction,0.9997580647468567
+airport_congestion_prediction,사람 몰리는 시간을 피하려면 내일 몇시쯤 도착하는게 좋을까요?,airport_congestion_prediction,0.999330997467041
+airport_congestion_prediction,"4시에 비행기 타는데, 줄이 길까요?",airport_congestion_prediction,0.9996311664581299
+immigration_policy,해외에 장기 거주하다 돌아올 때도 비자가 필요한지 알고 싶어요,immigration_policy,0.9995201826095581
+immigration_policy,입국 심사는 내국인과 외국인이 따로 받나요?,immigration_policy,0.9994919300079346
+immigration_policy,QCODE는 뭔가요?,immigration_policy,0.999119222164154
+immigration_policy,입국 심사에 걸리는 시간은 보통 어느 정도인가요?,immigration_policy,0.9992651343345642
+immigration_policy,면세 범위 안에 있어도 세관신고서를 작성해야 하나요?,immigration_policy,0.9979066848754883
+immigration_policy,출국 절차에 대해 설명해 주세요,immigration_policy,0.7033811211585999
+immigration_policy,기내 액체류 반입 규정이 어떻게 되나요?,immigration_policy,0.9757177829742432
+immigration_policy,병역 미필자는 출국 시 어떤 절차를 따라야 하나요?,immigration_policy,0.9994539618492126
+immigration_policy,스마트패스는 무엇인가요?,immigration_policy,0.9994353652000427
+immigration_policy,출국 심사는 어디서 받나요?,immigration_policy,0.9992042183876038
+baggage_claim_info,수하물 수취대 번호를 확인하고 싶어요,baggage_claim_info,0.9978979825973511
+baggage_claim_info,국제선 도착 짐은 어디서 찾나요?,baggage_claim_info,0.999710738658905
+baggage_claim_info,인천공항 수하물 찾는 곳이 어디예요?,baggage_claim_info,0.9995735287666321
+baggage_claim_info,제주항공 7C101편 짐 찾는 곳 위치 좀 알려주세요,baggage_claim_info,0.9991162419319153
+baggage_claim_info,수하물 어디로 나오는지 알고 싶어요,baggage_claim_info,0.9997318387031555
+baggage_rule_query,수하물 규정에 대해 알려주세요,baggage_rule_query,0.5212525129318237
+baggage_rule_query,기내에서 액체류를 반입할 때 따로 포장해야 하나요?,baggage_rule_query,0.9990070462226868
+baggage_rule_query,기내에 동물을 데리고 탈 수 있나요?,baggage_rule_query,0.9987339377403259
+baggage_rule_query,기내 반입 가능한 가방 개수는 몇 개인가요?,baggage_rule_query,0.9983490705490112
+baggage_rule_query,약을 들고 비행기에 탈 수 있나요?,baggage_rule_query,0.9915779829025269
+default_greeting,안녕,default_greeting,0.9988434314727783
+default_greeting,만나서 반가워,default_greeting,0.9979898929595947
+default_greeting,나를 도와줄래?,default_greeting,0.9987977743148804
+default_greeting,가이드해주세요,default_greeting,0.9961673617362976
+default_greeting,뭘 할 수 있나요?,default_greeting,0.9964063763618469
+facility_guide,AED 자동심장충격기 어디에 있어요?,facility_guide,0.9992382526397705
+facility_guide,운영중인 음식점은 어디인가요?,facility_guide,0.9995220899581909
+facility_guide,공항에 약국은 어디인가요?,facility_guide,0.9995149374008179
+facility_guide,화장실 위치를 알려주세요,facility_guide,0.9996738433837891
+facility_guide,면세점이 어디에 있는지 궁금해요,facility_guide,0.9996285438537598
+flight_info,내일 아침 인천 도착 예정인 비행기 스케줄이 궁금해요,flight_info,0.9995458722114563
+flight_info,제가 탈 비행기가 지연되었는지 알고 싶어요,flight_info,0.9975294470787048
+flight_info,비행기 도착 예정 시간을 알고 싶어요,flight_info,0.9995892643928528
+flight_info,인천에서 도쿄 가는 비행기 언제 이륙했나요?,flight_info,0.9991218447685242
+flight_info,비행기가 어느 게이트인지 알고 싶어요,flight_info,0.9990290403366089
+regular_schedule_query,매일 운항하는 뉴욕행 항공편이 있나요?,regular_schedule_query,0.9998170733451843
+regular_schedule_query,다음달에 런던으로 가는 비행기가 있나요?,regular_schedule_query,0.9995644688606262
+regular_schedule_query,정기 항공편 일정이 궁금해요,regular_schedule_query,0.9998308420181274
+regular_schedule_query,이번 여름에 운항 예정된 비행기를 알려주세요,regular_schedule_query,0.9998065829277039
+regular_schedule_query,히드로 공항 가는 대한항공 정기편은 언제 있어요?,regular_schedule_query,0.9997937083244324
+transfer_info,환승 시 인천공항 밖 나갔다 다시 들어올 수 있나요?,transfer_info,0.9933534860610962
+transfer_info,인천공항에서 환승할 때 서울을 다녀올 수 있나요?,transfer_info,0.9516246318817139
+transfer_info,휴대품 검사 어떻게 준비하나요?,immigration_policy,0.9270866513252258
+transfer_info,K스탑오버가 뭐예요?,transfer_info,0.9971754550933838
+transfer_info,환승할 때 준비할게 있나요?,transfer_info,0.9889149069786072
+transfer_route_guide,국제선에서 국내선으로 환승할 때 절차가 어떻게 돼나요?,transfer_route_guide,0.9992006421089172
+transfer_route_guide,게이트 간 환승 동선이 궁금해요,transfer_route_guide,0.9978516101837158
+transfer_route_guide,셔틀트레인은 어디서 타요?,transfer_route_guide,0.9996367692947388
+transfer_route_guide,환승 루트에 휠체어 지원 서비스 있나요?,transfer_route_guide,0.9997013211250305
+transfer_route_guide,제2터미널에서 제1터미널로 갈아타려면 어떻게 이동하나요?,transfer_route_guide,0.9997312426567078
+parking_availability_query,지금 주차장 상황은 어떤가요?,parking_availability_query,0.9992610812187195
+parking_availability_query,어느 주차장이 여유로운가요?,parking_availability_query,0.9991849064826965
+parking_availability_query,주차장 빈자리 있나요?,parking_availability_query,0.9991338849067688
+parking_availability_query,지금 주차장 이용 가능한가요?,parking_availability_query,0.999254047870636
+parking_availability_query,주차장 이용 현황 보여주세요,parking_availability_query,0.9992117881774902
+parking_congestion_prediction,오후에 주차장 복잡할까요?,parking_congestion_prediction,0.9995796084403992
+parking_congestion_prediction,몇 시에 주차장이 한가할까요?,parking_congestion_prediction,0.9995183944702148
+parking_congestion_prediction,밤에 주차장 빈자리가 많을까요?,parking_congestion_prediction,0.9995803236961365
+parking_congestion_prediction,몇 시가 주차하기 가장 나을까요?,parking_congestion_prediction,0.9994218349456787
+parking_congestion_prediction,몇 시쯤 주차장이 덜 붐빌까요?,parking_congestion_prediction,0.9995624423027039
+parking_location_recommendation,주차하기 편한 곳 추천해주세요,parking_location_recommendation,0.9982389211654663
+parking_location_recommendation,가장 빠르게 주차할 수 있는 곳이 궁금해요,parking_location_recommendation,0.997378945350647
+parking_location_recommendation,주차장 추천 좀 부탁해요,parking_location_recommendation,0.9976333379745483
+parking_location_recommendation,주차장 추천 해주실래요,parking_location_recommendation,0.9979299306869507
+parking_location_recommendation,덜 붐비는 주차장을 알려주세요,parking_location_recommendation,0.9960209727287292
+parking_fee_info,주차 비용이 궁금해요,parking_fee_info,0.9996054768562317
+parking_fee_info,주차 요금 계산 어떻게 하나요?,parking_fee_info,0.9998303651809692
+parking_fee_info,신용카드로 주차비 결제 가능한가요?,parking_fee_info,0.9998526573181152
+parking_fee_info,주차 요금 할인 가능한가요?,parking_fee_info,0.9998383522033691
+parking_fee_info,주차 요금 정산은 어디서 하면 되나요?,parking_fee_info,0.9997484087944031
+parking_walk_time_info,주차장에서 체크인 카운터까지 얼마나 걸리나요?,parking_walk_time_info,0.9996601343154907
+parking_walk_time_info,주차장에서 카운터까지 거리가 얼마나 되나요?,parking_walk_time_info,0.9993569254875183
+parking_walk_time_info,체크인 카운터에서 제 차까지 얼마나 걸리나요?,parking_walk_time_info,0.9995991587638855
+parking_walk_time_info,체크인 카운터에서 가장 가까운 주차장은 어디인가요?,parking_walk_time_info,0.9994207620620728
+parking_walk_time_info,어느 주차장이 체크인 카운터와 가장 가까운가요?,parking_walk_time_info,0.9995965361595154

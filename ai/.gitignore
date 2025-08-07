@@ -21,3 +21,7 @@ __pycache__/
 .idea/
 
 .env
+# 모델 파일 (PyTorch 등)
+*.pt
+*.pth
+best_model.pt
