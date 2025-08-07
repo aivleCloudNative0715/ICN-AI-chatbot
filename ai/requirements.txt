@@ -14,7 +14,6 @@ tqdm==4.66.4
 
 # 🔤 KoBERT용 Tokenizer
 # sentencepiece==0.1.96
-# pip install sentencepiece --prefer-binary
 
 # 📊 시각화
 matplotlib==3.8.4
@@ -25,5 +24,4 @@ ipywidgets==8.1.2
 
 langgraph==0.5.4
 
-djangorestframework
-django
+openai==1.99.1

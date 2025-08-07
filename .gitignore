@@ -2,10 +2,6 @@
 .venv/
 
 __pycache__/
-ai/intent_classifier/best_models/intent-kobert-v1/best_kobert_model.pt
-ai/intent_classifier/best_models/intent-kobert-v1/label_encoder.pkl
 
-ai/best_models/intent-kobert-v1/best_model.pt
-ai/intent_classifier/best_models/intent-kobert-v1/intent2idx.pkl
-ai/intent_classifier/best_models/intent-kobert-v1/best_model.pt
-ai/intent_classifier/best_models/intent-kobert-v1/slot2idx.pkl
+ai/best_models/intent-kobert-v2/best_model.pt
+ai/intent_classifier/best_models/intent-kobert-v2/best_model.pt
