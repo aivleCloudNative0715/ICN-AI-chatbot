@@ -1,20 +1,20 @@
-from ai.chatbot.graph.state import ChatState
+from chatbot.graph.state import ChatState
 
-from ai.chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client # utils에서 필요한 함수 임포트
-from ai.chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller # config에서 설정 및 공통 LLM 호출 함수 임포트
+from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client # utils에서 필요한 함수 임포트
+from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller # config에서 설정 및 공통 LLM 호출 함수 임포트
 
-from ai.chatbot.rag.regular_schedule_helper import (
+from chatbot.rag.regular_schedule_helper import (
     _parse_schedule_query_with_llm,
     _call_schedule_api,
     _get_day_of_week_field,
 )
-from ai.chatbot.rag.flight_info_helper import (
+from chatbot.rag.flight_info_helper import (
     _parse_flight_query_with_llm,
     _call_flight_api,
     _extract_flight_info_from_response,
     _get_airport_code_with_llm
 )
-from ai.chatbot.rag.utils import get_mongo_collection
+from chatbot.rag.utils import get_mongo_collection
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv

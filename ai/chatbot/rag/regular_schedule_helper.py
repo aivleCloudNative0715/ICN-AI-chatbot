@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 # ai/chatbot/rag/config.py 에 있는 client 객체
 # ai/chatbot/rag/db_connector.py 에 있는 get_mongo_collection 함수를 가정
 # 실제 경로에 맞게 수정 필요
-from .config import client
-from .utils import get_mongo_collection
-from .config import common_llm_rag_caller
-from ai.chatbot.graph.state import ChatState
+from chatbot.rag.config import client
+from chatbot.rag.utils import get_mongo_collection
+from chatbot.rag.config import common_llm_rag_caller
+from chatbot.graph.state import ChatState
 
 # 시스템 로케일 설정 (요일 처리를 위해 필요)
 locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')

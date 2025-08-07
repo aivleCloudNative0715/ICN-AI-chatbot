@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Any
 
 # 수정된 임포트: config.py의 common_llm_rag_caller를 직접 사용합니다.
-from ai.chatbot.rag.config import common_llm_rag_caller 
-from .config import client
+from chatbot.rag.config import common_llm_rag_caller 
+from chatbot.rag.config import client
 # 기존 코드는 그대로 유지합니다.
 BASE_URL = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp"
 SERVICE_KEY = os.getenv("SERVICE_KEY")
