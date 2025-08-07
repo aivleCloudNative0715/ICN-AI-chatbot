@@ -1,8 +1,8 @@
 import torch
 from torch.nn.functional import softmax
 
-from ai.shared.load_model import model, idx2intent, idx2slot
-from ai.shared.utils import tokenizer, device
+from shared.load_model import model, idx2intent, idx2slot
+from shared.utils import tokenizer, device
 
 # 🧱 토큰 → 단어 병합 + 슬롯 정렬
 def merge_tokens_and_slots(tokens, slot_ids, idx2slot):

@@ -3,9 +3,9 @@ import pickle
 
 from transformers import AutoTokenizer
 
-from ai.shared.config import INTENT2IDX_PATH, SLOT2IDX_PATH, MODEL_PATH
-from ai.shared.model import KoBERTIntentSlotModel
-from ai.shared.utils import device
+from shared.config import INTENT2IDX_PATH, SLOT2IDX_PATH, MODEL_PATH
+from shared.model import KoBERTIntentSlotModel
+from shared.utils import device
 
 # 인텐트/슬롯 라벨 딕셔너리 로드
 with open(INTENT2IDX_PATH, "rb") as f:

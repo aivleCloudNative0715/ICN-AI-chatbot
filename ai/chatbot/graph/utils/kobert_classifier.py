@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
+from torch import softmax
 from transformers import BertModel, AutoTokenizer
 import pickle
 
-from ai.shared.model import KoBERTIntentSlotModel
+from shared.model import KoBERTIntentSlotModel
 
 
 class KoBERTClassifier(nn.Module):
@@ -65,7 +66,7 @@ class KoBERTPredictor:
 
         return merged
 
-    def predict(self, text: str, k: int = 1):
+    def predict(self, text: str, k: int = 1, probabilities=None):
         # 토크나이징
         encoding = self.tokenizer(
             text,
@@ -82,6 +83,7 @@ class KoBERTPredictor:
             intent_logits, slot_logits = self.model(input_ids, attention_mask)
             intent_probs = softmax(intent_logits, dim=1)
             topk_probs, topk_indices = torch.topk(intent_probs, k, dim=1)
+            confidence_score, predicted_idx = torch.max(probabilities, dim=1)
 
             # 인텐트
             intents = [(self.idx2intent[idx.item()], prob.item()) for idx, prob in zip(topk_indices[0], topk_probs[0])]
@@ -91,4 +93,6 @@ class KoBERTPredictor:
             tokens = self.tokenizer.convert_ids_to_tokens(input_ids[0])
             slots = self.merge_tokens_and_slots(tokens, slot_ids)
 
-        return intents, slots
+            confidence = confidence_score.item()
+
+        return intents, slots. confidence
