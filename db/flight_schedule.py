@@ -102,7 +102,7 @@ def fetch_and_upload_flight_schedule_data(db, service_key, airline_map, api_url,
                 if not isinstance(items, list):
                     items = [items]
             elif not isinstance(items, list):
-                 items = []
+                items = []
 
             current_page_data = []
             for item in items:
@@ -133,10 +133,14 @@ def fetch_and_upload_flight_schedule_data(db, service_key, airline_map, api_url,
                 saturday = item.get('saturday', 'N').upper() == 'Y'
                 sunday = item.get('sunday', 'N').upper() == 'Y'
 
+                # --- 사용자 요청에 따라 'airport' 필드 추가 ---
+                airport_name_from_api = item.get('airport')
+
                 current_page_data.append({
                     'airline_name_kor': airline_name_from_api,
                     'airline_code': airline_code, # 여기에는 이제 반드시 매핑된 코드가 들어갑니다.
                     'airport_code': item.get('airportcode'),
+                    'airport_name_kor': airport_name_from_api, # ✅ 추가된 필드
                     'scheduled_time': scheduled_time,
                     'first_date': first_date,
                     'last_date': last_date,
@@ -192,7 +196,7 @@ def fetch_and_upload_flight_schedule_data(db, service_key, airline_map, api_url,
         collection = db[collection_name]
         
         # **주의: 기존 데이터를 삭제하고 새로 넣고 싶을 때만 아래 줄의 주석을 해제하세요.**
-        # collection.delete_many({'direction': direction_kr}) # 특정 방향의 기존 데이터 삭제 (중복 방지용)
+        collection.delete_many({'direction': direction_kr}) # 특정 방향의 기존 데이터 삭제 (중복 방지용)
 
         if data_to_insert: # 삽입할 데이터가 있을 경우에만 insert_many 호출
             collection.insert_many(data_to_insert)
