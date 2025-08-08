@@ -48,8 +48,22 @@ def build_chat_graph():
         print(f"Slots: {state.get('slots')}")
         print(f"-----------------------------------\n")
 
+        user_input = state.get("user_input", "")
+        top_k_intents = state.get('top_k_intents_and_probs', [])
         slots = state.get("slots", [])
+        
+        # 의도 신뢰도 기반 복합 의도 감지
+        # 상위 2개 의도의 신뢰도 차이가 10% 이내이고, 두 의도 모두 챗봇이 지원하는 의도일 경우
+        if len(top_k_intents) >= 2:
+            top1_intent, top1_conf = top_k_intents[0]
+            top2_intent, top2_conf = top_k_intents[1]
+            
+            # 신뢰도 차이가 0.1(10%) 미만일 경우
+            if (top1_conf - top2_conf) < 0.1:
+                print("DEBUG: 상위 2개 의도 신뢰도 기반 복합 의도 감지")
+                return "handle_complex_intent"
 
+        # 슬롯 기반 복합 의도 감지
         # 슬롯 태그 그룹 정의
         slot_groups = {
             'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
@@ -59,32 +73,27 @@ def build_chat_graph():
             'policy': {'B-document', 'B-organization', 'B-person_type', 'B-item', 'B-transfer_topic'},
             'weather': {'B-weather_topic'},
             'time': {'B-date', 'B-time', 'B-season', 'B-day_of_week'},
-            'general_topic': {'B-topic'}
+            'general_topic': {'B-topic'},
+            'congestion': {'B-congestion_topic', 'B-congestion_status'}
         }
 
         found_groups = set()
         for _, tag in slots:
-            # "B-" 태그만 검사하여 주요 키워드만 파악
             if tag.startswith('B-'):
                 for group_name, tags in slot_groups.items():
                     if tag in tags:
                         found_groups.add(group_name)
 
-        # general_topic 그룹에 해당하는 슬롯이 있는지 확인
-        has_general_topic = 'general_topic' in found_groups
-
-        # general_topic을 제외한 다른 슬롯 그룹의 개수를 세기
         specific_groups = found_groups - {'general_topic'}
         
-        # 특정 슬롯 그룹이 2개 이상일 경우에만 복합 의도로 판단
         if len(specific_groups) > 1:
             print("DEBUG: 복수 슬롯 그룹 기반 복합 의도 감지")
             return "handle_complex_intent"
         
-        # 그렇지 않은 경우(specific_groups가 0개 또는 1개)는 단일 의도로 판단
+        # 그렇지 않은 경우 단일 의도로 판단
         else:
-            print("DEBUG: 단일 슬롯 그룹 기반 단일 의도 감지")
-            return route_by_intent(state)
+            print("DEBUG: 단일 의도 감지")
+            return f"{state.get('intent')}_handler"
 
     # def route_by_intent(state: ChatState):
     #     intent = state.get("intent")

@@ -101,19 +101,19 @@ def _combine_responses(original_question: str, responses: List[str]) -> str:
     당신은 사용자의 원래 질문 '{original_question}'과 그에 대한 여러 정보를 종합하여 하나의 자연스러운 답변을 만듭니다.
 
     ### 지시사항
-    1. 제공된 정보들을 분석하여 두 답변 간에 공통된 터미널이나 위치 정보가 있는지 확인하세요.
-    2. 만약 공통된 정보(예: '제1여객터미널')가 있다면, 이를 바탕으로 두 정보를 논리적으로 연결하여 하나의 통합 답변을 만드세요.
+    1. 제공된 정보들을 분석하여 답변 간에 공통된 목적(예: '도착하자마자 화장실에 가고싶은데 어디에 주차하는게 좋아?')을 파악하고, 이를 바탕으로 두 정보를 논리적으로 연결하여 하나의 통합 답변을 만드세요.
+    2. 공통된 정보가 있다면, 이를 바탕으로 추천이나 설명을 포함한 통합 답변을 만드세요.
     3. 공통된 정보가 없다면, 두 답변을 각각 명확하게 분리하여 나열하되, 답변이 자연스럽게 이어지도록 정리하세요.
     4. 제공된 정보에 없는 내용은 절대로 추가하거나 추론하지 마세요.
 
     ### 제공된 정보:
-    {'- ' + '\n- '.join(responses)}
+    {'- ' + '\\n- '.join(responses)}
     """
     
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "당신은 사용자의 질문에 대해 가장 핵심적인 정보를 바탕으로 간결하고 정확하게 답변을 종합하는 전문가입니다."},
+            {"role": "system", "content": "당신은 사용자의 질문에 대해 가장 핵심적인 정보를 바탕으로 간결하고 정확하게 답변을 종합하는 전문가입니다. 특히 복합 의도가 있는 질문의 경우, 여러 정보를 연결하여 하나의 완성된 답변을 만드는 데 능숙합니다."},
             {"role": "user", "content": prompt}
         ],
         temperature=0.2
@@ -129,7 +129,6 @@ def _combine_responses(original_question: str, responses: List[str]) -> str:
     )
     
     return combined_response_text + common_disclaimer
-
 
 def handle_complex_intent(state: ChatState, handlers: Dict[str, Any], supported_intents: List[str]):
     """복합 의도 질문을 분리하고 처리하는 메인 함수"""

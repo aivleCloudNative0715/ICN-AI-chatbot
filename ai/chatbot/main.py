@@ -5,7 +5,7 @@ from chatbot.graph.flow import build_chat_graph
 chat_graph = build_chat_graph()
 
 result = chat_graph.invoke({
-    "user_input": "대형 수하물 어디서 찾지????????? 세관신고는 어케해"
+    "user_input": ""
 })
 
 print("📌 예측 인텐트:", result.get("intent"))
