@@ -3,16 +3,39 @@ from openai import OpenAI
 import os # API 키를 환경 변수에서 로드하기 위해 필요
 from dotenv import load_dotenv # dotenv 라이브러리 임포트
 from pathlib import Path # Path 객체 임포트
-
+from pymongo import MongoClient
 # .env 파일에서 환경 변수를 로드합니다.
-# 현재 파일 (config.py)에서 최상위 디렉토리 (ICN-AI-chatbot)까지의 경로를 계산합니다.
-# config.py -> rag -> chatbot -> ai -> ICN-AI-chatbot
-# 따라서 .parents[3]을 사용합니다.
-env_path = Path(__file__).resolve().parents[3] / ".env"
+# config.py -> rag -> chatbot -> ai
+# 따라서 .parents[2]을 사용합니다.
+env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(dotenv_path=env_path, override=True) # override=True 추가 권장
 
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
+
+# MongoDB 클라이언트
+try:
+    mongo_uri = os.getenv("MONGO_URI")
+    mongo_db_name = os.getenv("MONGO_DB_NAME")
+    if not mongo_uri or not mongo_db_name:
+        raise ValueError("MongoDB 환경 변수가 설정되지 않았습니다.")
+    mongo_client = MongoClient(mongo_uri)
+    mongo_client.admin.command('ping')
+    print("MongoDB에 성공적으로 연결되었습니다!")
+except Exception as e:
+    print(f"MongoDB 연결 오류: {e}")
+    mongo_client = None
+
+# OpenAI 클라이언트
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY 환경 변수가 설정되지 않았습니다.")
+openai_client = OpenAI(api_key=openai_api_key)
+
+# 다른 파일에서 불러올 변수들
+db_client = mongo_client
+client = openai_client
+db_name = mongo_db_name
 
 # 각 의도(또는 핸들러)별 RAG 검색 설정을 정의합니다.
 # 이 설정은 각 핸들러에서 어떤 MongoDB 컬렉션을 사용해야 하는지 알려줍니다.

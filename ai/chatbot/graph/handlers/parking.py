@@ -22,7 +22,7 @@ def parking_fee_info_handler(state: ChatState) -> ChatState:
     print(f"디버그: 사용자 쿼리 - '{user_query}'")
 
     # 슬롯에서 'B-fee_topic' 태그가 붙은 키워드를 모두 추출합니다.
-    search_keywords = [word for word, slot in slots if slot == 'B-fee_topic']
+    search_keywords = [word for word, slot in slots if slot in ['B-fee_topic', 'I-fee_topic']]
     
     # 만약 슬롯에서 키워드를 찾지 못했다면, 전체 쿼리를 사용합니다.
     if not search_keywords:
