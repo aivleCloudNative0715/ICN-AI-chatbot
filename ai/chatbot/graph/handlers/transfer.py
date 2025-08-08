@@ -2,6 +2,7 @@ from chatbot.graph.state import ChatState
 
 from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
+from chatbot.rag.transfer_route_helper import _parse_transfer_route_query_with_llm
 
 def transfer_info_handler(state: ChatState) -> ChatState:
     """
@@ -78,7 +79,7 @@ def transfer_route_guide_handler(state: ChatState) -> ChatState:
     """
     'transfer_route_guide' 의도에 대한 RAG 기반 핸들러.
     사용자 쿼리를 기반으로 TransitPathVector와 ConnectionTimeVector에서 환승 경로 및 최저 환승 시간 정보를 검색하고 답변을 생성합니다.
-    각 컬렉션에 맞는 인덱스 이름을 사용합니다.
+    복합 질문(여러 출발지-도착지 쌍)도 처리할 수 있도록 개선되었습니다.
     """
     user_query = state.get("user_input", "")
     intent_name = state.get("intent", "transfer_route_guide")
@@ -90,68 +91,69 @@ def transfer_route_guide_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 사용자 쿼리 - '{user_query}'")
 
+    # ⭐ LLM으로 복합 질문을 분해합니다.
+    parsed_queries = _parse_transfer_route_query_with_llm(user_query)
+
+    search_queries = []
+    if parsed_queries and parsed_queries.get("requests"):
+        search_queries = [req.get("query") for req in parsed_queries["requests"]]
+    
+    if not search_queries:
+        search_queries = [user_query]
+        print("디버그: 복합 질문으로 파악되지 않아 전체 쿼리로 검색을 시도합니다.")
+
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
-    # config에서 각 컬렉션별 이름과 인덱스 정보를 명시적으로 가져옴
     main_collection_info = rag_config.get("main_collection", {})
     additional_collections_info = rag_config.get("additional_collections", [])
     intent_description = rag_config.get("description", intent_name)
     query_filter = rag_config.get("query_filter")
 
-    # 필수 설정 확인 (메인 컬렉션 정보는 반드시 있어야 함)
     if not (main_collection_info.get("name") and main_collection_info.get("vector_index")):
         error_msg = f"죄송합니다. '{intent_name}' 의도에 대한 메인 컬렉션 설정(이름 또는 인덱스)이 누락되었습니다."
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
 
+    all_retrieved_docs_text = []
     try:
-        # 1. 사용자 쿼리 임베딩
-        query_embedding = get_query_embedding(user_query)
-        print("디버그: 쿼리 임베딩 완료.")
+        # ⭐ 분해된 각 질문에 대해 RAG 검색을 개별적으로 수행합니다.
+        for query in search_queries:
+            print(f"디버그: '{query}'에 대해 검색 시작...")
+            
+            query_embedding = get_query_embedding(query)
+            print(f"디버그: '{query}' 쿼리 임베딩 완료.")
 
-        all_retrieved_docs_text = []
-
-        # 2. 메인 컬렉션에서 벡터 검색
-        main_collection_name = main_collection_info["name"]
-        main_vector_index = main_collection_info["vector_index"]
-        print(f"디버그: 메인 컬렉션 '{main_collection_name}' (인덱스: '{main_vector_index}')에서 문서 검색 시작.")
-        main_docs_text = perform_vector_search(
-            query_embedding,
-            collection_name=main_collection_name,
-            vector_index_name=main_vector_index,
-            query_filter=query_filter,
-            top_k=3
-        )
-        all_retrieved_docs_text.extend(main_docs_text)
-        print(f"디버그: 메인 컬렉션에서 {len(main_docs_text)}개 문서 검색 완료.")
-
-        # 3. 추가 컬렉션들에서 벡터 검색
-        for col_info in additional_collections_info:
-            col_name = col_info.get("name")
-            col_vector_index = col_info.get("vector_index")
-            if col_name and col_vector_index:
-                print(f"디버그: 추가 컬렉션 '{col_name}' (인덱스: '{col_vector_index}')에서 문서 검색 시작.")
-                additional_docs_text = perform_vector_search(
-                    query_embedding,
-                    collection_name=col_name,
-                    vector_index_name=col_vector_index,
-                    query_filter=query_filter,
-                    top_k=2
-                )
-                all_retrieved_docs_text.extend(additional_docs_text)
-                print(f"디버그: 추가 컬렉션 '{col_name}'에서 {len(additional_docs_text)}개 문서 검색 완료.")
-            else:
-                print(f"디버그: 추가 컬렉션 '{col_info}' 설정이 불완전합니다. 스킵합니다.")
-
+            # 메인 컬렉션에서 벡터 검색
+            main_collection_name = main_collection_info["name"]
+            main_vector_index = main_collection_info["vector_index"]
+            main_docs_text = perform_vector_search(
+                query_embedding,
+                collection_name=main_collection_name,
+                vector_index_name=main_vector_index,
+                query_filter=query_filter,
+                top_k=3
+            )
+            all_retrieved_docs_text.extend(main_docs_text)
+            
+            # 추가 컬렉션들에서 벡터 검색
+            for col_info in additional_collections_info:
+                col_name = col_info.get("name")
+                col_vector_index = col_info.get("vector_index")
+                if col_name and col_vector_index:
+                    additional_docs_text = perform_vector_search(
+                        query_embedding,
+                        collection_name=col_name,
+                        vector_index_name=col_vector_index,
+                        query_filter=query_filter,
+                        top_k=2
+                    )
+                    all_retrieved_docs_text.extend(additional_docs_text)
 
         if not all_retrieved_docs_text:
             print("디버그: 검색된 관련 문서가 없습니다.")
             return {**state, "response": "죄송합니다. 요청하신 환승 관련 정보를 찾을 수 없습니다."}
 
-        # 4. 검색된 모든 문서 내용을 LLM에 전달할 컨텍스트로 결합
         context_for_llm = "\n\n".join(all_retrieved_docs_text)
         print(f"디버그: LLM에 전달될 최종 컨텍스트 길이: {len(context_for_llm)}자.")
-
-        # 5. 공통 LLM 호출 함수를 사용하여 최종 답변 생성
         final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
 
         return {**state, "response": final_response}
