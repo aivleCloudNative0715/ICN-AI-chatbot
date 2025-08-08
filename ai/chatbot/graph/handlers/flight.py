@@ -43,7 +43,8 @@ def flight_info_handler(state: ChatState) -> ChatState:
     for query in parsed_queries:
         flight_id = query.get("flight_id")
         airport_name = query.get("airport_name")
-        direction = query.get("direction", "departure")
+        airline_name = query.get("airline_name")
+        direction = query.get("direction", "departure") 
         info_type = query.get("info_type")
         
         # `airport_name`이 있으면 LLM을 사용해 공항 코드를 먼저 가져온 후 API 호출
@@ -52,12 +53,13 @@ def flight_info_handler(state: ChatState) -> ChatState:
             airport_code = _get_airport_code_with_llm(airport_name)
             
             if airport_code:
-                # `airport_code` 파라미터를 사용하여 API를 호출
-                api_result_dep = _call_flight_api("departure", airport_code=airport_code)
-                if not api_result_dep.get("error") and api_result_dep.get("data"):
-                    # `_extract_flight_info_from_response`는 이제 필터링 로직 없이 응답을 처리
+                # `direction` 변수를 사용하여 올바른 API 호출
+                api_result = _call_flight_api(direction, airport_code=airport_code)
+                if not api_result.get("error") and api_result.get("data"):
+                    # 수정된 부분: airline_name을 인자로 전달
                     retrieved_info = _extract_flight_info_from_response(
-                        api_result_dep, info_type, api_result_dep.get("found_date")
+                        api_result, info_type, api_result.get("found_date"),
+                        airline_name=airline_name # <-- 추가된 부분
                     )
                     all_flight_results.extend(retrieved_info)
                 else:
@@ -136,9 +138,12 @@ def flight_info_handler(state: ChatState) -> ChatState:
         if len(all_flight_results) > 2:
             intent_description += "또한, 더 많은 결과가 있지만 2개만 보여주고 있다는 메시지를 추가해 주세요."
 
+        # 수정된 부분: LLM 호출 결과를 바로 final_response에 할당
         final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
 
+    # 수정된 부분: 최종 응답을 한 번만 state에 저장하여 반환
     return {**state, "response": final_response}
+
 
 def regular_schedule_query_handler(state: ChatState) -> ChatState:
     user_query = state.get("user_input", "")

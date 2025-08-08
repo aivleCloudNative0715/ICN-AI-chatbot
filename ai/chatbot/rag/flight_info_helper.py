@@ -15,19 +15,21 @@ SERVICE_KEY = os.getenv("SERVICE_KEY")
 def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
     """
     LLM을 사용하여 사용자 쿼리에서 운항 정보를 파악하고 JSON 형식으로 추출합니다.
-    - 추출된 'flight_id'는 API 호출을 위해 대문자로 변환합니다.
-    - '파리행'과 같이 특정 항공편이 아닌 목적지를 묻는 경우 'airport_name'으로 추출합니다.
     """
     system_prompt = (
         "사용자의 질문을 분석하여 항공편 정보에 대한 필수 정보를 JSON 형식으로 추출해줘. "
         "응답은 반드시 'flights'라는 키를 가진 JSON 객체여야 해. "
         "각 항공편 정보는 이 'flights' 리스트 안에 객체로 넣어줘. "
-        "각 객체는 'flight_id'(편명), 'direction'(출발 또는 도착), 'info_type'(요청 정보)를 포함해야 해. "
-        "만약 질문이 특정 항공편이 아닌 '파리' 또는 '프랑스'와 같이 목적지 도시나 국가를 묻는 경우, 'flight_id' 대신 'airport_name'으로 추출해줘. "
+        "각 객체는 다음 정보 중 하나 이상을 포함해야 해: "
+        "'flight_id'(편명, 예: KE123), 'airline_name'(항공사명, 예: 대한항공), "
+        "'direction'(출발 또는 도착), 'airport_name'(공항명, 예: 파리), 'info_type'(요청 정보). "
+        "만약 질문이 특정 항공편이 아닌 '파리' 또는 '일본'과 같이 목적지 도시나 국가를 묻는 경우, 'airport_name'으로 추출해줘. "
+        "항공사 이름이 있으면 'airline_name'으로 추출해. "
         "방향을 알 수 없으면 'departure'를 기본값으로 사용해. "
-        "예시: {'flights': [{'airport_name': '파리', 'direction': 'departure'}]}"
+        "예시: {'flights': [{'airline_name': '대한항공', 'airport_name': '일본', 'direction': 'departure'}]}"
         "또한, '게이트'는 'gatenumber', '출구'는 'exitnumber', '체크인 카운터'는 'chkinrange'와 같이 구체적인 API 항목명으로 변환해줘."
     )
+    
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -102,7 +104,8 @@ def _call_flight_api(
         }
 
         try:
-            print(f"디버그: '{flight_id}'에 대해 {date} 날짜로 API 호출 시도...")
+            # API 호출 시 어떤 파라미터가 사용되는지 명확히 출력
+            print(f"디버그: '{airport_code}'에 대해 {date} 날짜로 API 호출 시도...")
             response = requests.get(url, params=params, timeout=5)
             response.raise_for_status()
             data = response.json()
@@ -111,25 +114,25 @@ def _call_flight_api(
             results = items.get("item", []) if isinstance(items, dict) else items
             
             if results:
-                print(f"디버그: {date} 날짜에서 '{flight_id}' 정보 발견!")
+                print(f"디버그: {date} 날짜에서 '{airport_code}' 정보 발견!")
                 return {"data": results, "found_date": date, "total_count": len(results)}
 
         except requests.exceptions.RequestException as e:
             print(f"API 호출 오류 (날짜: {date}): {e}")
             continue
 
-    print(f"디버그: {direction} 방향으로 모든 날짜에서 '{flight_id}'를 찾을 수 없습니다.")
+    print(f"디버그: {direction} 방향으로 모든 날짜에서 '{airport_code}'를 찾을 수 없습니다.")
     return {"data": [], "total_count": 0}
 
 def _extract_flight_info_from_response(
     api_response: Dict[str, Any], 
     info_type: Optional[str] = None, 
     found_date: Optional[str] = None,
-    airport_name: Optional[str] = None
+    airport_name: Optional[str] = None,
+    airline_name: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """
     API 응답에서 필요한 정보를 추출하고 포맷합니다.
-    - 'airport_name'이 제공될 경우, 해당 공항과 관련된 정보만 LLM을 활용해 필터링합니다.
     """
     flight_data = api_response.get("data", [])
     if not flight_data:
@@ -137,6 +140,11 @@ def _extract_flight_info_from_response(
 
     if isinstance(flight_data, dict):
         flight_data = [flight_data]
+
+    # 추가된 부분: airline_name으로 필터링
+    if airline_name:
+        flight_data = [item for item in flight_data if item.get("airline") == airline_name]
+        print(f"디버그: '{airline_name}'으로 항공편 정보 필터링 완료. 남은 항목 수: {len(flight_data)}")
 
     # 공항명 필터링이 필요할 경우 LLM 사용
     if airport_name:
