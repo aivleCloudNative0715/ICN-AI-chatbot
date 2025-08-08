@@ -35,31 +35,65 @@ def flight_info_handler(state: ChatState) -> ChatState:
 
     parsed_queries = _parse_flight_query_with_llm(user_query)
 
-    if not parsed_queries or not any(q.get("flight_id") or q.get("airport_name") for q in parsed_queries):
+    if not parsed_queries or not any(q.get("flight_id") or q.get("airport_name") or q.get("departure_airport_name") for q in parsed_queries):
         return {**state, "response": "죄송합니다. 요청하신 항공편 정보를 찾을 수 없습니다."}
 
     all_flight_results = []
-
+    
     for query in parsed_queries:
         flight_id = query.get("flight_id")
         airport_name = query.get("airport_name")
         airline_name = query.get("airline_name")
-        direction = query.get("direction", "departure") 
+        departure_airport_name = query.get("departure_airport_name")
+        direction = query.get("direction", "departure")
         info_type = query.get("info_type")
-        
-        # `airport_name`이 있으면 LLM을 사용해 공항 코드를 먼저 가져온 후 API 호출
+        schedule_time = query.get("scheduleDateTime")
+
+        if departure_airport_name:
+            print(f"디버그: 출발지 '{departure_airport_name}'에 대한 API 호출 준비 (도착)")
+            departure_airport_code = _get_airport_code_with_llm(departure_airport_name)
+            
+            if departure_airport_code:
+                api_result = _call_flight_api(
+                    direction, 
+                    departure_airport_code=departure_airport_code, 
+                    search_time=schedule_time
+                )
+                if not api_result.get("error") and api_result.get("data"):
+                    retrieved_info = _extract_flight_info_from_response(
+                        api_result, 
+                        info_type=info_type, 
+                        found_date=api_result.get("found_date"),
+                        airline_name=airline_name
+                    )
+                    all_flight_results.extend(retrieved_info)
+                else:
+                    all_flight_results.append({
+                        "query": query,
+                        "info": f"'{departure_airport_name}'에서 출발하는 항공편 정보를 찾을 수 없습니다."
+                    })
+            else:
+                all_flight_results.append({
+                    "query": query,
+                    "info": f"'{departure_airport_name}'에 대한 공항 코드를 찾을 수 없습니다."
+                })
+            continue
+
         if airport_name:
-            print(f"디버그: 도착지 '{airport_name}'에 대한 API 호출 준비")
+            print(f"디버그: 도착지 '{airport_name}'에 대한 API 호출 준비 ({'도착' if direction == 'arrival' else '출발'})")
             airport_code = _get_airport_code_with_llm(airport_name)
             
             if airport_code:
-                # `direction` 변수를 사용하여 올바른 API 호출
-                api_result = _call_flight_api(direction, airport_code=airport_code)
+                api_result = _call_flight_api(
+                    direction, 
+                    airport_code=airport_code, 
+                    search_time=schedule_time
+                )
                 if not api_result.get("error") and api_result.get("data"):
-                    # 수정된 부분: airline_name을 인자로 전달
                     retrieved_info = _extract_flight_info_from_response(
-                        api_result, info_type, api_result.get("found_date"),
-                        airline_name=airline_name # <-- 추가된 부분
+                        api_result, info_type=info_type, 
+                        found_date=api_result.get("found_date"),
+                        airline_name=airline_name 
                     )
                     all_flight_results.extend(retrieved_info)
                 else:
@@ -68,13 +102,12 @@ def flight_info_handler(state: ChatState) -> ChatState:
                         "info": f"'{airport_code}' 공항 정보를 찾을 수 없습니다."
                     })
             else:
-                 all_flight_results.append({
-                     "query": query,
-                     "info": f"'{airport_name}'에 대한 공항 코드를 찾을 수 없습니다."
-                 })
+                all_flight_results.append({
+                    "query": query,
+                    "info": f"'{airport_name}'에 대한 공항 코드를 찾을 수 없습니다."
+                })
             continue
 
-        # `flight_id`가 존재할 경우, 기존 로직 유지
         if not flight_id:
             continue
 
@@ -85,7 +118,7 @@ def flight_info_handler(state: ChatState) -> ChatState:
             print(f"디버그: API 호출 준비 - 항공편 '{flight_id}' ({direction}), 요청 정보 '{info_type}'")
             api_result = _call_flight_api(direction, flight_id=flight_id)
             if not api_result.get("error") and api_result.get("data"):
-                retrieved_info = _extract_flight_info_from_response(api_result, info_type, api_result.get("found_date"))
+                retrieved_info = _extract_flight_info_from_response(api_result, info_type=info_type, found_date=api_result.get("found_date"))
                 found_date = api_result.get("found_date")
 
         if not retrieved_info:
@@ -93,13 +126,13 @@ def flight_info_handler(state: ChatState) -> ChatState:
             
             api_result_dep = _call_flight_api("departure", flight_id=flight_id)
             if not api_result_dep.get("error") and api_result_dep.get("data"):
-                retrieved_info = _extract_flight_info_from_response(api_result_dep, info_type, api_result_dep.get("found_date"))
+                retrieved_info = _extract_flight_info_from_response(api_result_dep, info_type=info_type, found_date=api_result_dep.get("found_date"))
                 found_date = api_result_dep.get("found_date")
 
             if not retrieved_info:
                 api_result_arr = _call_flight_api("arrival", flight_id=flight_id)
                 if not api_result_arr.get("error") and api_result_arr.get("data"):
-                    retrieved_info = _extract_flight_info_from_response(api_result_arr, info_type, api_result_arr.get("found_date"))
+                    retrieved_info = _extract_flight_info_from_response(api_result_arr, info_type=info_type, found_date=api_result_arr.get("found_date"))
                     found_date = api_result_arr.get("found_date")
 
         if not retrieved_info:
@@ -117,15 +150,13 @@ def flight_info_handler(state: ChatState) -> ChatState:
     if not all_flight_results:
         final_response = "죄송합니다. 요청하신 항공편 정보를 찾을 수 없습니다."
     else:
-        # 1. 불필요한 "정보 없음" 항목을 필터링하여 새로운 리스트 생성
         cleaned_results = []
         for result in all_flight_results:
             cleaned_item = {k: v for k, v in result.items() if v and v != "정보 없음"}
             if cleaned_item:
                 cleaned_results.append(cleaned_item)
 
-        # 2. 결과를 최대 2개로 제한
-        truncated_flight_results = cleaned_results[:2]
+        truncated_flight_results = cleaned_results[:5]
 
         context_for_llm = json.dumps(truncated_flight_results, ensure_ascii=False, indent=2)
 
@@ -134,16 +165,10 @@ def flight_info_handler(state: ChatState) -> ChatState:
             "친절하고 명확하게 답변해주세요. "
             "응답에는 찾은 정보만 포함하고, 정보가 없는 항목은 언급하지 마세요. "
         )
-        
-        if len(all_flight_results) > 2:
-            intent_description += "또한, 더 많은 결과가 있지만 2개만 보여주고 있다는 메시지를 추가해 주세요."
 
-        # 수정된 부분: LLM 호출 결과를 바로 final_response에 할당
         final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
 
-    # 수정된 부분: 최종 응답을 한 번만 state에 저장하여 반환
     return {**state, "response": final_response}
-
 
 def regular_schedule_query_handler(state: ChatState) -> ChatState:
     user_query = state.get("user_input", "")
