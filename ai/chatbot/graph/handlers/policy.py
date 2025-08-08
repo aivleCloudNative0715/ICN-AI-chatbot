@@ -98,10 +98,21 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
         if not flight_id:
             if not searchday and not airport_code:
                 final_responses.append(f"죄송합니다. 어느 시각에 도착한 항공편인지 더 자세히 알 수 있을까요? 출발지 공항 이름이나 편명을 알려주시면 더 정확한 정보를 제공할 수 있습니다.")
-                return {**state, "response": final_responses}
+                text_response = "\n".join(final_responses)
+                return {**state, "response": text_response}
         
         searchday = datetime.now() + timedelta(days=date_offset)
         searchday = searchday.strftime("%Y%m%d")
+        
+        if not from_time and not to_time:
+            now = datetime.now()
+            
+            from_dt = now - timedelta(hours=1)
+            to_dt = now + timedelta(hours=1)
+
+            # HHMM 형식의 문자열로 변환
+            from_time = str(from_dt.strftime("%H%M"))
+            to_time = str(to_dt.strftime("%H%M"))
         
         print(f"디버그: 검색일 - {searchday}, 편명 - {flight_id}, 시각 범위 - {from_time} ~ {to_time}, 공항 이름 - {airport_code}")
         
