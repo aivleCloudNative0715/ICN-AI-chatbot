@@ -119,7 +119,7 @@ def _get_daily_congestion_data_from_db() -> dict | None:
             print(f"디버그: MongoDB에서 하루 합계 혼잡도 데이터 조회 성공: {daily_data.get('congestion_predict_id')}")
             return daily_data
         else:
-            print(f"디버그: MongoDB에서 {date_str} 하루 합계 데이터를 찾을 수 없습니다.")
+            print(f"디버그: MongoDB에서 하루 합계 데이터를 찾을 수 없습니다.")
             return None
     except Exception as e:
         print(f"디버그: 하루 합계 데이터 조회 중 오류 발생 - {e}")

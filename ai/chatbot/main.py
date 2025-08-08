@@ -5,7 +5,7 @@ from chatbot.graph.flow import build_chat_graph
 chat_graph = build_chat_graph()
 
 result = chat_graph.invoke({
-    "user_input": "1터미널 하루 전체 혼잡도랑 오늘 2터미널 출국장1 혼잡도 알고싶어"
+    "user_input": "1터미널 하루 전체 혼잡도랑 내일 2터미널 출국장1 혼잡도 알고싶어"
 })
 
 print("📌 예측 인텐트:", result.get("intent"))
