@@ -5,8 +5,7 @@ from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller # config
 
 from chatbot.rag.regular_schedule_helper import (
     _parse_schedule_query_with_llm,
-    _call_schedule_api,
-    _get_day_of_week_field,
+    _get_schedule_from_db
 )
 from chatbot.rag.flight_info_helper import (
     _parse_flight_query_with_llm,
@@ -141,7 +140,6 @@ def flight_info_handler(state: ChatState) -> ChatState:
 
     return {**state, "response": final_response}
 
-
 def regular_schedule_query_handler(state: ChatState) -> ChatState:
     user_query = state.get("user_input", "")
     intent_name = state.get("intent", "regular_schedule_query")
@@ -152,75 +150,75 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 사용자 쿼리 - '{user_query}'")
 
-    parsed_queries = _parse_schedule_query_with_llm(user_query)
-    if not parsed_queries:
+    parsed_queries_data = _parse_schedule_query_with_llm(user_query)
+    if not parsed_queries_data or not parsed_queries_data.get('requests'):
         return {**state, "response": "죄송합니다. 스케줄 정보를 파악하는 중 문제가 발생했습니다. 다시 시도해 주세요."}
     
-    # API 호출은 한 번만 수행 (도착/출발은 첫 번째 쿼리 방향을 따름)
-    direction = parsed_queries[0].get('direction', 'departure')
+    parsed_queries = parsed_queries_data['requests']
     
-    api_result = _call_schedule_api(direction)
-    if isinstance(api_result, str):
-      return {**state, "response": f"API 호출 중 오류가 발생했습니다: {api_result}"}
-    
-    retrieved_api_docs = api_result
-
-    # 여러 쿼리 결과를 저장할 딕셔너리
-    consolidated_results = {}
+    all_retrieved_docs = []
+    not_found_messages = []
 
     for parsed_query in parsed_queries:
         airline_name = parsed_query.get("airline_name")
-        airport_name = parsed_query.get("airport_name", "목적지")
+        airport_name = parsed_query.get("airport_name")
+        
+        # ⭐ LLM이 파싱한 airport_codes를 그대로 사용
         airport_codes = parsed_query.get("airport_codes", [])
+        
         day_name = parsed_query.get("day_of_week")
         time_period = parsed_query.get("time_period")
+        direction = parsed_query.get('direction', '출발')
         
-        filtered_docs = []
-        day_field_name = _get_day_of_week_field(day_name)
+        retrieved_db_docs = _get_schedule_from_db(
+            direction=direction,
+            airport_codes=airport_codes, 
+            day_name=day_name,
+            time_period=time_period,
+            airline_name=airline_name
+        )
+
+        if isinstance(retrieved_db_docs, str):
+            not_found_messages.append(f"데이터 조회 중 오류가 발생했습니다: {retrieved_db_docs}")
+            continue
+
+        retrieved_db_docs.sort(key=lambda x: x.get("scheduled_time", "99:99"))
+        top_5_docs = retrieved_db_docs[:5]
         
-        for doc in retrieved_api_docs:
-            if not isinstance(doc, dict):
-                continue
-            
-            # 도착지 공항 코드(IATA) 필터링
-            if airport_codes and doc.get("airportcode") not in airport_codes:
-                continue
+        if not top_5_docs:
+            not_found_messages.append(f"죄송합니다. '{airport_name}'에서 오는 {day_name} {time_period} {direction} 스케줄 정보를 찾을 수 없습니다.")
+        else:
+            sanitized_schedules = []
+            for doc in top_5_docs:
+                if '_id' in doc:
+                    doc['_id'] = str(doc['_id'])
+                if 'first_date' in doc and isinstance(doc['first_date'], datetime):
+                    doc['first_date'] = doc['first_date'].isoformat()
+                if 'last_date' in doc and isinstance(doc['last_date'], datetime):
+                    doc['last_date'] = doc['last_date'].isoformat()
+                if 'scheduled_datetime' in doc and isinstance(doc['scheduled_datetime'], datetime):
+                    doc['scheduled_datetime'] = doc['scheduled_datetime'].isoformat()
+                sanitized_schedules.append(doc)
 
-            # 요일 필터링
-            if day_field_name and doc.get(day_field_name, 'N') != 'Y':
-                continue
+            query_meta = {
+                "query_info": {
+                    "day": day_name,
+                    "airport": airport_name,
+                    "direction": direction,
+                    "airline": airline_name
+                },
+                "schedules": sanitized_schedules
+            }
+            all_retrieved_docs.append(query_meta)
 
-            # 시간대 필터링
-            if time_period:
-                scheduled_time_str = doc.get("st", "0000")
-                if time_period == '오전' and not ('0600' <= scheduled_time_str < '1200'):
-                    continue
-                if time_period == '오후' and not ('1200' <= scheduled_time_str < '1800'):
-                    continue
-                if time_period == '저녁' and not ('1800' <= scheduled_time_str <= '2359'):
-                    continue
-                if time_period == '새벽' and not ('0000' <= scheduled_time_str < '0600'):
-                    continue
-
-            # 항공사명 필터링
-            normalized_airline_name = airline_name.replace(' ', '') if airline_name else None
-            normalized_doc_airline = doc.get("airline", "").replace(' ', '')
-            
-            if normalized_airline_name and normalized_airline_name not in normalized_doc_airline:
-                continue
-
-            filtered_docs.append(doc)
-        
-        filtered_docs.sort(key=lambda x: x.get("st", "9999"))
-        top_5_docs = filtered_docs[:5]
-        
-        query_key = f"{day_name} {airport_name}"
-        consolidated_results[query_key] = top_5_docs
+    if not all_retrieved_docs:
+        final_response_text = "\n".join(not_found_messages)
+        if not final_response_text:
+            final_response_text = "죄송합니다. 요청하신 조건에 맞는 정보를 찾을 수 없습니다."
+        return {**state, "response": final_response_text}
     
-    # 모든 쿼리 결과를 담을 하나의 컨텍스트 생성
-    context_for_llm = json.dumps(consolidated_results, ensure_ascii=False, indent=2)
+    context_for_llm = json.dumps(all_retrieved_docs, ensure_ascii=False, indent=2)
     
-    # LLM에게 단일 답변을 요청하는 프롬프트
     intent_description = (
         "사용자가 여러 조건에 대한 정기 운항 스케줄 정보를 요청했습니다. "
         "다음 검색 결과를 종합하여, 각 조건별로 구분하여 친절하고 명확하게 답변해주세요. "
@@ -228,7 +226,7 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
     )
 
     final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
-
+    
     return {**state, "response": final_response}
 
 def airline_info_query_handler(state: ChatState) -> ChatState:
