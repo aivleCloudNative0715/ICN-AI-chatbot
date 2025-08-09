@@ -8,6 +8,7 @@ from chatbot.rag.regular_schedule_helper import (
     _get_schedule_from_db
 )
 from chatbot.rag.flight_info_helper import (
+    _normalize_time,
     _parse_flight_query_with_llm,
     _call_flight_api,
     _extract_flight_info_from_response,
@@ -46,118 +47,127 @@ def flight_info_handler(state: ChatState) -> ChatState:
         airline_name = query.get("airline_name")
         departure_airport_name = query.get("departure_airport_name")
         direction = query.get("direction", "departure")
-        info_type = query.get("info_type")
         schedule_time = query.get("scheduleDateTime")
 
-        if departure_airport_name:
-            print(f"디버그: 출발지 '{departure_airport_name}'에 대한 API 호출 준비 (도착)")
-            departure_airport_code = _get_airport_code_with_llm(departure_airport_name)
-            
-            if departure_airport_code:
-                api_result = _call_flight_api(
-                    direction, 
-                    departure_airport_code=departure_airport_code, 
-                    search_time=schedule_time
-                )
-                if not api_result.get("error") and api_result.get("data"):
-                    retrieved_info = _extract_flight_info_from_response(
-                        api_result, 
-                        info_type=info_type, 
-                        found_date=api_result.get("found_date"),
-                        airline_name=airline_name
-                    )
-                    all_flight_results.extend(retrieved_info)
+        # 시간 파라미터 계산을 위한 새로운 리스트
+        time_to_check = []
+        if schedule_time:
+            try:
+                normalized_time = _normalize_time(schedule_time)
+                time_obj = datetime.strptime(normalized_time, "%H%M")
+                
+                # 오전/오후 모호성 처리: 1시~11시 사이의 시간이면 오전과 오후 모두 검색
+                if 1 <= time_obj.hour < 12:
+                    # 오전 시간
+                    from_time_am = (time_obj - timedelta(hours=1)).strftime("%H%M")
+                    to_time_am = (time_obj + timedelta(hours=1)).strftime("%H%M")
+                    time_to_check.append({"from": from_time_am, "to": to_time_am})
+                    
+                    # 오후 시간
+                    time_obj_pm = time_obj + timedelta(hours=12)
+                    from_time_pm = (time_obj_pm - timedelta(hours=1)).strftime("%H%M")
+                    to_time_pm = (time_obj_pm + timedelta(hours=1)).strftime("%H%M")
+                    time_to_check.append({"from": from_time_pm, "to": to_time_pm})
                 else:
-                    all_flight_results.append({
-                        "query": query,
-                        "info": f"'{departure_airport_name}'에서 출발하는 항공편 정보를 찾을 수 없습니다."
-                    })
-            else:
-                all_flight_results.append({
-                    "query": query,
-                    "info": f"'{departure_airport_name}'에 대한 공항 코드를 찾을 수 없습니다."
-                })
-            continue
+                    from_time = (time_obj - timedelta(hours=1)).strftime("%H%M")
+                    to_time = (time_obj + timedelta(hours=1)).strftime("%H%M")
+                    time_to_check.append({"from": from_time, "to": to_time})
 
-        if airport_name:
-            print(f"디버그: 도착지 '{airport_name}'에 대한 API 호출 준비 ({'도착' if direction == 'arrival' else '출발'})")
-            airport_code = _get_airport_code_with_llm(airport_name)
+            except (ValueError, TypeError) as e:
+                print(f"디버그: 시간 파싱 오류 - {e}, 원본 시간: {schedule_time}")
+                time_to_check = [{"from": None, "to": None}]
+        else:
+            time_to_check = [{"from": None, "to": None}]
+
+        api_result = {"data": [], "total_count": 0}
+        
+        # 각 시간대에 대해 API를 호출하고 결과를 합산
+        for time_params in time_to_check:
+            current_from_time = time_params["from"]
+            current_to_time = time_params["to"]
             
-            if airport_code:
-                api_result = _call_flight_api(
-                    direction, 
-                    airport_code=airport_code, 
-                    search_time=schedule_time
-                )
-                if not api_result.get("error") and api_result.get("data"):
-                    retrieved_info = _extract_flight_info_from_response(
-                        api_result, info_type=info_type, 
-                        found_date=api_result.get("found_date"),
-                        airline_name=airline_name 
+            current_api_result = {"data": [], "total_count": 0}
+
+            if departure_airport_name:
+                print(f"디버그: 출발지 '{departure_airport_name}'에 대한 API 호출 준비 (도착)")
+                airport_code = _get_airport_code_with_llm(departure_airport_name)
+                
+                if airport_code:
+                    current_api_result = _call_flight_api(
+                        direction, 
+                        airport_code=airport_code,
+                        from_time=current_from_time,
+                        to_time=current_to_time
                     )
-                    all_flight_results.extend(retrieved_info)
-                else:
-                    all_flight_results.append({
-                        "query": query,
-                        "info": f"'{airport_code}' 공항 정보를 찾을 수 없습니다."
-                    })
-            else:
-                all_flight_results.append({
-                    "query": query,
-                    "info": f"'{airport_name}'에 대한 공항 코드를 찾을 수 없습니다."
-                })
-            continue
+            
+            elif airport_name:
+                print(f"디버그: 도착지 '{airport_name}'에 대한 API 호출 준비 ({'도착' if direction == 'arrival' else '출발'})")
+                airport_code = _get_airport_code_with_llm(airport_name)
+                
+                if airport_code:
+                    current_api_result = _call_flight_api(
+                        direction, 
+                        airport_code=airport_code,
+                        from_time=current_from_time,
+                        to_time=current_to_time
+                    )
 
-        if not flight_id:
-            continue
+            elif flight_id:
+                api_result_dep = _call_flight_api(
+                    "departure", 
+                    flight_id=flight_id,
+                    from_time=current_from_time,
+                    to_time=current_to_time
+                )
+                api_result_arr = _call_flight_api(
+                    "arrival",
+                    flight_id=flight_id,
+                    from_time=current_from_time,
+                    to_time=current_to_time
+                )
+                current_api_result["data"].extend(api_result_dep.get("data", []))
+                current_api_result["data"].extend(api_result_arr.get("data", []))
+            
+            if current_api_result.get("data"):
+                api_result["data"].extend(current_api_result.get("data"))
+                api_result["total_count"] += current_api_result.get("total_count")
+                if not api_result.get("found_date"):
+                    api_result["found_date"] = current_api_result.get("found_date")
 
-        retrieved_info = None
-        found_date = None
 
-        if direction != "unknown":
-            print(f"디버그: API 호출 준비 - 항공편 '{flight_id}' ({direction}), 요청 정보 '{info_type}'")
-            api_result = _call_flight_api(direction, flight_id=flight_id)
-            if not api_result.get("error") and api_result.get("data"):
-                retrieved_info = _extract_flight_info_from_response(api_result, info_type=info_type, found_date=api_result.get("found_date"))
-                found_date = api_result.get("found_date")
+        retrieved_info = []
+        if api_result.get("data"):
+            retrieved_info = _extract_flight_info_from_response(
+                api_result, 
+                info_type=query.get("info_type"), 
+                found_date=api_result.get("found_date"),
+                airline_name=airline_name,
+                departure_airport_name=departure_airport_name,
+                departure_airport_code=airport_code if departure_airport_name else None
+            )
 
         if not retrieved_info:
-            print(f"디버그: '{flight_id}'에 대한 정보가 없어, 출/도착 정보를 모두 확인합니다.")
-            
-            api_result_dep = _call_flight_api("departure", flight_id=flight_id)
-            if not api_result_dep.get("error") and api_result_dep.get("data"):
-                retrieved_info = _extract_flight_info_from_response(api_result_dep, info_type=info_type, found_date=api_result_dep.get("found_date"))
-                found_date = api_result_dep.get("found_date")
-
-            if not retrieved_info:
-                api_result_arr = _call_flight_api("arrival", flight_id=flight_id)
-                if not api_result_arr.get("error") and api_result_arr.get("data"):
-                    retrieved_info = _extract_flight_info_from_response(api_result_arr, info_type=info_type, found_date=api_result_arr.get("found_date"))
-                    found_date = api_result_arr.get("found_date")
-
-        if not retrieved_info:
-            all_flight_results.append({
-                "query": query,
-                "info": "찾을 수 없습니다."
-            })
             continue
 
         for info in retrieved_info:
-            info["운항날짜"] = found_date if found_date else "알 수 없음"
+            info["운항날짜"] = api_result.get("found_date") if api_result.get("found_date") else "알 수 없음"
 
         all_flight_results.extend(retrieved_info)
     
     if not all_flight_results:
         final_response = "죄송합니다. 요청하신 항공편 정보를 찾을 수 없습니다."
+        return {**state, "response": final_response}
+    
+    cleaned_results = []
+    for result in all_flight_results:
+        cleaned_item = {k: v for k, v in result.items() if v and v != "정보 없음"}
+        if cleaned_item:
+            cleaned_results.append(cleaned_item)
+
+    if not cleaned_results:
+        final_response = "죄송합니다. 요청하신 항공편 정보를 찾았으나, 세부 정보가 부족합니다."
     else:
-        cleaned_results = []
-        for result in all_flight_results:
-            cleaned_item = {k: v for k, v in result.items() if v and v != "정보 없음"}
-            if cleaned_item:
-                cleaned_results.append(cleaned_item)
-
-        truncated_flight_results = cleaned_results[:5]
-
+        truncated_flight_results = cleaned_results[:2]
         context_for_llm = json.dumps(truncated_flight_results, ensure_ascii=False, indent=2)
 
         intent_description = (
@@ -165,6 +175,9 @@ def flight_info_handler(state: ChatState) -> ChatState:
             "친절하고 명확하게 답변해주세요. "
             "응답에는 찾은 정보만 포함하고, 정보가 없는 항목은 언급하지 마세요. "
         )
+        
+        if len(all_flight_results) > 2:
+            intent_description += "또한, 더 많은 결과가 있지만 2개만 보여주고 있다는 메시지를 추가해 주세요."
 
         final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
 
