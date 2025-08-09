@@ -52,11 +52,12 @@ def build_chat_graph():
                 return node_name
         return "fallback_handler"
     
-    # 새로운 라우팅 함수: 복합 의도 감지 후 LLM 검증으로 이동
+    # 새로운 라우팅 함수: 복합 의도 감지 후 LLM 검증 또는 바로 핸들러로 이동
     def route_after_initial_classification(state: ChatState) -> str:
+        top_k_intents = state.get('top_k_intents_and_probs', [])
         slots = state.get("slots", [])
 
-        # 1. 슬롯 기반 복합 의도 감지 (신뢰도 차이 로직 제거)
+        # 1. 복합 의도 감지
         slot_groups = {
              'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
              'facility_info': {'B-facility_name', 'B-location_keyword'},
@@ -75,29 +76,32 @@ def build_chat_graph():
                     if tag in tags:
                         found_groups.add(group_name)
         
-        specific_groups = found_groups - {'general_topic', 'time'} # 'time'은 단독 의도가 아닌 경우가 많아 제외
+        specific_groups = found_groups - {'general_topic'}
         if len(specific_groups) > 1:
             print("DEBUG: 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
             return "handle_complex_intent"
             
-        # 2. 그 외 모든 경우는 LLM 검증 노드로 라우팅
-        print("DEBUG: 단일 의도 또는 모호한 의도 감지 -> llm_verify_intent로 라우팅")
-        return "llm_verify_intent"
+        # 2. 단일 의도 신뢰도 기반 라우팅
+        top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
+        
+        if top_conf >= 0.7:
+            print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
+            return f"{top_intent}_handler"
+        else:
+            print("DEBUG: 낮은 신뢰도 또는 모호한 의도 감지 -> llm_verify_intent로 라우팅")
+            return "llm_verify_intent"
 
     # 그래프의 시작점과 엣지 연결
     builder.set_entry_point("classify_intent")
     
-    # 모든 노드 이름 목록
     all_nodes = list(handlers.keys()) + ["handle_complex_intent", "llm_verify_intent"]
     
-    # classify_intent 이후의 라우팅
     builder.add_conditional_edges(
         "classify_intent",
         route_after_initial_classification,
         all_nodes
     )
     
-    # LLM 검증 이후의 라우팅
     builder.add_conditional_edges(
         "llm_verify_intent",
         route_final_intent_to_handler,
