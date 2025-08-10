@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface AdminRepository extends JpaRepository<Admin, Integer> {
     Optional<Admin> findByAdminId(String adminId);
-    // soft-delete되지 않은(=deletedAt IS NULL) 활성 관리자 페이징 조회
+    // soft-delete 되지 않은(=deletedAt IS NULL) 활성 관리자 페이징 조회
     Page<Admin> findAllByDeletedAtIsNull(Pageable pageable);
     // soft-delete된(=deletedAt IS NOT NULL) 관리자 페이징 조회
     Page<Admin> findAllByDeletedAtIsNotNull(Pageable pageable);

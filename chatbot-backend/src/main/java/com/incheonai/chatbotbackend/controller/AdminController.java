@@ -23,7 +23,7 @@ import com.incheonai.chatbotbackend.dto.KnowledgeFileDto;
 import com.incheonai.chatbotbackend.dto.StatusUpdateRequestDto;
 import com.incheonai.chatbotbackend.dto.UrgencyUpdateRequestDto;
 import com.incheonai.chatbotbackend.service.AdminService;
-import com.incheonai.chatbotbackend.service.InquiryService;
+import com.incheonai.chatbotbackend.service.AdminInquiryService;
 import com.incheonai.chatbotbackend.service.KnowledgeFileService;
 
 @RestController
@@ -31,16 +31,16 @@ import com.incheonai.chatbotbackend.service.KnowledgeFileService;
 public class AdminController {
 
     private final AdminService adminService;
-    private final InquiryService inquiryService;
+    private final AdminInquiryService adminInquiryService;
     private final KnowledgeFileService knowledgeFileService;
 
     @Autowired
     public AdminController(
             AdminService adminService,
-            InquiryService inquiryService,
+            AdminInquiryService adminInquiryService,
             KnowledgeFileService knowledgeFileService) {
         this.adminService = adminService;
-        this.inquiryService = inquiryService;
+        this.adminInquiryService = adminInquiryService;
         this.knowledgeFileService = knowledgeFileService;
     }
 
@@ -81,7 +81,7 @@ public class AdminController {
             @RequestParam(required = false) String search,
             @RequestParam int page,
             @RequestParam int size) {
-        Page<InquiryDto> pageData = inquiryService.getInquiries(
+        Page<InquiryDto> pageData = adminInquiryService.getInquiries(
                 status, urgency, category, search,
                 PageRequest.of(page, size));
         return ResponseEntity.ok(pageData);
@@ -94,14 +94,14 @@ public class AdminController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam("created_at_end")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        return ResponseEntity.ok(inquiryService.getInquiryCounts(start, end));
+        return ResponseEntity.ok(adminInquiryService.getInquiryCounts(start, end));
     }
 
     /** 문의 상세 조회 */
     @GetMapping("/inquiries/{inquiry_id}")
     public ResponseEntity<InquiryDetailDto> getInquiryDetail(
             @PathVariable("inquiry_id") Integer inquiryId) {
-        return ResponseEntity.ok(inquiryService.getInquiryDetail(inquiryId.toString()));
+        return ResponseEntity.ok(adminInquiryService.getInquiryDetail(inquiryId.toString()));
     }
 
     /** 문의 긴급도 수정 */
@@ -109,7 +109,7 @@ public class AdminController {
     public ResponseEntity<Void> updateUrgency(
             @PathVariable("inquiry_id") Integer inquiryId,
             @RequestBody UrgencyUpdateRequestDto request) {
-        inquiryService.updateUrgency(inquiryId.toString(), request.urgency());
+        adminInquiryService.updateUrgency(inquiryId.toString(), request.urgency());
         return ResponseEntity.noContent().build();
     }
 
@@ -118,7 +118,7 @@ public class AdminController {
     public ResponseEntity<Void> updateStatus(
             @PathVariable("inquiry_id") Integer inquiryId,
             @RequestBody StatusUpdateRequestDto request) {
-        inquiryService.updateStatus(inquiryId.toString(), request.status());
+        adminInquiryService.updateStatus(inquiryId, request.status());
         return ResponseEntity.noContent().build();
     }
 
@@ -127,7 +127,7 @@ public class AdminController {
     public ResponseEntity<InquiryAnswerResponseDto> addAnswer(
             @PathVariable("inquiry_id") Integer inquiryId,
             @RequestBody InquiryAnswerRequestDto request) {
-        InquiryAnswerResponseDto answer = inquiryService.addAnswer(
+        InquiryAnswerResponseDto answer = adminInquiryService.addAnswer(
                 inquiryId.toString(), request);
         return ResponseEntity.ok(answer);
     }
@@ -138,8 +138,7 @@ public class AdminController {
             @PathVariable("inquiry_id") Integer inquiryId,
             @PathVariable("answer_id") Integer answerId,
             @RequestBody InquiryAnswerRequestDto request) {
-        inquiryService.updateAnswer(
-                inquiryId.toString(), answerId.toString(), request);
+        adminInquiryService.updateAnswer(inquiryId, answerId, request);
         return ResponseEntity.noContent().build();
     }
 
@@ -147,7 +146,7 @@ public class AdminController {
     @DeleteMapping("/inquiries/{inquiry_id}")
     public ResponseEntity<Void> deleteInquiry(
             @PathVariable("inquiry_id") Integer inquiryId) {
-        inquiryService.deleteInquiry(inquiryId.toString());
+        adminInquiryService.deleteInquiry(inquiryId.toString());
         return ResponseEntity.noContent().build();
     }
 

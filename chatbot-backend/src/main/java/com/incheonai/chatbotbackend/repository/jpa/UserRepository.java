@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, String> {
     // @Where("deleted_at IS NULL")의 영향을 받음 (활성 사용자만 조회)
     Optional<User> findByUserId(String userId);
 
