@@ -98,9 +98,7 @@ def main():
             run_task_with_logging(fetch_and_save_airport_enterprise, "공항 기업 데이터 갱신")
             run_task_with_logging(fetch_and_save_airport_facility, "공항 시설 데이터 갱신")
             
-            print(parking_discount_csv_path)
             run_task_with_logging(lambda: upload_discount_policy_from_csv(parking_discount_csv_path), "주차 할인 정책 데이터 갱신")
-            print(parking_fee_payment_csv_path)
             run_task_with_logging(lambda: upload_payment_methods_from_csv(parking_fee_payment_csv_path), "주차 요금 결제 방법 데이터 갱신")
             run_task_with_logging(lambda: upload_parking_lot_from_csv(parkingLot_csv_path), "주차장 데이터 갱신")
             run_task_with_logging(update_parking_walk_time, "주차장 보행 시간 데이터 갱신")

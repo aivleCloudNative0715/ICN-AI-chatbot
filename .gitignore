@@ -6,3 +6,6 @@ __pycache__/
 
 ai/best_models/intent-kobert-v2/best_model.pt
 ai/intent_classifier/best_models/intent-kobert-v2/best_model.pt
+
+chatbot-vm_key.pem
+data-uploader-vm_key.pem
