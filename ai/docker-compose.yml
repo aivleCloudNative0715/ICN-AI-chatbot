@@ -2,12 +2,18 @@ version: '3'
 
 services:
   web:
-    build: .
-    command: gunicorn ai.wsgi:application --bind 0.0.0.0:8000
+    image: meatcarrot/chatbot:250811
+    env_file:
+      - .env
+    command: gunicorn chatbot_core.wsgi:application --bind 0.0.0.0:8000 --workers 6 --timeout 120
     volumes:
       - ./models:/app/models
     expose:
       - "8000"
+    ports:
+      - "8000:8000"   
+
+
 
   nginx:
     image: nginx:latest
@@ -21,3 +27,5 @@ services:
 
   redis:
     image: redis:alpine
+    ports:
+      - "6379:6379"

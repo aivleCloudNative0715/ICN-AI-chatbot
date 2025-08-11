@@ -141,7 +141,6 @@ class GenerateAPIView(APIView):
         message_id = request.data.get("message_id", '') # 새로운 메시지의 ID
         parent_id = request.data.get("parent_id") # 수정/재생성일 경우 이전 메시지 ID(없으면 null)
         user_id = request.data.get("user_id")
-        context = request.data.get("context", []) # context는 없으면 빈 리스트로
         
         user_message = request.data.get("content")
         

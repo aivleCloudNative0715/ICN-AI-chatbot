@@ -30,7 +30,6 @@ certifi==2025.7.14
 charset-normalizer==3.4.2
 
 colorama==0.4.6
-default-jdk
 django==5.2.5
 django_redis==6.0.0
 djangorestframework==3.16.1

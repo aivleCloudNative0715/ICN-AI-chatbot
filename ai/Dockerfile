@@ -1,26 +1,27 @@
-# 베이스 이미지 지정 (Python 3.12)
 FROM python:3.12-slim
 
-# 작업 디렉토리 생성
 WORKDIR /app
 
-RUN apt-get update
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    default-jdk \
+    locales \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && \
-    apt-get install -y nginx && \
-    rm -rf /var/lib/apt/lists/*
+# ko_KR.UTF-8 로케일 생성
+RUN sed -i '/ko_KR.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
-# 의존성 파일 복사 및 설치
-COPY requirements.txt RAG_requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r RAG_requirements.txt && \
-    pip install sentencepiece --prefer-binary
+ENV LANG=ko_KR.UTF-8
+ENV LANGUAGE=ko_KR:ko
+ENV LC_ALL=ko_KR.UTF-8
 
-# 프로젝트 파일 전체 복사
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir sentencepiece --prefer-binary
+
 COPY . .
 
-# 포트 노출
 EXPOSE 8000
 
-# 컨테이너 시작 시 실행할 명령어
-CMD ["gunicorn", "chatbot_core.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "chatbot_core.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "8", "--timeout", "120"]
+
