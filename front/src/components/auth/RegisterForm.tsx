@@ -8,17 +8,19 @@ import { Button } from 'primereact/button';
 import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '@/lib/api';
 
-// 일반 사용자 로그인 응답 타입
-interface UserLoginData {
+// 회원가입 성공 시 받는 데이터 타입 (로그인 응답과 동일)
+interface LoginResponseData {
   accessToken: string;
   id: number;
   userId: string;
   googleId: string | null;
   loginProvider: 'LOCAL' | 'GOOGLE';
+  sessionId: string;
 }
 
 interface RegisterFormProps {
-  onRegisterSuccess: (data: UserLoginData) => void;
+  // 성공 콜백의 파라미터 타입을 LoginResponseData로 변경
+  onRegisterSuccess: (data: LoginResponseData) => void;
 }
 
 export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
@@ -56,7 +58,7 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
     if (validate()) {
       setErrors({});
       try {
-        const response = await fetch(`${API_BASE_URL}/users/signup`, {
+        const response = await fetch(`${API_BASE_URL}/api/users/signup`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -94,7 +96,7 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
     setErrors((prev) => ({ ...prev, userId: undefined }));
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/check-id`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/check-id`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
@@ -220,7 +222,7 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
 
       {/* "Google로 계속하기" 버튼 스타일 적용 */}
       {/* a 태그로 감싸서 백엔드 OAuth2 로그인 URL로 이동시킵니다. */}
-      <a href={`${API_BASE_URL}/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
+      <a href={`${API_BASE_URL}/api/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
         <Button
           type="button" // form submit을 방지하기 위해 type="button"으로 설정
           pt={{

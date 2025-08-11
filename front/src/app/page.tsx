@@ -10,27 +10,20 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
 
 // User와 Admin 타입을 정의합니다.
-interface UserLoginData {
+interface LoginResponseData {
   accessToken: string;
   id: number;
-  userId: string;
-  googleId: string | null;
-  loginProvider: 'LOCAL' | 'GOOGLE';
+  userId?: string; // 일반 유저
+  googleId?: string | null; // 일반 유저
+  loginProvider?: 'LOCAL' | 'GOOGLE'; // 일반 유저
+  adminId?: string; // 관리자
+  adminName?: string; // 관리자
+  role?: 'ADMIN' | 'SUPER' | 'USER'; // 관리자 또는 유저
+  sessionId: string; // 모든 로그인 응답에 세션 ID 포함
 }
 
-interface AdminLoginData {
-  accessToken: string;
-  id: number;
-  adminId: string;
-  adminName: string;
-  role: 'ADMIN' | 'SUPER';
-}
-
-type LoginData = UserLoginData | AdminLoginData;
-
-// 타입 가드 함수: LoginData가 AdminLoginData인지 확인
-function isAdminData(data: LoginData): data is AdminLoginData {
-  return (data as AdminLoginData).role !== undefined;
+function isAdminData(data: LoginResponseData): boolean {
+  return data.role === 'ADMIN' || data.role === 'SUPER';
 }
 
 export default function HomePage() {
@@ -41,28 +34,62 @@ export default function HomePage() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [isAdmin, setIsAdmin] = useState(false);
+  // 비로그인 사용자를 위한 익명 세션 ID 상태
+  const [anonymousSessionId, setAnonymousSessionId] = useState<string | null>(null);
 
-  const handleLoginSuccess = useCallback((data: LoginData) => {
-    console.log("handleLoginSuccess 호출됨. Local Storage에 정보를 저장합니다.");
+
+  /**
+   * 로그인/회원가입 성공 시 공통 처리 핸들러
+   * 응답에 포함된 accessToken과 sessionId를 Local Storage에 저장합니다.
+   */
+  const handleLoginSuccess = useCallback((data: LoginResponseData) => {
+    console.log("로그인 성공 핸들러 호출됨:", data);
     localStorage.setItem('jwt_token', data.accessToken);
     localStorage.setItem('user_id', String(data.id));
+    // 로그인된 사용자의 세션 ID를 저장
+    localStorage.setItem('session_id', data.sessionId);
 
     if (isAdminData(data)) {
-      localStorage.setItem('user_role', data.role);
-      localStorage.setItem('admin_id', data.adminId);
-      localStorage.setItem('admin_name', data.adminName);
+      localStorage.setItem('user_role', data.role!);
+      localStorage.setItem('admin_id', data.adminId!);
+      localStorage.setItem('admin_name', data.adminName!);
       setIsAdmin(true);
       router.push('/admin');
     } else {
       localStorage.setItem('user_role', 'USER');
-      localStorage.setItem('user_login_id', data.userId);
-      localStorage.setItem('login_provider', data.loginProvider);
+      localStorage.setItem('user_login_id', data.userId!);
+      localStorage.setItem('login_provider', data.loginProvider!);
       setIsAdmin(false);
     }
     
     setIsLoggedIn(true);
     setIsAuthModalOpen(false);
+    // 로그인 했으므로 익명 세션 ID는 초기화
+    setAnonymousSessionId(null);
   }, [router]);
+
+  /**
+   * 비로그인 사용자를 위한 익명 세션 ID를 발급받는 함수
+   */
+  const fetchAnonymousSession = useCallback(async () => {
+    try {
+      console.log("익명 세션 ID를 요청합니다.");
+      const response = await fetch(`${API_BASE_URL}/chat/session`, {
+        method: 'POST',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log("익명 세션 ID 발급 성공:", data.sessionId);
+        setAnonymousSessionId(data.sessionId);
+        // 비로그인 상태에서도 채팅을 이어가기 위해 세션 ID를 저장
+        localStorage.setItem('session_id', data.sessionId);
+      } else {
+        console.error('익명 세션 ID 발급 실패');
+      }
+    } catch (error) {
+      console.error('익명 세션 ID 요청 중 네트워크 오류:', error);
+    }
+  }, []);
 
 
   useEffect(() => {
@@ -111,16 +138,21 @@ export default function HomePage() {
       fetchUserInfo(oauthToken);
       
     } else {
+      // 로컬 토큰 확인 및 세션 관리 로직
       const localToken = localStorage.getItem('jwt_token');
       if (localToken) {
+        // 로그인 상태일 때
         setIsLoggedIn(true);
         const userRole = localStorage.getItem('user_role');
         if (userRole === 'ADMIN' || userRole === 'SUPER') {
           setIsAdmin(true);
         }
+      } else {
+        // 비로그인 상태일 때, 익명 세션을 발급받는다.
+        fetchAnonymousSession();
       }
     }
-  }, [searchParams, handleLoginSuccess, router]);
+  }, [searchParams, handleLoginSuccess, router, fetchAnonymousSession]);
 
   const openAuthModal = (mode: 'login' | 'register' = 'login') => {
     setAuthMode(mode);
@@ -144,45 +176,41 @@ export default function HomePage() {
     router.push('/');
   }, [router]);
 
+  /**
+   * 로그아웃 핸들러
+   * 서버에 토큰 무효화를 요청하고, 클라이언트의 모든 세션 정보를 정리합니다.
+   */
   const handleLogout = async () => {
     const token = localStorage.getItem('jwt_token');
 
     if (token) {
         try {
-            // 헤더에 Bearer 토큰을 담아 로그아웃 API 호출
+            // 서버에 현재 토큰을 무효화하도록 요청
             const response = await fetch(`${API_BASE_URL}/users/logout`, {
-                method: 'POST', // 일반적으로 로그아웃은 POST를 사용합니다.
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
             });
-
             if (!response.ok) {
-                // 서버에서 로그아웃 실패 시 에러를 콘솔에 출력합니다.
-                // 클라이언트에서는 어쨌든 로그아웃 처리를 계속 진행합니다.
                 const errorData = await response.json();
-                console.error('Server logout failed:', errorData.message || 'Unknown error');
+                console.error('서버 로그아웃 실패:', errorData.message || 'Unknown error');
             }
         } catch (error) {
-            console.error('Logout API call failed:', error);
+            console.error('로그아웃 API 호출 실패:', error);
         }
     }
 
-    // API 호출 결과와 관계없이 localStorage에서 모든 관련 정보 삭제
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('user_role');
-    localStorage.removeItem('admin_id');
-    localStorage.removeItem('admin_name');
-    localStorage.removeItem('user_login_id');
-    localStorage.removeItem('login_provider');
-    
-    // 상태를 업데이트하고 사용자에게 알림
+    // API 호출 결과와 관계없이 모든 로컬 스토리지 정보 삭제
+    localStorage.clear();
+
+    // 상태를 초기화하고 사용자에게 알림
     setIsLoggedIn(false);
     setIsAdmin(false);
     alert('로그아웃되었습니다.');
+
+    // 로그아웃 후 즉시 새로운 익명 세션을 받아 채팅을 이어갈 수 있도록 함
+    fetchAnonymousSession();
     
-    // 메인 페이지로 리디렉션
+    // 메인 페이지로 리디렉션 (이미 메인 페이지라면 UI만 변경됨)
     router.push('/');
   };
 
@@ -247,6 +275,8 @@ export default function HomePage() {
           onClose={closeAuthModal}
           onLoginSuccess={handleLoginSuccess}
           initialMode={authMode}
+          // 로그인 폼에 익명 세션 ID를 전달
+          anonymousSessionId={anonymousSessionId}
         />
       )}
     </div>

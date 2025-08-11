@@ -7,50 +7,42 @@ import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import { Button } from 'primereact/button';
 
-// User와 Admin 타입을 정의합니다.
-interface UserLoginData {
+// 로그인/회원가입 응답 타입을 하나로 통일
+interface LoginResponseData {
   accessToken: string;
   id: number;
-  userId: string;
-  googleId: string | null;
-  loginProvider: 'LOCAL' | 'GOOGLE';
+  userId?: string;
+  googleId?: string | null;
+  loginProvider?: 'LOCAL' | 'GOOGLE';
+  adminId?: string;
+  adminName?: string;
+  role?: 'ADMIN' | 'SUPER' | 'USER';
+  sessionId: string;
 }
-
-interface AdminLoginData {
-  accessToken: string;
-  id: number;
-  adminId: string;
-  adminName: string;
-  role: 'ADMIN' | 'SUPER';
-}
-
-// 두 타입을 모두 포함하는 Union 타입을 정의합니다.
-type LoginData = UserLoginData | AdminLoginData;
 
 interface AuthModalProps {
   onClose: () => void;
   initialMode?: 'login' | 'register';
-  onLoginSuccess: (data: LoginData) => void;
+  onLoginSuccess: (data: LoginResponseData) => void;
+  // 비로그인 시 사용하던 익명 세션 ID
+  anonymousSessionId: string | null;
 }
 
-export default function AuthModal({ onClose, initialMode = 'login', onLoginSuccess }: AuthModalProps) {
+export default function AuthModal({ onClose, initialMode = 'login', onLoginSuccess, anonymousSessionId }: AuthModalProps) {
   const [isRegisterMode, setIsRegisterMode] = useState(initialMode === 'register');
 
   useEffect(() => {
     setIsRegisterMode(initialMode === 'register');
   }, [initialMode]);
 
-  // 로그인 또는 회원가입 성공 시 호출되는 공통 핸들러
-  const handleAuthSuccess = (data: LoginData) => {
-    onLoginSuccess(data);
-  };
-
   return (
     <Modal isOpen={true} onClose={onClose} title={isRegisterMode ? '회원가입' : '로그인'}>
       {isRegisterMode ? (
-        <RegisterForm onRegisterSuccess={handleAuthSuccess} />
+        // 회원가입 성공 시 onLoginSuccess를 직접 호출
+        <RegisterForm onRegisterSuccess={onLoginSuccess} />
       ) : (
-        <LoginForm onLoginSuccess={handleAuthSuccess} />
+        // 로그인 폼에 익명 세션 ID 전달
+        <LoginForm onLoginSuccess={onLoginSuccess} anonymousSessionId={anonymousSessionId} />
       )}
 
       {isRegisterMode && (

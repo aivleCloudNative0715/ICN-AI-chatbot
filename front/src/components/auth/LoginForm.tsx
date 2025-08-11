@@ -8,30 +8,26 @@ import { Button } from 'primereact/button';
 import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '@/lib/api';
 
-interface UserLoginData {
+interface LoginResponseData {
   accessToken: string;
   id: number;
-  userId: string;
-  googleId: string | null;
-  loginProvider: 'LOCAL' | 'GOOGLE';
+  userId?: string;
+  googleId?: string | null;
+  loginProvider?: 'LOCAL' | 'GOOGLE';
+  adminId?: string;
+  adminName?: string;
+  role?: 'ADMIN' | 'SUPER' | 'USER';
+  sessionId: string;
 }
-
-interface AdminLoginData {
-  accessToken: string;
-  id: number;
-  adminId: string;
-  adminName: string;
-  role: 'ADMIN' | 'SUPER';
-}
-
-type LoginData = UserLoginData | AdminLoginData;
 
 
 interface LoginFormProps {
-  onLoginSuccess: (data: LoginData) => void;
+  onLoginSuccess: (data: LoginResponseData) => void;
+  // 세션 마이그레이션을 위한 익명 세션 ID
+  anonymousSessionId: string | null;
 }
 
-export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
+export default function LoginForm({ onLoginSuccess, anonymousSessionId }: LoginFormProps) {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ userId?: string; password?: string; general?: string }>({});
@@ -57,26 +53,33 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     if (validate()) {
       setErrors({}); // 이전 에러 초기화
       try {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        // 요청 Body에 anonymousSessionId를 포함
+        const requestBody: { [key: string]: any } = { userId, password };
+        if (anonymousSessionId) {
+          requestBody.anonymousSessionId = anonymousSessionId;
+          console.log("세션 마이그레이션을 위해 익명 세션 ID를 포함하여 로그인 요청:", anonymousSessionId);
+        }
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, password }),
+          body: JSON.stringify(requestBody),
         });
 
         const data = await response.json();
 
         if (response.ok) {
+          // 성공 시, 응답 데이터(accessToken, sessionId 등)를 부모로 전달
           onLoginSuccess(data);
         } else {
-          // [수정된 부분] 로그인 실패 시 alert 창을 띄웁니다.
-          const errorMessage = data.message || '로그인에 실패했습니다. 아이디 또는 비밀번호를 확인해주세요.';
-          alert(errorMessage); // alert 창 추가
+          const errorMessage = data.message || '로그인에 실패했습니다.';
+          alert(errorMessage);
           setErrors(prev => ({ ...prev, general: errorMessage }));
         }
       } catch (error) {
         console.error('로그인 중 오류 발생:', error);
-        const networkErrorMessage = '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
-        alert(networkErrorMessage); // 네트워크 에러 시 alert 창 추가
+        const networkErrorMessage = '네트워크 오류가 발생했습니다.';
+        alert(networkErrorMessage);
         setErrors(prev => ({ ...prev, general: networkErrorMessage }));
       }
     }
@@ -168,7 +171,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
 
       {/* "Google로 계속하기" 버튼 스타일 적용 */}
       {/* a 태그로 감싸서 백엔드 OAuth2 로그인 URL로 이동시킵니다. */}
-      <a href={`${API_BASE_URL}/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
+      <a href={`${API_BASE_URL}/api/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
         <Button
           type="button" // form submit을 방지하기 위해 type="button"으로 설정
           pt={{
