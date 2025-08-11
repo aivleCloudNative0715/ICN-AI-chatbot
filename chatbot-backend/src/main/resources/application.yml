@@ -63,6 +63,9 @@ logging:
 ai-server:
   url: ${AI_SERVER_URL}
 
+frontend:
+  url: ${FRONTEND_URL}
+
 springdoc:
   api-docs:
     path: /v3/api-docs

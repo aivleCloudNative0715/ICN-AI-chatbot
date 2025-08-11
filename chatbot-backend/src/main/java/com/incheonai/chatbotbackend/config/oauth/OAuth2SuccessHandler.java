@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
@@ -54,7 +58,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("OAuth2 로그인 성공. Redis에 토큰 저장. Key: {}", token);
 
         // 프론트엔드로 리다이렉트할 URL 생성 (토큰을 쿼리 파라미터로 포함)
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000") // 프론트엔드 주소
+        String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl) // 프론트엔드 주소
                 .queryParam("token", token)
                 .build()
                 .encode(StandardCharsets.UTF_8)

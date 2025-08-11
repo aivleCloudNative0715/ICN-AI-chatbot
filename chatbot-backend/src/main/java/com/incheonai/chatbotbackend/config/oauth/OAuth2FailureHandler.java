@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
@@ -17,6 +18,9 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Component
 public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler {
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
@@ -34,7 +38,7 @@ public class OAuth2FailureHandler extends SimpleUrlAuthenticationFailureHandler 
         }
 
         // 프론트엔드로 리디렉션할 URL에 에러 메시지를 쿼리 파라미터로 추가
-        String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000")
+        String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl)
                 .queryParam("error", errorMessage)
                 .build()
                 .encode(StandardCharsets.UTF_8)
