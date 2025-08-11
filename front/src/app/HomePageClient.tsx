@@ -75,7 +75,7 @@ export default function HomePageClient() {
    */
   const fetchAnonymousSession = useCallback(async () => {
     try {
-      console.log("익명 세션 ID를 요청합니다.");
+      console.log("익명 세션 ID를 요청합니다: ", `${API_BASE_URL}`);
       const response = await fetch(`${API_BASE_URL}/api/chat/session`, {
         method: 'POST',
       });
