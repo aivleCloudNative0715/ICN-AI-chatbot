@@ -1,189 +1,150 @@
 import pandas as pd
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-from dotenv import load_dotenv 
-import os 
-
+from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
-mongo_uri = os.getenv("MONGO_URI")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-if not mongo_uri:
-    print("❌ 오류: .env 파일에서 MONGO_URI를 찾을 수 없습니다. 파일을 확인해주세요.")
-    exit(1) # 프로그램 종료
-
-# --- MongoDB 연결 설정 ---
-try:
-    client = MongoClient(mongo_uri, server_api=ServerApi('1'))
-    db = client["AirBot"] 
-
-    client.admin.command('ping')
-    print("✅ MongoDB에 성공적으로 연결되었습니다!")
-
-except Exception as e:
-    print(f"❌ MongoDB 연결 오류: {e}")
-    exit(1) # 연결 실패 시 프로그램 종료
+visa_file = os.path.join(BASE_DIR, "visa.xlsx")
+restricted_item_file = os.path.join(BASE_DIR, "restricted_item.xlsx")
+min_transit_time_file = os.path.join(BASE_DIR, "최소_환승_시간.xlsx")
+airport_procedure_file = os.path.join(BASE_DIR, "공항_절차.xlsx")
+transit_path_file = os.path.join(BASE_DIR, "환승_경로.xlsx")
 
 
-EXCEL_FILES_DIR = "./" 
+def _get_mongo_client_and_db():
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri:
+        raise ValueError("오류: .env 파일에서 MONGO_URI를 찾을 수 없습니다.")
+    try:
+        client = MongoClient(mongo_uri, server_api=ServerApi('1'))
+        db = client["AirBot"]
+        client.admin.command('ping')
+        return client, db
+    except Exception as e:
+        raise ConnectionError(f"MongoDB 연결 오류: {e}")
 
-visa_file = os.path.join(EXCEL_FILES_DIR, "visa.xlsx")
-restricted_item_file = os.path.join(EXCEL_FILES_DIR, "restricted_item.xlsx")
-min_transit_time_file = os.path.join(EXCEL_FILES_DIR, "최소 환승 시간.xlsx")
-airport_procedure_file = os.path.join(EXCEL_FILES_DIR, "공항 절차.xlsx")
-transit_path_file = os.path.join(EXCEL_FILES_DIR, "환승 경로.xlsx") 
-
-
-# --- 각 컬렉션별 데이터 업로드 함수 정의 ---
-
-def upload_country_data(file_path, db):
-    collection_name = "Country"
+def _upload_with_temp_collection(file_path, collection_name, rename_map=None, process_df_func=None):
+    client, db = _get_mongo_client_and_db()
+    temp_collection_name = collection_name + "_temp"
     try:
         df = pd.read_excel(file_path)
-        df.rename(columns={
-            'country_c': 'country_code',
-            'country_n.': 'country_name_kor',
-            'visa_requi': 'visa_required',
-            'stay_durat': 'stay_duration',
-            'entry_requ': 'entry_requirement'
-        }, inplace=True)
+        if rename_map:
+            df.rename(columns=rename_map, inplace=True)
+        if process_df_func:
+            df = process_df_func(df)
+        else:
+            for col in df.columns:
+                df[col] = df[col].apply(lambda x: None if pd.isna(x) else str(x) if isinstance(x, str) else x)
+
+        data = df.to_dict(orient="records")
+
+        temp_col = db[temp_collection_name]
+        temp_col.delete_many({})
+        temp_col.insert_many(data)
+
+        if collection_name in db.list_collection_names():
+            db.drop_collection(collection_name)
+
+        db[temp_collection_name].rename(collection_name)
+
+        print(f"'{file_path}' -> '{collection_name}' 컬렉션 업데이트 완료 (임시 컬렉션 스왑)")
+
+    except FileNotFoundError:
+        print(f"오류: 파일을 찾을 수 없습니다: {file_path}")
+    except Exception as e:
+        print(f"'{file_path}' 처리 중 오류 발생: {e}")
+    finally:
+        client.close()
+
+
+def upload_country_data():
+    rename_map = {
+        'country_c': 'country_code',
+        'country_n.': 'country_name_kor',
+        'visa_requi': 'visa_required',
+        'stay_durat': 'stay_duration',
+        'entry_requ': 'entry_requirement'
+    }
+    def process(df):
         df['visa_required'] = df['visa_required'].astype(bool)
-        df['stay_duration'] = pd.to_numeric(df['stay_duration'], errors='coerce')
-        df['stay_duration'] = df['stay_duration'].apply(lambda x: None if pd.isna(x) else int(x))
+        df['stay_duration'] = pd.to_numeric(df['stay_duration'], errors='coerce').apply(lambda x: None if pd.isna(x) else int(x))
         df['entry_requirement'] = df['entry_requirement'].apply(lambda x: None if pd.isna(x) else str(x))
-        data = df.to_dict(orient="records")
-        collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
-        collection.insert_many(data)
-        print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
-    except FileNotFoundError:
-        print(f"❌ 오류: 파일을 찾을 수 없습니다. 경로를 확인해주세요: {file_path}")
-    except Exception as e:
-        print(f"❌ '{file_path}' 처리 중 오류가 발생했습니다: {e}")
+        return df
 
-def upload_restricted_item_data(file_path, db):
-    collection_name = "RestrictedItem"
-    try:
-        df = pd.read_excel(file_path)
-        df.rename(columns={
-            'item_category': 'item_category',
-            'item_name': 'item_name',
-            'carry_on_policy': 'carry_on_policy',
-            'checked_baggage_policy': 'checked_baggage_policy',
-            'source_url': 'source_url'
-        }, inplace=True)
-        for col in df.columns:
-            df[col] = df[col].apply(lambda x: None if pd.isna(x) else str(x))
-        data = df.to_dict(orient="records")
-        collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
-        collection.insert_many(data)
-        print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
-    except FileNotFoundError:
-        print(f"❌ 오류: 파일을 찾을 수 없습니다. 경로를 확인해주세요: {file_path}")
-    except Exception as e:
-        print(f"❌ '{file_path}' 처리 중 오류가 발생했습니다: {e}")
+    _upload_with_temp_collection(visa_file, "Country", rename_map, process)
 
-def upload_minimum_connection_time_data(file_path, db):
-    collection_name = "MinimumConnectionTime"
-    try:
-        df = pd.read_excel(file_path)
-        df.rename(columns={
-            'origin_terminal': 'origin_terminal',
-            'destination_terminal': 'destination_terminal',
-            'min_time_minutes': 'min_time_minutes'
-        }, inplace=True)
-        df['min_time_minutes'] = pd.to_numeric(df['min_time_minutes'], errors='coerce')
-        df['min_time_minutes'] = df['min_time_minutes'].apply(lambda x: None if pd.isna(x) else int(x))
+def upload_restricted_item_data():
+    rename_map = {
+        'item_category': 'item_category',
+        'item_name': 'item_name',
+        'carry_on_policy': 'carry_on_policy',
+        'checked_baggage_policy': 'checked_baggage_policy',
+        'source_url': 'source_url'
+    }
+    _upload_with_temp_collection(restricted_item_file, "RestrictedItem", rename_map)
+
+def upload_minimum_connection_time_data():
+    rename_map = {
+        'origin_terminal': 'origin_terminal',
+        'destination_terminal': 'destination_terminal',
+        'min_time_minutes': 'min_time_minutes'
+    }
+    def process(df):
+        df['min_time_minutes'] = pd.to_numeric(df['min_time_minutes'], errors='coerce').apply(lambda x: None if pd.isna(x) else int(x))
         df['origin_terminal'] = df['origin_terminal'].apply(lambda x: None if pd.isna(x) else str(x))
         df['destination_terminal'] = df['destination_terminal'].apply(lambda x: None if pd.isna(x) else str(x))
-        data = df.to_dict(orient="records")
-        collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
-        collection.insert_many(data)
-        print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
-    except FileNotFoundError:
-        print(f"❌ 오류: 파일을 찾을 수 없습니다. 경로를 확인해주세요: {file_path}")
-    except Exception as e:
-        print(f"❌ '{file_path}' 처리 중 오류가 발생했습니다: {e}")
+        return df
 
-def upload_airport_procedure_data(file_path, db):
-    collection_name = "AirportProcedure"
-    try:
-        df = pd.read_excel(file_path)
-        df.rename(columns={
-            'procedure_type': 'procedure_type',
-            'step_number': 'step_number',
-            'sub_step': 'sub_step',
-            'step_name': 'step_name',
-            'description': 'description',
-            'source_url': 'source_url'
-        }, inplace=True)
-        df['step_number'] = pd.to_numeric(df['step_number'], errors='coerce')
-        df['step_number'] = df['step_number'].apply(lambda x: None if pd.isna(x) else int(x))
+    _upload_with_temp_collection(min_transit_time_file, "MinimumConnectionTime", rename_map, process)
+
+def upload_airport_procedure_data():
+    rename_map = {
+        'procedure_type': 'procedure_type',
+        'step_number': 'step_number',
+        'sub_step': 'sub_step',
+        'step_name': 'step_name',
+        'description': 'description',
+        'source_url': 'source_url'
+    }
+    def process(df):
+        df['step_number'] = pd.to_numeric(df['step_number'], errors='coerce').apply(lambda x: None if pd.isna(x) else int(x))
         if 'sub_step' in df.columns:
-            df['sub_step'] = pd.to_numeric(df['sub_step'], errors='coerce')
-            df['sub_step'] = df['sub_step'].apply(lambda x: None if pd.isna(x) else int(x))
+            df['sub_step'] = pd.to_numeric(df['sub_step'], errors='coerce').apply(lambda x: None if pd.isna(x) else int(x))
         else:
-            df['sub_step'] = None # 컬럼이 없으면 None으로 채움
-
-        string_cols = ['procedure_type', 'step_name', 'description', 'source_url']
-        for col in string_cols:
+            df['sub_step'] = None
+        for col in ['procedure_type', 'step_name', 'description', 'source_url']:
             if col in df.columns:
                 df[col] = df[col].apply(lambda x: None if pd.isna(x) else str(x))
             else:
                 df[col] = None
+        return df
 
-        data = df.to_dict(orient="records")
-        collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
-        collection.insert_many(data)
-        print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
-    except FileNotFoundError:
-        print(f"❌ 오류: 파일을 찾을 수 없습니다. 경로를 확인해주세요: {file_path}")
-    except Exception as e:
-        print(f"❌ '{file_path}' 처리 중 오류가 발생했습니다: {e}")
+    _upload_with_temp_collection(airport_procedure_file, "AirportProcedure", rename_map, process)
 
-def upload_transit_path_data(file_path, db):
-    collection_name = "TransitPath"
-    try:
-        df = pd.read_excel(file_path)
-        df.rename(columns={
-            'origin_terminal': 'origin_terminal',
-            'destination_terminal': 'destination_terminal',
-            'path_description': 'path_description'
-        }, inplace=True)
-        string_cols = ['origin_terminal', 'destination_terminal', 'path_description']
-        for col in string_cols:
+def upload_transit_path_data():
+    rename_map = {
+        'origin_terminal': 'origin_terminal',
+        'destination_terminal': 'destination_terminal',
+        'path_description': 'path_description'
+    }
+    def process(df):
+        for col in ['origin_terminal', 'destination_terminal', 'path_description']:
             if col in df.columns:
                 df[col] = df[col].apply(lambda x: None if pd.isna(x) else str(x))
             else:
                 df[col] = None
-        data = df.to_dict(orient="records")
-        collection = db[collection_name]
-        # collection.delete_many({}) # 기존 데이터 삭제를 원하면 주석 해제
-        collection.insert_many(data)
-        print(f"✅ 성공적으로 '{file_path}' 데이터를 '{collection_name}' 컬렉션에 삽입했습니다.")
-    except FileNotFoundError:
-        print(f"❌ 오류: 파일을 찾을 수 없습니다. 경로를 확인해주세요: {file_path}")
-    except Exception as e:
-        print(f"❌ '{file_path}' 처리 중 오류가 발생했습니다: {e}")
+        return df
+
+    _upload_with_temp_collection(transit_path_file, "TransitPath", rename_map, process)
 
 
-# --- 모든 데이터 업로드 실행 ---
-
-print("\n--- 모든 엑셀 데이터 MongoDB 업로드 시작 ---")
-
-# 모든 컬렉션의 기존 데이터를 삭제하고 새로 넣고 싶다면,
-# 각 함수 내부의 'collection.delete_many({})' 주석을 해제
-
-upload_country_data(visa_file, db)
-upload_restricted_item_data(restricted_item_file, db)
-upload_minimum_connection_time_data(min_transit_time_file, db)
-upload_airport_procedure_data(airport_procedure_file, db)
-upload_transit_path_data(transit_path_file, db)
-
-# --- MongoDB 연결 종료 ---
-client.close()
-print("\n--- 모든 데이터 업로드 완료 및 MongoDB 연결 종료 ---")
+if __name__ == "__main__":
+    upload_country_data()
+    upload_restricted_item_data()
+    upload_minimum_connection_time_data()
+    upload_airport_procedure_data()
+    upload_transit_path_data()

@@ -1,45 +1,47 @@
 import pandas as pd
-import numpy as np
 import requests
-import json
-import os
-import time 
 from datetime import datetime
 from pymongo import MongoClient
 from dotenv import load_dotenv
+import os
 from ..Key.key_manager import get_valid_api_key
 
-load_dotenv()  # .env 파일에서 환경변수 불러오기
-mongo_uri = os.getenv("MONGO_URI")
-
-# MongoDB 설정
-client = MongoClient(mongo_uri)
-db = client["AirBot"]
-collection = db["TAF"]
+load_dotenv()
 
 def fetch_and_save_taf_data():
-    url = 'https://apihub.kma.go.kr/api/typ02/openApi/AmmService/getTaf'
-    params_base = {
-        'pageNo': '1',
-        'numOfRows': '30',
-        'dataType': 'JSON',
-        'icao': 'RKSI'
-    }
-
-    # 🔹 type='public' 키 요청
-    authKey = get_valid_api_key(url, params_base, key_type="weather", auth_param_name="authKey")
-
-    if not authKey:
-        print("유효한 API 키를 찾지 못해 작업을 종료합니다.")
+    mongo_uri = os.getenv("MONGO_URI")
+    if not mongo_uri:
+        print("오류: .env 파일에서 MONGO_URI를 찾을 수 없습니다. 파일을 확인해주세요.")
         return
 
-    params = params_base.copy()
-    params['authKey'] = authKey
-
-    current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{current_time_str}] TAF API 요청 시작...")
-
+    client = None
     try:
+        client = MongoClient(mongo_uri)
+        db = client["AirBot"]
+
+        collection_name = "TAF"
+        temp_collection_name = collection_name + "_temp"
+        collection_temp = db[temp_collection_name]
+
+        url = 'https://apihub.kma.go.kr/api/typ02/openApi/AmmService/getTaf'
+        params_base = {
+            'pageNo': '1',
+            'numOfRows': '30',
+            'dataType': 'JSON',
+            'icao': 'RKSI'
+        }
+
+        authKey = get_valid_api_key(url, params_base, key_type="weather", auth_param_name="authKey")
+        if not authKey:
+            print("유효한 API 키를 찾지 못해 작업을 종료합니다.")
+            return
+
+        params = params_base.copy()
+        params['authKey'] = authKey
+
+        current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"[{current_time_str}] TAF API 요청 시작...")
+
         response = requests.get(url, params=params)
         response.raise_for_status()
 
@@ -53,34 +55,40 @@ def fetch_and_save_taf_data():
             print(f"[{current_time_str}] 'item'이 비어 있습니다.")
             return
 
+        # 임시 컬렉션 초기화
+        collection_temp.delete_many({})
+
         taf_id = datetime.now().strftime("%Y%m%d")
 
-        saved_count = 0
-        for item in items:
+        documents = []
+        for idx, item in enumerate(items):
             metar_msg = item.get("metarMsg", "").strip()
             doc = {
+                "_id": f"{taf_id}_{idx}",  # 고유 키 지정 (날짜 + 인덱스)
                 "taf_id": taf_id,
                 "metar_MSG": metar_msg
             }
+            documents.append(doc)
 
-            result = collection.update_one(
-                {"taf_id": taf_id},
-                {"$set": doc},
-                upsert=True
-            )
-            if result.modified_count > 0 or result.upserted_id is not None:
-                saved_count += 1
+        if documents:
+            collection_temp.insert_many(documents)
 
-        print(f"[{current_time_str}] MongoDB 저장 완료. 총 {saved_count}개 문서.")
+            # 기존 컬렉션 삭제 후 임시 컬렉션 rename
+            if collection_name in db.list_collection_names():
+                db.drop_collection(collection_name)
+            collection_temp.rename(collection_name)
+
+            print(f"[{current_time_str}] MongoDB 저장 완료. 총 {len(documents)}개 문서.")
+        else:
+            print(f"[{current_time_str}] 저장할 문서가 없습니다.")
 
     except Exception as e:
         print(f"[{current_time_str}] 오류 발생: {e}")
 
-# --- 주기적 실행 ---
-if __name__ == "__main__":
-    interval_seconds = 60 * 60  # 1시간 마다 호출
+    finally:
+        if client:
+            client.close()
 
-    while True:
-        fetch_and_save_taf_data()
-        print(f"\n다음 업데이트까지 {interval_seconds // 60}분 대기...\n")
-        time.sleep(interval_seconds)
+
+if __name__ == "__main__":
+    fetch_and_save_taf_data()

@@ -1,15 +1,12 @@
 import requests
 import re
 import os
-import time
-import schedule
 from datetime import datetime
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 from ..Key.key_manager import get_valid_api_key
 
-# 전처리용 파싱 함수
 def parse_floor(floor_text):
     terminal_match = re.match(r'(T\d)\s*(.+)', floor_text)
     if terminal_match:
@@ -39,20 +36,20 @@ def parse_floor(floor_text):
 
     return terminal, parking_type, zone, floor
 
-load_dotenv()
+def fetch_and_insert_parking_lot_status_once():
+    load_dotenv()
 
-MONGO_URI = os.getenv('MONGO_URI')
-parking_lot_status_url = "http://apis.data.go.kr/B551177/StatusOfParking/getTrackingParking"
+    MONGO_URI = os.getenv('MONGO_URI')
+    parking_lot_status_url = "http://apis.data.go.kr/B551177/StatusOfParking/getTrackingParking"
 
-if not MONGO_URI:
-    raise ValueError("MONGO_URI 환경 변수가 설정되지 않았습니다. .env 파일을 확인하세요.")
+    if not MONGO_URI:
+        raise ValueError("MONGO_URI 환경 변수가 설정되지 않았습니다. .env 파일을 확인하세요.")
 
-client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
-db = client['AirBot']
-parking_lot_col = db['ParkingLot']
-parking_lot_status_col = db['ParkingLotStatus']
+    client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
+    db = client['AirBot']
+    parking_lot_col = db['ParkingLot']
+    parking_lot_status_col = db['ParkingLotStatus']
 
-def fetch_and_insert_parking_lot_status():
     try:
         params = {
             "numOfRows": 100,
@@ -60,8 +57,7 @@ def fetch_and_insert_parking_lot_status():
             'type': 'json'
         }
         print("[요청] 주차장 가용 정보 API 호출 중...")
-        
-        # type='public' 키 요청
+
         service_key = get_valid_api_key(parking_lot_status_url, params, key_type="public", auth_param_name="serviceKey")
 
         if not service_key:
@@ -69,9 +65,8 @@ def fetch_and_insert_parking_lot_status():
             return
 
         params = params.copy()
-        params['serviceKey'] = service_key          
-        
-        
+        params['serviceKey'] = service_key
+
         response = requests.get(parking_lot_status_url, params=params)
         response.raise_for_status()
 
@@ -93,7 +88,6 @@ def fetch_and_insert_parking_lot_status():
 
             terminal, parking_type, zone, floor = parse_floor(floor_raw)
 
-            ## MongoDB에서 ParkingLot 조회
             parking_lot_doc = parking_lot_col.find_one({
                 "terminal": terminal,
                 "parking_type": parking_type,
@@ -120,23 +114,9 @@ def fetch_and_insert_parking_lot_status():
 
     except Exception as e:
         print(f"[오류] {e}")
+    finally:
+        client.close()
+        print("MongoDB 연결 종료")
 
-# 3. 스케줄 등록 (5분 간격 실행)
-schedule.every(5).minutes.do(fetch_and_insert_parking_lot_status)
-
-print("⏳ 주차장 가용 정보 스케줄러 실행 중 (5분 간격)...")
-
-try:
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("⛔ 수동 종료됨")
-finally:
-    client.close()
-    print("MongoDB 연결 종료")
-
-# if __name__ == "__main__":
-#     fetch_and_insert_parking_lot_status()
-#     client.close()
-#     print("MongoDB 연결 종료")
+if __name__ == "__main__":
+    fetch_and_insert_parking_lot_status_once()
