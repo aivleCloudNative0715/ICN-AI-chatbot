@@ -1,6 +1,3 @@
-# Docker Compose 버전 정의
-version: '3.8'
-
 # 실행할 서비스(컨테이너)들 정의
 services:
   # Spring Boot 애플리케이션 서비스
@@ -8,8 +5,6 @@ services:
     build: . # 현재 디렉토리의 Dockerfile을 사용하여 이미지를 빌드
     container_name: chatbot-backend
     restart: always
-    env_file:
-      - .env # .env 파일의 환경 변수를 컨테이너에 주입
     ports:
       - "8080:8080" # 로컬 8080 포트와 컨테이너 8080 포트를 연결
     depends_on:
@@ -23,9 +18,9 @@ services:
     container_name: postgres-db
     restart: always # 컨테이너가 꺼지면 항상 다시 시작
     environment:
-      POSTGRES_DB: ${DB_NAME}       # .env 파일과 동일하게 설정
-      POSTGRES_USER: ${DB_USERNAME}   # .env 파일과 동일하게 설정
-      POSTGRES_PASSWORD: ${DB_PASSWORD} # .env 파일과 동일하게 설정
+      POSTGRES_DB: chatbot       # .env 파일과 동일하게 설정
+      POSTGRES_USER: icn_chatbot   # .env 파일과 동일하게 설정
+      POSTGRES_PASSWORD: icn_chatbot # .env 파일과 동일하게 설정
     ports:
       - "5432:5432" # 내 컴퓨터의 5432 포트와 컨테이너의 5432 포트를 연결
 
