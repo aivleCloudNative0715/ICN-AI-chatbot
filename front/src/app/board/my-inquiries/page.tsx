@@ -1,4 +1,4 @@
-// src/app/(board)/my-inquiries/page.tsx
+// src/app/board/my-inquiries/page.tsx
 import InquiryList from '@/components/board/InquiryList';
 import React from 'react';
 
