@@ -16,31 +16,13 @@ public class ChatController {
     private final ChatService chatService;
 
     /**
-     * 클라이언트가 메시지를 보낼 때 (sendMessage)
-     * /app/chat.sendMessage 로 메시지를 발행
+     * 클라이언트가 보내는 모든 메시지를 처리하는 단일 엔드포인트.
+     * /app/chat.sendMessage 로 메시지를 발행하면,
+     * messageDto의 messageType에 따라 적절한 서비스 로직이 호출됩니다.
      */
     @MessageMapping("/chat.sendMessage")
-    public void sendMessage(WebSocketMessageDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
-        // 현재는 connect 이벤트에 대한 별도 처리가 없으므로 sendMessage에서 세션 ID를 받아 처리
-        // 또는 connect 시점에 세션 정보를 저장해두고 활용할 수 있음
-        chatService.processAndRespond(messageDto);
-    }
-
-    /**
-     * 답변 재생성 요청 (regenerateAnswer)
-     * /app/chat.regenerateAnswer 로 메시지를 발행
-     */
-    @MessageMapping("/chat.regenerateAnswer")
-    public void regenerateAnswer(WebSocketMessageDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
-        chatService.regenerateAnswer(messageDto);
-    }
-
-    /**
-     * 질문 수정 요청 (editQuestion)
-     * /app/chat.editQuestion 로 메시지를 발행
-     */
-    @MessageMapping("/chat.editQuestion")
-    public void editQuestion(WebSocketMessageDto messageDto, SimpMessageHeaderAccessor headerAccessor) {
-        chatService.editQuestion(messageDto);
+    public void sendMessage(WebSocketMessageDto messageDto) {
+        // ChatService의 processMessage가 모든 메시지 유형을 처리
+        chatService.processMessage(messageDto);
     }
 }

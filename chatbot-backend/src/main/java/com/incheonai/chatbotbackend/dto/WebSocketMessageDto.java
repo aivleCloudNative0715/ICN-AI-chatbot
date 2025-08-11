@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class WebSocketMessageDto {
     private String sessionId;
-    private String messageId; // 답변 재생성, 질문 수정 시 필요
+    private String parentId;// 답변 재생성, 질문 수정 시 필요
     private String content;
     private MessageType messageType;
 }

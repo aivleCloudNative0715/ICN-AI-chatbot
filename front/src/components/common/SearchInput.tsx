@@ -13,9 +13,10 @@ interface SearchInputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void; 
   initialQuery?: string;
   onSend?: () => void;
+  disabled?: boolean; 
 }
 
-export default function SearchInput({ placeholder = '검색어를 입력하세요', value, onChange, onSend }: SearchInputProps) {
+export default function SearchInput({ placeholder = '검색어를 입력하세요', value, onChange, onSend, disabled = false, }: SearchInputProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSend) {
       onSend();
@@ -29,6 +30,7 @@ export default function SearchInput({ placeholder = '검색어를 입력하세�
         value={value}
         onChange={onChange} 
         onKeyDown={handleKeyDown}
+        disabled={disabled}
         className="flex-grow p-3 border-none focus:outline-none rounded-l-full"
         style={{ borderRadius: '9999px 0 0 9999px', paddingLeft: '1.5rem' }}
       />
@@ -36,6 +38,7 @@ export default function SearchInput({ placeholder = '검색어를 입력하세�
         icon={<MagnifyingGlassIcon className="h-6 w-6 text-gray-500" />}
         className="p-button-text p-button-icon-only rounded-r-full hover:bg-gray-100 p-3"
         onClick={onSend}
+        disabled={disabled} 
         style={{ borderRadius: '0 9999px 9999px 0' }}
       />
     </div>

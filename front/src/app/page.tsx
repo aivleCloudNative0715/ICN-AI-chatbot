@@ -36,6 +36,8 @@ export default function HomePage() {
   const [isAdmin, setIsAdmin] = useState(false);
   // 비로그인 사용자를 위한 익명 세션 ID 상태
   const [anonymousSessionId, setAnonymousSessionId] = useState<string | null>(null);
+  // 로그인/비로그인 상태를 포괄하는 현재 세션 ID 상태
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
 
   /**
@@ -64,6 +66,7 @@ export default function HomePage() {
     
     setIsLoggedIn(true);
     setIsAuthModalOpen(false);
+    setCurrentSessionId(data.sessionId);
     // 로그인 했으므로 익명 세션 ID는 초기화
     setAnonymousSessionId(null);
   }, [router]);
@@ -74,7 +77,7 @@ export default function HomePage() {
   const fetchAnonymousSession = useCallback(async () => {
     try {
       console.log("익명 세션 ID를 요청합니다.");
-      const response = await fetch(`${API_BASE_URL}/chat/session`, {
+      const response = await fetch(`${API_BASE_URL}/api/chat/session`, {
         method: 'POST',
       });
       if (response.ok) {
@@ -83,6 +86,7 @@ export default function HomePage() {
         setAnonymousSessionId(data.sessionId);
         // 비로그인 상태에서도 채팅을 이어가기 위해 세션 ID를 저장
         localStorage.setItem('session_id', data.sessionId);
+        setCurrentSessionId(data.sessionId); // 상태 업데이트
       } else {
         console.error('익명 세션 ID 발급 실패');
       }
@@ -109,7 +113,7 @@ export default function HomePage() {
       const fetchUserInfo = async (token: string) => {
         try {
           console.log("토큰으로 사용자 정보 조회를 시작합니다...");
-          const response = await fetch(`${API_BASE_URL}/users/me`, {
+          const response = await fetch(`${API_BASE_URL}/api/users/me`, {
             headers: {
               // 이 부분은 문제가 없습니다.
               'Authorization': `Bearer ${token}`,
@@ -140,9 +144,12 @@ export default function HomePage() {
     } else {
       // 로컬 토큰 확인 및 세션 관리 로직
       const localToken = localStorage.getItem('jwt_token');
-      if (localToken) {
+      const localSessionId = localStorage.getItem('session_id'); // 로컬 세션 ID도 확인
+
+      if (localToken && localSessionId) {
         // 로그인 상태일 때
         setIsLoggedIn(true);
+        setCurrentSessionId(localSessionId); // 로그인 상태일 때 세션 ID 설정
         const userRole = localStorage.getItem('user_role');
         if (userRole === 'ADMIN' || userRole === 'SUPER') {
           setIsAdmin(true);
@@ -186,7 +193,7 @@ export default function HomePage() {
     if (token) {
         try {
             // 서버에 현재 토큰을 무효화하도록 요청
-            const response = await fetch(`${API_BASE_URL}/users/logout`, {
+            const response = await fetch(`${API_BASE_URL}/api/users/logout`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -205,6 +212,7 @@ export default function HomePage() {
     // 상태를 초기화하고 사용자에게 알림
     setIsLoggedIn(false);
     setIsAdmin(false);
+    setCurrentSessionId(null); // 로그아웃 시 세션 ID 초기화
     alert('로그아웃되었습니다.');
 
     // 로그아웃 후 즉시 새로운 익명 세션을 받아 채팅을 이어갈 수 있도록 함
@@ -228,7 +236,7 @@ export default function HomePage() {
 
     try {
       // 1. 백엔드에 계정 삭제 API를 호출합니다. (이 API가 서버의 토큰도 무효화합니다)
-      const response = await fetch(`${API_BASE_URL}/users/me`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/me`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -261,8 +269,7 @@ export default function HomePage() {
       <div className="flex-grow flex overflow-hidden">
         <ChatBotScreen
           isLoggedIn={isLoggedIn}
-          onLoginStatusChange={setIsLoggedIn}
-          onSidebarToggle={toggleSidebar}
+          sessionId={currentSessionId}
         />
       </div>
       

@@ -1,83 +1,157 @@
 // src/components/chat/ChatBotScreen.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import SearchInput from '@/components/common/SearchInput';
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'; // 화살표 아이콘
 import ChatBubble from '@/components/chat/ChatBubble'; // ChatBubble 컴포넌트 임포트
 import RecommendedQuestions from '@/components/chat/RecommendedQuestions'; // RecommendedQuestions 컴포넌트 임포트
+// STOMP 관련 라이브러리 임포트
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { API_BASE_URL } from '@/lib/api';
 
-interface ChatBotScreenProps {
-  isLoggedIn: boolean; // 로그인 상태 prop
-  onLoginStatusChange: (status: boolean) => void; // 로그인 상태 변경 핸들러
-  onSidebarToggle: () => void; // 사이드바 토글 핸들러
+type MessageType = 'text' | 'recommendation' | 'flightinfo' | 'edit' | 'again';
+
+interface WebSocketMessageDto {
+  sessionId: string;
+  content: string;
+  messageType: MessageType;
+  parentId: string | null;
 }
 
-export default function ChatBotScreen({
-  isLoggedIn,
-  onLoginStatusChange,
-  onSidebarToggle,
-}: ChatBotScreenProps) {
-  // 채팅 메시지 목록 상태 관리
-  const [chatMessages, setChatMessages] = useState<
-    { id: number; sender: 'user' | 'bot'; content: string; type?: string }[]
-  >([]);
-  const [messageInputValue, setMessageInputValue] = useState(''); // 메시지 입력 필드 상태
-  const [flightNumberInputValue, setFlightNumberInputValue] = useState(''); // 편명 입력 필드 상태
-  const [recommendedQuestions, setRecommendedQuestions] = useState<string[]>([]); // 추천 질문 상태 추가
+interface WebSocketResponseDto {
+  messageId: string;
+  userMessageId: string | null;
+  sessionId: string;
+  sender: 'user' | 'chatbot';
+  content: string;
+  messageType: 'text' | 'recommendation' | 'again';
+  createdAt: string;
+}
 
-  const handleSendMessage = (message: string, type?: string) => {
-    if (message.trim()) {
-      const newUserMessage = {
-        id: chatMessages.length + 1,
-        sender: 'user' as const,
-        content: message.trim(),
-        type: type,
-      };
-      setChatMessages((prevMessages) => [...prevMessages, newUserMessage]);
-      setMessageInputValue(''); // 메시지 입력 필드 초기화
-      setFlightNumberInputValue(''); // 편명 입력 필드도 초기화 (선택 사항, 필요에 따라 유지 가능)
-      setRecommendedQuestions([]); // 새 메시지 전송 시 추천 질문 초기화
+interface ChatBotScreenProps {
+  isLoggedIn: boolean;
+  sessionId: string | null;
+}
 
-      // TODO: 여기에 챗봇 API 호출 로직 추가 (API-09-25031)
-      // 챗봇 답변을 시뮬레이션
-      setTimeout(() => {
-        const botResponse = {
-          id: chatMessages.length + 2,
-          sender: 'bot' as const,
-          content: `"${message}"에 대한 챗봇의 답변입니다.`,
-        };
-        setChatMessages((prevMessages) => [...prevMessages, botResponse]);
+export default function ChatBotScreen({ sessionId }: ChatBotScreenProps) {
+  const stompClientRef = useRef<Client | null>(null);
+  const [chatMessages, setChatMessages] = useState<WebSocketResponseDto[]>([]);
+  const [messageInputValue, setMessageInputValue] = useState('');
+  const [flightNumberInputValue, setFlightNumberInputValue] = useState('');
+  const [recommendedQuestions, setRecommendedQuestions] = useState<string[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
 
-        // 챗봇 답변 후 추천 질문 설정 (예시 로직)
-        if (message.includes('편명') || message.includes('항공')) {
-          setRecommendedQuestions(['출국 절차 안내', '입국 절차 안내', '수하물 규정']);
-        } else if (message.includes('수하물')) {
-          setRecommendedQuestions(['기내 수하물 규정', '위탁 수하물 규정', '초과 수하물 요금']);
-        } else {
-          setRecommendedQuestions(['다른 질문은 없으신가요?', '가장 인기 있는 질문은?']);
-        }
-      }, 500);
+  // 웹소켓 연결 및 구독 로직
+  useEffect(() => {
+    if (!sessionId) return;
+    const client = new Client({
+      webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws-chat`),
+      connectHeaders: { Authorization: `Bearer ${localStorage.getItem('jwt_token') || ''}` },
+      onConnect: () => {
+        setIsConnected(true);
+        console.log('✅ STOMP: 연결 성공');
+        
+        // 서버로부터 메시지를 받는 구독 로직 수정
+        client.subscribe(`/topic/chat/${sessionId}`, (message) => {
+          const receivedMessage: WebSocketResponseDto = JSON.parse(message.body);
+          console.log('📥 STOMP: 메시지 수신', receivedMessage);
+
+          if (receivedMessage.messageType === 'recommendation') {
+            // 추천 질문은 화면에 그리지 않고, 추천 질문 목록 상태만 업데이트
+            setRecommendedQuestions(receivedMessage.content.split(';'));
+          } else {
+            // 그 외 모든 메시지(사용자 질문 포함)는 chatMessages 상태에 추가
+            setChatMessages((prevMessages) => [...prevMessages, receivedMessage]);
+          }
+        });
+      },
+      onStompError: (frame) => console.error('❌ STOMP 오류:', frame.headers['message']),
+    });
+
+    client.activate();
+    stompClientRef.current = client;
+
+    return () => {
+      client.deactivate();
+      setIsConnected(false);
+    };
+  }, [sessionId]);
+
+  // 공통 발신 함수
+  const publishMessage = (dto: WebSocketMessageDto) => {
+    if (!stompClientRef.current || !isConnected) {
+      alert('연결이 불안정합니다. 잠시 후 다시 시도해주세요.');
+      return;
     }
+    stompClientRef.current.publish({
+      destination: '/app/chat.sendMessage',
+      body: JSON.stringify(dto),
+    });
+    console.log('📤 STOMP: 메시지 발신', dto);
+  };
+  
+  // 1. 새 메시지 전송 (parentId: null)
+  const handleSendNewMessage = (content: string, type: 'text' | 'flightinfo' | 'recommendation') => {
+    if (!content.trim() || !sessionId) return;
+    
+    // --- 1. 사용자 메시지를 화면에 즉시 표시하기 위한 객체 생성 ---
+    const userMessage: WebSocketResponseDto = {
+        messageId: `local-user-${Date.now()}`, // 임시 로컬 ID 부여
+        userMessageId: null,
+        sessionId: sessionId,
+        sender: 'user',
+        content: content.trim(),
+        messageType: 'text', // 사용자 메시지는 항상 'text'로 화면에 표시
+        createdAt: new Date().toISOString(),
+    };
+
+    // --- 2. 생성한 객체를 chatMessages 상태에 바로 추가 ---
+    setChatMessages((prev) => [...prev, userMessage]);
+    
+    // --- 3. 서버로 메시지 전송 (기존 로직) ---
+    publishMessage({
+        sessionId,
+        content: content.trim(),
+        messageType: type,
+        parentId: null,
+    });
+
+    setMessageInputValue('');
+    setFlightNumberInputValue('');
+    setRecommendedQuestions([]);
   };
 
-  const handleMessageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessageInputValue(e.target.value);
+  // 2. 질문 수정 (parentId: 원본 질문 ID)
+  const handleEditMessage = (originalMessageId: string, newContent: string) => {
+    if (!newContent.trim() || !sessionId) return;
+    
+    publishMessage({
+      sessionId,
+      content: newContent.trim(),
+      messageType: 'edit',
+      parentId: originalMessageId, // 수정할 원본 질문 ID
+    });
   };
 
-  const handleMessageInputSend = () => {
-    handleSendMessage(messageInputValue);
+  // 3. 답변 재생성 (parentId: 원본 질문 ID)
+  const handleRegenerateAnswer = (originalUserMessageId: string) => {
+    if (!sessionId) return;
+
+    publishMessage({
+      sessionId,
+      content: '', // 내용은 비워도 됨
+      messageType: 'again',
+      parentId: originalUserMessageId, // 답변을 다시 받을 원본 질문 ID
+    });
   };
 
-  const handleFlightNumberInputSend = () => {
-    handleSendMessage(flightNumberInputValue, 'flightNumber'); // 편명 입력 메시지 전송
-  };
-
-  const handleRecommendedQuestionClick = (question: string) => {
-    handleSendMessage(question, 'Recommendation'); // 추천 질문 클릭 시 type을 'Recommendation'으로 설정
-  };
-
+  const handleMessageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setMessageInputValue(e.target.value);
+  const handleMessageInputSend = () => handleSendNewMessage(messageInputValue, 'text');
+  const handleFlightNumberInputSend = () => handleSendNewMessage(flightNumberInputValue, 'flightinfo');
+  const handleRecommendedQuestionClick = (question: string) => handleSendNewMessage(question, 'recommendation');
   // 하단 SearchInput의 높이를 고려하여 padding-bottom을 설정 (예시: 80px 또는 p-20)
   const paddingBottomClass = 'pb-20'; // 대략적인 SearchInput 높이에 맞춰 여유 공간 확보
 
@@ -123,14 +197,19 @@ export default function ChatBotScreen({
       {/* 채팅 메시지 표시 영역 */}
       {chatMessages.length > 0 && (
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {chatMessages.map((message) => (
+          {chatMessages.map((msg) => (
             <ChatBubble
-              key={message.id}
-              message={message.content}
-              isUser={message.sender === 'user'}
+              key={msg.messageId} // 고유 키는 messageId 사용
+              message={{
+                 messageId: msg.messageId,
+                 content: msg.content,
+                 sender: msg.sender,
+                 userMessageId: msg.userMessageId
+              }}
+              onEdit={handleEditMessage}
+              onRegenerate={handleRegenerateAnswer}
             />
           ))}
-          {/* 추천 질문 표시 */}
           {recommendedQuestions.length > 0 && (
             <RecommendedQuestions questions={recommendedQuestions} onQuestionClick={handleRecommendedQuestionClick} />
           )}
@@ -144,6 +223,7 @@ export default function ChatBotScreen({
           value={messageInputValue} // 메시지 입력 필드 상태 사용
           onChange={handleMessageInputChange} // 메시지 입력 핸들러
           onSend={handleMessageInputSend} // 메시지 전송 핸들러
+          disabled={!isConnected} //  연결 안됐으면 입력 비활성화
         />
       </div>
     </div>
