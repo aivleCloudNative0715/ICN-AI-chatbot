@@ -1,4 +1,4 @@
-# ai/chatbot/rag/config.py
+import re
 from openai import OpenAI
 import os # API 키를 환경 변수에서 로드하기 위해 필요
 from dotenv import load_dotenv # dotenv 라이브러리 임포트
@@ -276,6 +276,7 @@ LLM_PROMPT_TEMPLATES = {
     - 당신은 인천국제공항 챗봇입니다. 모든 답변은 **인천국제공항을 기준**으로 작성해야 합니다.
     - 제공된 '검색된 정보'의 `direction` 필드를 확인하여, 항공편이 **인천공항으로 도착**하는 편인지, **인천공항에서 출발**하는 편인지 정확하게 파악하고 답변에 반영하세요.
     - '사용자 질문'의 표현(예: '상하이에서 출발해서')이 '검색된 정보'의 `direction` 필드와 상충될 경우, 항상 **`direction` 필드에 있는 실제 운항 방향을 우선시**하여 답변하세요.
+    - **`terminalid` 정보를 확인하여, 어떤 터미널(예: 제1여객터미널, 제2여객터미널)인지 답변에 반드시 포함하세요.**
     
     5. 만약 특정 정보(예: 게이트, 체크인 카운터)가 '정보 없음'으로 표시되면, 해당 정보가 현재 확인되지 않음을 명확히 알려주세요.
     6. 운항 현황(remark) 정보가 있을 경우, 그 내용을 간결하게 요약해서 알려주세요.
@@ -284,6 +285,21 @@ LLM_PROMPT_TEMPLATES = {
     
     사용자 질문: {user_query}
     검색된 정보: {retrieved_context}
+    
+    답변:""",
+
+    "airport_congestion_prediction": """
+    당신은 인천국제공항 챗봇입니다. 다음 공항 혼잡도 예측 정보를 바탕으로 사용자 질문에 답변해주세요.
+    
+    다음 지침을 반드시 따르세요:
+    1. 제공된 '혼잡도 예측 정보' 내에서만 답변하세요.
+    2. 터미널 번호, 예상 승객 수, 혼잡도 수준을 명확하게 언급해주세요.
+    3. '혼잡도 수준'은 '원활', '보통', '붐빔', '매우 붐빔' 중 하나로만 답변하세요.
+    4. 제공된 정보에 사용자 질문과 관련된 내용이 없을 경우, 답변할 수 없음을 명확히 알리세요.
+    5. 답변 마지막에는 반드시 다음과 같은 문구를 추가하세요: "이 정보는 예측 자료이며, 실제 상황과 다를 수 있습니다. 최신 정보는 공항 공식 안내를 확인해 주세요."
+    
+    사용자 질문: {user_query}
+    혼잡도 예측 정보: {retrieved_context}
     
     답변:"""
 }
@@ -300,9 +316,13 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
     
     # 의도에 맞는 프롬프트 템플릿을 가져오거나, 없으면 'default' 템플릿 사용
     prompt_template = LLM_PROMPT_TEMPLATES.get(intent_name, LLM_PROMPT_TEMPLATES["default"])
+    prompt_with_formatting_instruction = (
+        f"{prompt_template}\n\n"
+        "지침: 답변에서 **중요한 정보나 키워드**는 Markdown의 볼드체(`**키워드**`)를 사용하여 강조해줘."
+    )
     
     # 프롬프트 구성
-    final_prompt = prompt_template.format(user_query=user_query, retrieved_context=retrieved_context)
+    final_prompt = prompt_with_formatting_instruction.format(user_query=user_query, retrieved_context=retrieved_context)
 
     print("의도명 :", intent_name)
     # --- 추가: LLM에 전송될 최종 프롬프트 출력 ---

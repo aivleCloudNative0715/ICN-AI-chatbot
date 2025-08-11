@@ -6,6 +6,7 @@ from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
 from chatbot.rag.baggage_helper import _parse_baggage_rule_query_with_llm
 from chatbot.rag.baggage_claim_info_helper import call_arrival_flight_api, _parse_flight_baggage_query_with_llm, _parse_airport_code_with_llm, _generate_final_answer_with_llm
 from chatbot.rag.immigration_helper import _parse_immigration_policy_query_with_llm
+from chatbot.rag.flight_info_helper import _call_flight_api, _extract_flight_info_from_response
 
 def immigration_policy_handler(state: ChatState) -> ChatState:
     """
@@ -89,11 +90,9 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
     """
     print(f"\n--- 수하물 수취 정보 핸들러 실행 ---")
     
-    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
     query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # 📌 수정된 부분: _parse_flight_baggage_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
     parsed_queries = _parse_flight_baggage_query_with_llm(query_to_process)
 
     if not parsed_queries or not isinstance(parsed_queries, list):
@@ -103,74 +102,58 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
     final_responses = []
     
     for query in parsed_queries:
-        date_offset = query.get("date_offset", 0)
+        date_offset = query.get("date_offset")
         flight_id = (query.get("flight_id") or "")
-        searchday = query.get("searchday", "")
-        from_time = query.get("from_time", 0000)
-        to_time = query.get("to_time", 2359)
+        from_time = query.get("from_time")
+        to_time = query.get("to_time")
         airport_code = query.get("airport_code", "")
         
         print(f"디버그: 쿼리 정보 - {query}")
 
-        if date_offset == "unsupported" or not isinstance(date_offset, (int, float)) or not (-3 <= date_offset <= 6):
+        # 📌 수정된 로직: date_offset이 정수이면서 범위를 벗어났을 때만 continue
+        if isinstance(date_offset, (int, float)) and not (-3 <= date_offset <= 6):
             final_responses.append(f"죄송합니다. 조회일 기준 -3일부터 +6일까지만 조회가 가능합니다.")
             continue
         
-        if not flight_id:
-            if not searchday and not airport_code:
-                final_responses.append(f"죄송합니다. 어느 시각에 도착한 항공편인지 더 자세히 알 수 있을까요? 출발지 공항 이름이나 편명을 알려주시면 더 정확한 정보를 제공할 수 있습니다.")
-                text_response = "\n".join(final_responses)
-                return {**state, "response": text_response}
+        # 📌 수정된 로직: 필수 정보(편명 또는 공항 코드)가 없을 때 에러 반환
+        if not flight_id and not airport_code:
+            final_responses.append(f"죄송합니다. 어느 시각에 도착한 항공편인지 더 자세히 알 수 있을까요? 출발지 공항 이름이나 편명을 알려주시면 더 정확한 정보를 제공할 수 있습니다.")
+            text_response = "\n".join(final_responses)
+            return {**state, "response": text_response}
         
-        searchday = datetime.now() + timedelta(days=date_offset)
-        searchday = searchday.strftime("%Y%m%d")
-        
+        # 📌 수정된 로직: 날짜와 시간 파라미터 설정
+        search_date = datetime.now() + timedelta(days=date_offset or 0)
+        search_date_str = search_date.strftime("%Y%m%d")
+
         if not from_time and not to_time:
             now = datetime.now()
-            
             from_dt = now - timedelta(hours=1)
             to_dt = now + timedelta(hours=1)
-
-            from_time = str(from_dt.strftime("%H%M"))
-            to_time = str(to_dt.strftime("%H%M"))
+            from_time_str = str(from_dt.strftime("%H%M"))
+            to_time_str = str(to_dt.strftime("%H%M"))
+        else:
+            from_time_str = from_time
+            to_time_str = to_time
         
-        print(f"디버그: 검색일 - {searchday}, 편명 - {flight_id}, 시각 범위 - {from_time} ~ {to_time}, 공항 이름 - {airport_code}")
+        print(f"디버그: 검색일 - {search_date_str}, 편명 - {flight_id}, 시각 범위 - {from_time_str} ~ {to_time_str}, 공항 코드 - {airport_code}")
         
-        # 📌 수정된 부분: 공항 코드 추출 시 재구성된 쿼리를 사용합니다.
-        if not airport_code:
-            query_embedding = get_query_embedding(query_to_process)
-            print("디버그: 쿼리 임베딩 완료.")
-
-            retrieved_docs_text = perform_vector_search(
-                query_embedding,
-                collection_name="AirportVector",
-                vector_index_name="airport_vector_index",
-                top_k=1
-            )
-            
-            airport_code = _parse_airport_code_with_llm(retrieved_docs_text[0]) if retrieved_docs_text else None
-            
-        print(f"디버그: 공항 코드 - {airport_code}")
-
         params = {
-            "searchday": searchday,
+            "search_date": search_date_str, # 📌 수정된 매개변수 이름
             "flight_id": flight_id,
-            "from_time": from_time,
-            "to_time": to_time,
-            "airport_code": airport_code,
+            "from_time": from_time_str,
+            "to_time": to_time_str,
+            "airport_code": airport_code, # 도착편의 경우, 이 코드는 출발 공항 코드를 의미
         }
 
         clean_params = {k: v for k, v in params.items() if v is not None}
 
-        arrival_info = call_arrival_flight_api(clean_params)
+        arrival_info = _call_flight_api(direction="arrival", **clean_params)
         
         print(f"디버그: API 호출 결과 - {arrival_info}")
         
-        # 📌 수정된 부분: 최종 답변 생성 시에도 재구성된 쿼리를 사용합니다.
         llm_reponse = _generate_final_answer_with_llm(arrival_info, query_to_process)
         final_responses.append(llm_reponse)
 
-    
     if not final_responses:
         response_text = f"죄송합니다. 해당하는 항공편들의 운항 정보를 찾을 수 없습니다."
     else:
@@ -178,7 +161,7 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
         
     disclaimer = (
         "\n\n"
-        "⚠️ 주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다.\n"
+        "주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다.\n"
         "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
     )
     if isinstance(response_text, list):

@@ -63,15 +63,34 @@ def build_chat_graph():
 
         # 1. 복합 의도 감지 (기존 로직 그대로)
         slot_groups = {
-            'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
-            'facility_info': {'B-facility_name', 'B-location_keyword'},
-            'flight_info': {'B-airline_flight', 'B-flight_status', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-arrival_type', 'B-departure_type', 'B-destination', 'B-gate', 'B-terminal'},
-            'baggage_info': {'B-baggage_type', 'B-luggage_term'},
-            'policy': {'B-document', 'B-organization', 'B-person_type', 'B-item', 'B-transfer_topic'},
-            'weather': {'B-weather_topic'},
-            'time': {'B-date', 'B-time', 'B-season', 'B-day_of_week'},
-            'general_topic': {'B-topic'},
-            'congestion': {'B-congestion_topic', 'B-congestion_status'}
+            # 주차 관련 의도들
+            'parking_fee_info': {'B-parking_type', 'B-parking_lot', 'B-fee_topic', 'B-vehicle_type', 'B-payment_method'},
+            'parking_availability_query': {'B-parking_type', 'B-parking_lot', 'B-availability_status'},
+            'parking_location_recommendation': {'B-parking_lot', 'B-location_keyword'},
+            'parking_congestion_prediction': {'B-congestion_topic'},
+            
+            # 항공편 관련 의도들
+            'flight_info': {'B-airline_flight', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-destination', 'B-departure_airport', 'B-arrival_airport', 'B-gate', 'B-flight_status'},
+            'airline_info_query': {'B-airline_name', 'B-airline_info'},
+            'baggage_claim_info': {'B-luggage_term', 'B-baggage_issue'},
+            'baggage_rule_query': {'B-baggage_type', 'B-rule_type', 'B-item'},
+            
+            # 공항 시설 및 정책 관련 의도들
+            'facility_guide': {'B-facility_name', 'B-location_keyword'},
+            'airport_info': {'B-airport_name', 'B-airport_code'},
+            'immigration_policy': {'B-organization', 'B-person_type', 'B-rule_type', 'B-document'},
+            
+            # 환승 관련 의도들
+            'transfer_info': {'B-transfer_topic'},
+            'transfer_route_guide': {'B-transfer_topic'},
+            
+            # 날씨 및 혼잡도 관련 의도들
+            'airport_weather_current': {'B-weather_topic'},
+            'airport_congestion_prediction': {'B-congestion_topic'},
+            
+            # 공통 슬롯 그룹 (복합 의도 감지에서 제외)
+            'time_general': {'B-date', 'B-time', 'B-vague_time', 'B-season', 'B-day_of_week', 'B-relative_time', 'B-minute', 'B-hour', 'B-time_period'},
+            'general_topic': {'B-topic'}
         }
         found_groups = set()
         for _, tag in slots:

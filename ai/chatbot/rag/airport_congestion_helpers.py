@@ -174,6 +174,9 @@ def _parse_query_with_llm(user_query: str) -> dict | None:
     )
     
     llm_output = response.choices[0].message.content.strip()
+    
+    # 📌 추가된 부분: LLM이 반환한 원본 응답 출력
+    print(f"디버그: LLM 원본 응답 -> {llm_output}")
 
     try:
         if llm_output.startswith("```json"):
@@ -184,9 +187,7 @@ def _parse_query_with_llm(user_query: str) -> dict | None:
     except json.JSONDecodeError as e:
         print("디버그: LLM 응답이 올바른 JSON 형식이 아닙니다.")
         print(f"디버그: JSONDecodeError -> {e}")
-        print(f"디버그: LLM 원본 응답 -> {llm_output}")
     except Exception as e:
         print(f"디버그: 알 수 없는 오류 발생 -> {e}")
-        print(f"디버그: LLM 원본 응답 -> {llm_output}")
     
     return None
