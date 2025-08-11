@@ -60,7 +60,7 @@ export default function LoginForm({ onLoginSuccess, anonymousSessionId }: LoginF
           console.log("세션 마이그레이션을 위해 익명 세션 ID를 포함하여 로그인 요청:", anonymousSessionId);
         }
 
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        const response = await fetch(`}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestBody),

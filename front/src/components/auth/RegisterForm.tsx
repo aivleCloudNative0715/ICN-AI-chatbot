@@ -58,7 +58,7 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
     if (validate()) {
       setErrors({});
       try {
-        const response = await fetch(`${API_BASE_URL}/api/users/signup`, {
+        const response = await fetch(`/api/users/signup`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -96,7 +96,7 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
     setErrors((prev) => ({ ...prev, userId: undefined }));
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/check-id`, {
+      const response = await fetch(`/api/auth/check-id`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
