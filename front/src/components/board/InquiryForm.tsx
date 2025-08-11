@@ -72,7 +72,7 @@ export default function InquiryForm({ inquiryId, initialData }: InquiryFormProps
       if (isEditMode) {
         // TODO: API-13-27041 (문의/건의 수정) 호출 로직
         console.log('문의/건의 수정 시도:', inquiryId, dataToSend);
-        // const response = await fetch(`/api/inquiries/${inquiryId}`, {
+        // const response = await fetch(`${API_BASE_URL}/api/inquiries/${inquiryId}`, {
         //   method: 'PUT',
         //   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer YOUR_JWT_TOKEN` },
         //   body: JSON.stringify(dataToSend),

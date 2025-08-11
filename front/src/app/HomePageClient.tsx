@@ -76,7 +76,7 @@ export default function HomePageClient() {
   const fetchAnonymousSession = useCallback(async () => {
     try {
       console.log("익명 세션 ID를 요청합니다: ", `${API_BASE_URL}`);
-      const response = await fetch(`/api/chat/session`, {
+      const response = await fetch(`${API_BASE_URL}/api/chat/session`, {
         method: 'POST',
       });
       if (response.ok) {
@@ -112,7 +112,7 @@ export default function HomePageClient() {
       const fetchUserInfo = async (token: string) => {
         try {
           console.log("토큰으로 사용자 정보 조회를 시작합니다...");
-          const response = await fetch(`/api/users/me`, {
+          const response = await fetch(`${API_BASE_URL}/api/users/me`, {
             headers: {
               // 이 부분은 문제가 없습니다.
               'Authorization': `Bearer ${token}`,
@@ -192,7 +192,7 @@ export default function HomePageClient() {
     if (token) {
         try {
             // 서버에 현재 토큰을 무효화하도록 요청
-            const response = await fetch(`/api/users/logout`, {
+            const response = await fetch(`${API_BASE_URL}/api/users/logout`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -235,7 +235,7 @@ export default function HomePageClient() {
 
     try {
       // 1. 백엔드에 계정 삭제 API를 호출합니다. (이 API가 서버의 토큰도 무효화합니다)
-      const response = await fetch(`/api/users/me`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/me`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
