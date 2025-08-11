@@ -23,6 +23,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 웹소켓 경로에 대한 요청은 이 필터를 건너뛰도록 설정
+        if (request.getRequestURI().startsWith("/ws-chat")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = resolveToken(request);
         log.debug("Request URI: {}, Token: {}", request.getRequestURI(), token);
 

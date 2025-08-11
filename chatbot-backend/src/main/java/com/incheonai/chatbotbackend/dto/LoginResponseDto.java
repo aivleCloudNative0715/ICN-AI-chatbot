@@ -15,5 +15,6 @@ public record LoginResponseDto(
         Integer id,
         String userId,
         String googleId,
-        LoginProvider loginProvider
+        LoginProvider loginProvider,
+        String sessionId
 ) {}

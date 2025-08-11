@@ -3,11 +3,13 @@ package com.incheonai.chatbotbackend.service;
 import com.incheonai.chatbotbackend.config.jwt.JwtTokenProvider;
 import com.incheonai.chatbotbackend.domain.jpa.LoginProvider;
 import com.incheonai.chatbotbackend.domain.jpa.User;
+import com.incheonai.chatbotbackend.domain.mongodb.ChatSession;
 import com.incheonai.chatbotbackend.dto.LoginResponseDto;
 import com.incheonai.chatbotbackend.dto.SignUpRequestDto;
 import com.incheonai.chatbotbackend.exception.BusinessException;
 import com.incheonai.chatbotbackend.repository.jpa.AdminRepository;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
+import com.incheonai.chatbotbackend.repository.mongodb.ChatSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -29,6 +33,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ChatSessionRepository chatSessionRepository;
 
     @Transactional
     public LoginResponseDto signup(SignUpRequestDto requestDto) {
@@ -70,7 +75,19 @@ public class UserService {
         );
         log.info("회원가입 성공. 자동 로그인을 위해 Redis에 토큰 저장. Key: {}", token);
 
-        return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider());
+        // 6. 회원가입과 동시에 새로운 채팅 세션 생성
+        ChatSession newSession = ChatSession.builder()
+                .id(UUID.randomUUID().toString())
+                .userId(String.valueOf(user.getId())) // 새로 가입한 사용자의 ID 연결
+                .createdAt(LocalDateTime.now())
+                .lastActivatedAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusHours(24))
+                .build();
+        chatSessionRepository.save(newSession);
+        log.info("회원가입 성공. 사용자 {}의 첫 채팅 세션 {} 생성.", user.getUserId(), newSession.getId());
+
+
+        return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider(), newSession.getId());
     }
 
     /**
@@ -83,9 +100,15 @@ public class UserService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."));
 
+        // 사용자의 활성 세션 조회
+        String activeSessionId = chatSessionRepository
+                .findFirstByUserIdAndExpiresAtAfterOrderByCreatedAtDesc(String.valueOf(user.getId()), LocalDateTime.now())
+                .map(ChatSession::getId) // 세션이 존재하면 ID를 꺼내고
+                .orElse(null); // 없으면 null
+
         // User 엔티티를 LoginResponseDto로 변환하여 반환
         // 프론트엔드에서 이미 토큰을 가지고 있으므로, 여기서는 null로 설정
-        return new LoginResponseDto(null, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider());
+        return new LoginResponseDto(null, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider(), activeSessionId);
     }
 
     /**

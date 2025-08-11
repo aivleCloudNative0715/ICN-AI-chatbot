@@ -3,12 +3,14 @@ package com.incheonai.chatbotbackend.service;
 import com.incheonai.chatbotbackend.config.jwt.JwtTokenProvider;
 import com.incheonai.chatbotbackend.domain.jpa.Admin;
 import com.incheonai.chatbotbackend.domain.jpa.User;
+import com.incheonai.chatbotbackend.domain.mongodb.ChatSession;
 import com.incheonai.chatbotbackend.dto.AdminLoginResponseDto;
 import com.incheonai.chatbotbackend.dto.LoginRequestDto;
 import com.incheonai.chatbotbackend.dto.LoginResponseDto;
 import com.incheonai.chatbotbackend.exception.BusinessException;
 import com.incheonai.chatbotbackend.repository.jpa.AdminRepository;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
+import com.incheonai.chatbotbackend.repository.mongodb.ChatSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,6 +34,7 @@ public class AuthService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ChatSessionRepository chatSessionRepository;
 
     /**
      * 아이디 중복을 확인합니다. (재가입 정책, 관리자 계정, Redis 임시 ID 확인 포함)
@@ -78,36 +81,45 @@ public class AuthService {
         Optional<User> userOptional = userRepository.findByUserId(requestDto.userId());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // 비밀번호 확인
             if (!passwordEncoder.matches(requestDto.password(), user.getPassword())) {
                 throw new BusinessException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
             }
-            // 마지막 로그인 시간 업데이트 및 토큰 생성
             user.updateLastLogin();
             String token = jwtTokenProvider.createToken(user.getUserId());
 
             redisTemplate.opsForValue().set(token, user.getUserId(), jwtTokenProvider.getTokenValidTime(), TimeUnit.MILLISECONDS);
             log.info("로컬 로그인 성공. Redis에 토큰 저장. Key: {}", token);
 
+            // 세션 마이그레이션
+            String sessionId = null;
+            if (requestDto.anonymousSessionId() != null && !requestDto.anonymousSessionId().isEmpty()) {
+                Optional<ChatSession> sessionOpt = chatSessionRepository.findById(requestDto.anonymousSessionId());
+                if(sessionOpt.isPresent()) {
+                    ChatSession session = sessionOpt.get();
+                    // 익명 세션(userId=null)을 찾아 로그인한 사용자의 ID를 연결
+                    session.setUserId(String.valueOf(user.getId())); // User의 id(Long)를 String으로 변환하여 저장
+                    chatSessionRepository.save(session);
+                    sessionId = session.getId(); // 마이그레이션된 세션 ID를 사용
+                    log.info("익명 세션 {}을 사용자 {}에게 마이그레이션했습니다.", sessionId, user.getUserId());
+                }
+            }
+
             // 사용자용 응답 DTO 반환
-            return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider());
+            return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider(), sessionId);
         }
 
-        // 2. Admin 테이블에서 아이디 확인
+        // 2. Admin 테이블에서 아이디 확인 (관리자는 세션 마이그레이션 없음)
         Optional<Admin> adminOptional = adminRepository.findByAdminId(requestDto.userId());
         if (adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
-            // 비밀번호 확인
             if (!passwordEncoder.matches(requestDto.password(), admin.getPassword())) {
                 throw new BusinessException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
             }
-            // 마지막 로그인 시간 업데이트 및 토큰 생성
             admin.updateLastLogin();
             String token = jwtTokenProvider.createToken(admin.getAdminId());
 
             redisTemplate.opsForValue().set(token, admin.getAdminId(), jwtTokenProvider.getTokenValidTime(), TimeUnit.MILLISECONDS);
             log.info("관리자 로그인 성공. Redis에 토큰 저장. Key: {}", token);
-            // 관리자용 응답 DTO 반환
             return new AdminLoginResponseDto(token, admin.getId(), admin.getAdminId(), admin.getAdminName(), admin.getRole());
         }
 

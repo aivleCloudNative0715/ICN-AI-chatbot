@@ -57,6 +57,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(
+                                "/ws-chat/**",
+                                "/api/chat/session",
                                 "/api/users/signup",
                                 "/api/auth/check-id",
                                 "/api/auth/login",
