@@ -5,6 +5,7 @@ from chatbot.graph.state import ChatState
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+from langchain_core.messages import HumanMessage, AIMessage
 
 env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(dotenv_path=env_path, override=True)
@@ -15,8 +16,8 @@ client = OpenAI(api_key=api_key)
 def llm_verify_intent_node(state: ChatState) -> ChatState:
     user_input = state["user_input"]
     initial_intent = state["intent"]
+    messages = state.get("messages", []) # 대화 기록 가져오기
     
-    # 의도와 설명을 함께 담은 딕셔너리
     supported_intents_with_desc = {
         "airport_congestion_prediction": "공항 혼잡도 예측 정보",
         "default": "일반적인 인사 또는 맥락이 없는 질문",
@@ -39,17 +40,25 @@ def llm_verify_intent_node(state: ChatState) -> ChatState:
         "airport_weather_current": "공항 현재 날씨 정보"
     }
     
-    # 프롬프트에 들어갈 의도 목록 문자열 생성
     supported_intents_list_str = "\n".join(
         [f"- {k}: {v}" for k, v in supported_intents_with_desc.items() if k != "unhandled"]
     )
-    supported_intents = list(supported_intents_with_desc.keys())
 
-
-    prompt = f"""
-    당신은 챗봇 시스템의 의도 분류 검증 도우미입니다.
-    사용자 질문과 챗봇 시스템이 1차로 분류한 '예측된 의도'를 제공할 것입니다.
-    당신의 임무는 '예측된 의도'가 사용자 질문에 가장 적합한 의도인지 확인하고, 만약 더 적합한 의도가 있다면 그 의도명을 JSON 형식으로 반환하는 것입니다.
+    # --- 수정된 부분: 메시지 리스트를 messages 파라미터로 전달 ---
+    # 메시지 리스트의 마지막 대화(사용자의 현재 질문)가 아닌 전체 대화를 LLM에 전달
+    messages_for_llm = [
+        {"role": "system", "content": "당신은 의도 분류 전문가입니다. 질문과 예측 의도를 검증하고 최종 의도명을 JSON으로 반환합니다."},
+    ]
+    # 이전 대화 기록을 messages 리스트에 추가
+    for msg in messages:
+        if isinstance(msg, HumanMessage):
+            messages_for_llm.append({"role": "user", "content": msg.content})
+        elif isinstance(msg, AIMessage):
+            messages_for_llm.append({"role": "assistant", "content": msg.content})
+    
+    # 마지막으로 LLM에게 검증 프롬프트와 함께 대화 기록을 전달
+    messages_for_llm.append({"role": "user", "content": f"""
+    아래 정보를 참고하여, 이전 대화 맥락을 포함한 사용자 질문에 대한 최종 의도를 판단해줘.
     
     사용 가능한 의도 목록:
     {supported_intents_list_str}
@@ -63,15 +72,13 @@ def llm_verify_intent_node(state: ChatState) -> ChatState:
     사용자 질문: "{user_input}"
     예측된 의도: {initial_intent}
     
-    JSON 응답:"""
+    JSON 응답:"""})
+    # --- 수정된 부분 끝 ---
     
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "당신은 의도 분류 전문가입니다. 질문과 예측 의도를 검증하고 최종 의도명을 JSON으로 반환합니다."},
-                {"role": "user", "content": prompt}
-            ],
+            messages=messages_for_llm, # 수정된 메시지 리스트 전달
             temperature=0.1,
             response_format={"type": "json_object"}
         )

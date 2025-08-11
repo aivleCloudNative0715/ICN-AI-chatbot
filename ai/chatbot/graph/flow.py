@@ -84,7 +84,7 @@ def build_chat_graph():
         # 2. 단일 의도 신뢰도 기반 라우팅
         top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
         
-        if top_conf >= 0.7:
+        if top_conf >= 0.9:
             print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
             return f"{top_intent}_handler"
         else:
