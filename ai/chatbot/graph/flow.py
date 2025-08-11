@@ -51,12 +51,17 @@ def build_chat_graph():
                 return node_name
         return "fallback_handler"
     
-    # 새로운 라우팅 함수: 복합 의도 감지 후 LLM 검증 또는 바로 핸들러로 이동
     def route_after_initial_classification(state: ChatState) -> str:
         top_k_intents = state.get('top_k_intents_and_probs', [])
         slots = state.get("slots", [])
-    
-        # 1. 복합 의도 감지
+        user_query = state.get("user_input", "")
+
+        # 📌 수정된 부분: 이전 대화 감지 로직을 최상단으로 이동
+        if len(state.get("messages", [])) > 1:
+            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅")
+            return "llm_verify_intent"
+
+        # 1. 복합 의도 감지 (기존 로직 그대로)
         slot_groups = {
             'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
             'facility_info': {'B-facility_name', 'B-location_keyword'},
@@ -79,17 +84,10 @@ def build_chat_graph():
         if len(specific_groups) > 1:
             print("DEBUG: 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
             return "handle_complex_intent"
-        
-        # 2. 단일 의도 신뢰도 기반 라우팅 (수정된 로직)
+            
+        # 2. 단일 의도 신뢰도 기반 라우팅
         top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
         
-        # 수정: 신뢰도와 관계없이 이전 질문 있으면 LLM으로 보내기
-        user_query = state.get("user_input", "")
-        if len(state.get("messages", [])) > 1:
-            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅")
-            return "llm_verify_intent"
-
-        # 신뢰도가 충분히 높은 경우 바로 핸들러로 이동
         if top_conf >= 0.9:
             print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
             return f"{top_intent}_handler"

@@ -1,25 +1,40 @@
 import json
 from chatbot.rag.config import db_client, db_name, client
 from pymongo.errors import ConnectionFailure, OperationFailure
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 import locale
 
 # 시스템 로케일 설정 (요일 처리를 위해 필요)
 locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')
 
-# ⭐ API 호출 함수는 제거하고 MongoDB 관련 함수만 남깁니다.
-
 def _get_day_of_week_field(day_name: str) -> str | None:
     """
     요일 이름을 MongoDB 문서의 필드명으로 변환합니다.
     """
+    # 시스템 로케일을 영어로 임시 설정하여 영문 요일을 얻습니다.
+    # 이렇게 하면 어떤 OS 환경에서든 일관된 영문 요일 이름을 얻을 수 있습니다.
+    try:
+        locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')
+    except locale.Error:
+        try:
+            locale.setlocale(locale.LC_TIME, 'en_US')
+        except locale.Error:
+            print("디버그: 로케일 설정 실패. 기본값 사용.")
+
     day_map = {
         "월요일": "monday", "화요일": "tuesday", "수요일": "wednesday",
         "목요일": "thursday", "금요일": "friday", "토요일": "saturday",
-        "일요일": "sunday", "오늘": datetime.now().strftime('%A')
+        "일요일": "sunday", 
     }
-    return day_map.get(day_name, datetime.now().strftime('%A')).lower()
+    
+    # 📌 수정된 부분: "오늘"과 "내일"을 처리하는 로직 추가
+    if day_name == "오늘":
+        return datetime.now().strftime('%A').lower()
+    elif day_name == "내일":
+        return (datetime.now() + timedelta(days=1)).strftime('%A').lower()
+    
+    return day_map.get(day_name)
 
 def _get_schedule_from_db(
     direction: str,

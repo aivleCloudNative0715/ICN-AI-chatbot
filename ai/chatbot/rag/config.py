@@ -320,7 +320,7 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
                 {"role": "user", "content": final_prompt}
             ],
             temperature=0.5, # 창의성 조절 (0.0은 가장 보수적, 1.0은 가장 창의적)
-            max_tokens=500 # 생성할 최대 토큰 수
+            max_tokens=600 # 생성할 최대 토큰 수
         )
         final_response_text = response.choices[0].message.content
         print(f"\n--- [GPT-4o-mini 응답] ---")
