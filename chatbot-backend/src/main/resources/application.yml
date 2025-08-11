@@ -24,6 +24,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
 
   security:
     oauth2:
@@ -73,7 +78,7 @@ spring:
       on-profile: default
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
 ---
 
@@ -86,7 +91,7 @@ spring:
       on-profile: local-ssl
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
 server:
   port: 8443
@@ -116,4 +121,4 @@ spring:
         enabled: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate

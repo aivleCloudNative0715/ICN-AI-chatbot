@@ -18,25 +18,4 @@ public class ChatbotBackendApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ChatbotBackendApplication.class, args);
 	}
-
-	@Bean
-	public CommandLineRunner initSuperAdmin(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
-		return args -> {
-			// "superadmin" 이라는 아이디를 가진 관리자가 있는지 확인
-			if (adminRepository.findByAdminId("superadmin").isEmpty()) {
-				// application-local.yml에 정의된 기본 비밀번호 사용
-				String rawPassword = "qwer1234!!";
-				String encodedPassword = passwordEncoder.encode(rawPassword);
-
-				Admin superAdmin = Admin.builder()
-						.adminId("superadmin")
-						.password(encodedPassword)
-						.adminName("슈퍼관리자")
-						.role(AdminRole.SUPER)
-						.build();
-				adminRepository.save(superAdmin);
-				System.out.println("Super admin account created.");
-			}
-		};
-	}
 }
