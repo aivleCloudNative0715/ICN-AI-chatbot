@@ -4,9 +4,9 @@ from functools import partial
 from langgraph.graph import StateGraph, END
 
 from chatbot.graph.state import ChatState
+from chatbot.graph.router import route_by_intent
 from chatbot.graph.nodes.classifiy_intent import classify_intent
 from chatbot.graph.nodes.complex_handler import handle_complex_intent
-from chatbot.graph.nodes.llm_verify_intent import llm_verify_intent_node
 import chatbot.graph.handlers
 
 
@@ -38,30 +38,33 @@ def build_chat_graph():
     builder.add_node("handle_complex_intent", complex_handler_node)
     builder.add_edge("handle_complex_intent", END)
 
-    # LLM 검증 노드 추가
-    builder.add_node("llm_verify_intent", llm_verify_intent_node)
-    
-    def route_final_intent_to_handler(state):
-        final_intent = state.get("intent")
-        if final_intent:
-            if final_intent == "complex_intent":
-                return "handle_complex_intent"
-            node_name = f"{final_intent}_handler"
-            if node_name in handlers:
-                return node_name
-        return "fallback_handler"
-    
-    def route_after_initial_classification(state: ChatState) -> str:
+    # 엣지 추가: 복합 의도 감지 로직이 포함된 라우팅 함수
+    def route_to_complex_or_single(state: ChatState) -> str:
+        print(f"\n--- DEBUGGING STATE IN ROUTER ---")
+        print(f"User Input: {state.get('user_input')}")
+        print(f"Predicted Intent: {state.get('intent')}")
+        print(f"Confidence: {state.get('confidence')}")
+        print(f"Top-K Intents: {state.get('top_k_intents_and_probs')}")
+        print(f"Slots: {state.get('slots')}")
+        print(f"-----------------------------------\n")
+
+        user_input = state.get("user_input", "")
         top_k_intents = state.get('top_k_intents_and_probs', [])
         slots = state.get("slots", [])
-        user_query = state.get("user_input", "")
+        
+        # 의도 신뢰도 기반 복합 의도 감지
+        # 상위 2개 의도의 신뢰도 차이가 10% 이내이고, 두 의도 모두 챗봇이 지원하는 의도일 경우
+        if len(top_k_intents) >= 2:
+            top1_intent, top1_conf = top_k_intents[0]
+            top2_intent, top2_conf = top_k_intents[1]
+            
+            # 신뢰도 차이가 0.1(10%) 미만일 경우
+            if (top1_conf - top2_conf) < 0.1:
+                print("DEBUG: 상위 2개 의도 신뢰도 기반 복합 의도 감지")
+                return "handle_complex_intent"
 
-        # 📌 수정된 부분: 이전 대화 감지 로직을 최상단으로 이동
-        if len(state.get("messages", [])) > 1:
-            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅")
-            return "llm_verify_intent"
-
-        # 1. 복합 의도 감지 (기존 로직 그대로)
+        # 슬롯 기반 복합 의도 감지
+        # 슬롯 태그 그룹 정의
         slot_groups = {
             'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
             'facility_info': {'B-facility_name', 'B-location_keyword'},
@@ -73,43 +76,39 @@ def build_chat_graph():
             'general_topic': {'B-topic'},
             'congestion': {'B-congestion_topic', 'B-congestion_status'}
         }
+
         found_groups = set()
         for _, tag in slots:
             if tag.startswith('B-'):
                 for group_name, tags in slot_groups.items():
                     if tag in tags:
                         found_groups.add(group_name)
-        
-        specific_groups = found_groups - {'general_topic'}
-        if len(specific_groups) > 1:
-            print("DEBUG: 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
-            return "handle_complex_intent"
-            
-        # 2. 단일 의도 신뢰도 기반 라우팅
-        top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
-        
-        if top_conf >= 0.9:
-            print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
-            return f"{top_intent}_handler"
-        else:
-            print("DEBUG: 낮은 신뢰도 또는 모호한 의도 감지 -> llm_verify_intent로 라우팅")
-            return "llm_verify_intent"
 
-    # 그래프의 시작점과 엣지 연결
+        specific_groups = found_groups - {'general_topic'}
+        
+        if len(specific_groups) > 1:
+            print("DEBUG: 복수 슬롯 그룹 기반 복합 의도 감지")
+            return "handle_complex_intent"
+        
+        # 그렇지 않은 경우 단일 의도로 판단
+        else:
+            print("DEBUG: 단일 의도 감지")
+            return f"{state.get('intent')}_handler"
+
+    # def route_by_intent(state: ChatState):
+    #     intent = state.get("intent")
+    #     if intent:
+    #         return f"{intent}_handler"
+    #     return "fallback_handler"
+
     builder.set_entry_point("classify_intent")
     
-    all_nodes = list(handlers.keys()) + ["handle_complex_intent", "llm_verify_intent"]
+    all_handler_names = list(handlers.keys()) + ["handle_complex_intent"]
     
     builder.add_conditional_edges(
         "classify_intent",
-        route_after_initial_classification,
-        all_nodes
-    )
-    
-    builder.add_conditional_edges(
-        "llm_verify_intent",
-        route_final_intent_to_handler,
-        all_nodes
+        route_to_complex_or_single,
+        all_handler_names
     )
 
     return builder.compile()

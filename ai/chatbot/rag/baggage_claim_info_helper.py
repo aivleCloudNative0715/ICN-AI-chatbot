@@ -1,5 +1,3 @@
-# ai/chatbot/rag/flight_info_helper.py
-
 import os
 import requests
 import json
@@ -225,4 +223,3 @@ def _generate_final_answer_with_llm(document: dict, user_query: str) -> str:
     print(final_response_text)
     
     return final_response_text
-

@@ -82,9 +82,20 @@ def parking_fee_info_handler(state: ChatState) -> ChatState:
         error_msg = f"죄송합니다. 정보를 검색하는 중 오류가 발생했습니다: {e}"
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
+    
+    
+    
+    
+    
 
 def parking_congestion_prediction_handler(state: ChatState) -> ChatState:
     return {**state, "response": "주차 혼잡도 예측입니다."}
+
+
+
+
+
+
 
 def parking_location_recommendation_handler(state: ChatState) -> ChatState:
     """

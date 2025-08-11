@@ -17,8 +17,6 @@ def _create_subgraph_for_intent(handlers: Dict[str, Any]):
     subgraph = StateGraph(ChatState)
     subgraph.add_node("classify_intent", classify_intent)
     
-    # 핸들러를 추가하고, 핸들러에서 END로 바로 연결
-    # 이렇게 하면 핸들러의 return 값이 최종 result에 담깁니다.
     for name, handler in handlers.items():
         subgraph.add_node(name, handler)
         subgraph.add_edge(name, END)
@@ -26,8 +24,7 @@ def _create_subgraph_for_intent(handlers: Dict[str, Any]):
     def route_single_intent_to_handler(state):
         intent = state.get("intent")
         if intent:
-            # 핸들러의 이름(handler_func)이 아닌, 노드 이름(name)을 반환
-            node_name = f"{intent}_handler" # 핸들러 이름으로 라우팅
+            node_name = f"{intent}_handler"
             if node_name in handlers:
                 return node_name
         return None 
@@ -35,11 +32,9 @@ def _create_subgraph_for_intent(handlers: Dict[str, Any]):
     subgraph.set_entry_point("classify_intent")
     all_handler_names = list(handlers.keys())
     
-    # conditional_edges의 두 번째 인자로 라우팅 함수를 전달
     subgraph.add_conditional_edges(
         "classify_intent", 
         route_single_intent_to_handler,
-        # conditional_edges의 세 번째 인자로 유효한 노드 이름 목록을 전달합니다.
         all_handler_names
     )
     
@@ -53,25 +48,23 @@ def _split_intents(user_input: str, supported_intents: List[str]) -> List[str]:
     당신은 사용자의 질문을 분석하여, 여러 의도가 포함된 질문을 독립적인 하위 질문들로 분해하는 데 능숙한 전문가입니다.
 
     ### 지시사항
-    1. 사용자의 질문이 하나 이상의 독립적인 질문으로 분리될 수 있는지 판단하세요.
-    2. 질문을 분리할 때, 주차장(주차, 주차요금), 시설(카페, 식당, 라운지), 비행(도착, 출발, 항공편) 등의 키워드를 기준으로 분리하세요.
-    3. 분리된 각 질문은 완전한 문장 형태여야 하며, 쉼표(,)로 구분하여 한 줄로 반환하세요.
-    4. 질문이 분리될 수 없다면 (단일 의도라면), 원래 질문을 그대로 반환하세요.
-    5. 절대 다른 설명이나 문장은 추가하지 말고, 오직 분리된 질문들만 반환하세요.
-    6. 지원되는 의도 목록은 {', '.join(supported_intents)}입니다.
-    7. 질문에 들어있던 정보가 소실되지 않도록 주의하세요.
+    1. 사용자의 질문이 **하나의 주제에 대한 여러 요청**인지, 아니면 **서로 다른 주제에 대한 여러 요청**인지 판단하세요.
+    2. 주제가 서로 다른 경우에만 질문을 분리하세요.
+    3. 질문을 분리할 때, 주차장, 시설, 비행, 날씨 등의 키워드를 기준으로 주제를 판단하세요.
+    4. 분리된 각 질문은 완전한 문장 형태여야 하며, 쉼표(,)로 구분하여 한 줄로 반환하세요.
+    5. 질문이 분리될 수 없다면 (단일 의도라면), 원래 질문을 그대로 반환하세요.
+    6. 절대 다른 설명이나 문장은 추가하지 말고, 오직 분리된 질문들만 반환하세요.
+    7. 지원되는 의도 목록은 {', '.join(supported_intents)}입니다.
+
     ### 예시
-    사용자 질문: "주차 요금이랑 카페 위치 알려줘"
-    출력: 주차 요금 알려줘, 카페 위치 알려줘
+    - 사용자 질문: "주차 요금이랑 카페 위치 알려줘"
+    - 출력: 주차 요금 알려줘, 카페 위치 알려줘
 
-    사용자 질문: "도착하자마자 카페가고싶은데 어디에 주차하는게 좋아?"
-    출력: 카페 위치 알려줘, 도착하자마자 어디에 주차하는게 좋아?
+    - 사용자 질문: "지금 공항 날씨 어때요? 내일은요?"
+    - 출력: 지금 공항 날씨 어때요? 내일은요?
 
-    사용자 질문: "제1터미널 주차장 요금 알려줘"
-    출력: 제1터미널 주차장 요금 알려줘
-    
-    사용자 질문: "오늘 5시에 도착하는 비행긴데, 수하물 어디서 받아?"
-    출력: 오늘 5시에 도착하는 비행긴데, 수하물 어디서 받아?
+    - 사용자 질문: "제1터미널 주차장 요금 알려줘"
+    - 출력: 제1터미널 주차장 요금 알려줘
 
     사용자 질문: "{user_input}"
     출력:
@@ -104,19 +97,24 @@ def _combine_responses(original_question: str, responses: List[str]) -> str:
     당신은 사용자의 원래 질문 '{original_question}'과 그에 대한 여러 정보를 종합하여 하나의 자연스러운 답변을 만듭니다.
 
     ### 지시사항
-    1. 제공된 정보들을 분석하여 두 답변 간에 공통된 터미널이나 위치 정보가 있는지 확인하세요.
-    2. 만약 공통된 정보(예: '제1여객터미널')가 있다면, 이를 바탕으로 두 정보를 논리적으로 연결하여 하나의 통합 답변을 만드세요.
-    3. 공통된 정보가 없다면, 두 답변을 각각 명확하게 분리하여 나열하되, 답변이 자연스럽게 이어지도록 정리하세요.
+    1. 제공된 정보들을 분석하여 답변 간의 관계와 사용자의 숨겨진 의도를 파악하세요.
+    2. 파악된 의도를 바탕으로, 모든 정보를 유기적으로 연결하여 하나의 완성된 답변을 만드세요.
+    3. 만약 정보 간에 연결점이 없다면, 각 답변을 명확하게 분리하여 나열하되, 답변이 자연스럽게 이어지도록 정리하세요.
     4. 제공된 정보에 없는 내용은 절대로 추가하거나 추론하지 마세요.
 
+    ### 예시
+    - 사용자 질문: '도착하자마자 화장실에 가고싶은데 어디에 주차하는게 좋아?'
+    - 제공된 정보: ['탑승동 3층 중앙 안내소 부근에 화장실이 있습니다.', '제1터미널에는 P1, P2 장기주차장이 있습니다.']
+    - 예상 답변: '탑승동 3층 중앙 안내소 부근에 화장실이 있습니다. 이와 가까운 제1터미널 P1, P2 장기주차장을 이용하시면 편리합니다.'
+
     ### 제공된 정보:
-    {'- ' + '\n- '.join(responses)}
+    {'- ' + '\\n- '.join(responses)}
     """
     
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "당신은 사용자의 질문에 대해 가장 핵심적인 정보를 바탕으로 간결하고 정확하게 답변을 종합하는 전문가입니다."},
+            {"role": "system", "content": "당신은 사용자의 질문에 대해 가장 핵심적인 정보를 바탕으로 간결하고 정확하게 답변을 종합하는 전문가입니다. 특히 복합 의도가 있는 질문의 경우, 여러 정보를 연결하여 하나의 완성된 답변을 만드는 데 능숙합니다."},
             {"role": "user", "content": prompt}
         ],
         temperature=0.2
@@ -124,7 +122,6 @@ def _combine_responses(original_question: str, responses: List[str]) -> str:
     
     combined_response_text = response.choices[0].message.content
 
-    # 모든 답변에 공통적으로 추가될 주의 문구
     common_disclaimer = (
         "\n\n---"
         "\n주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
@@ -133,43 +130,31 @@ def _combine_responses(original_question: str, responses: List[str]) -> str:
     
     return combined_response_text + common_disclaimer
 
-
 def handle_complex_intent(state: ChatState, handlers: Dict[str, Any], supported_intents: List[str]):
     """복합 의도 질문을 분리하고 처리하는 메인 함수"""
     user_input = state["user_input"]
     print("--- 복합 의도 처리 시작 ---")
 
-    # 딕셔너리 내용 확인용 디버그 코드 추가
     print(f"디버그: handle_complex_intent에 전달된 핸들러 목록: {handlers.keys()}")
 
-    # 1. LLM을 사용하여 복합 의도 질문을 분리
     split_questions: List[str] = _split_intents(user_input, supported_intents)
     print(f"분해된 질문: {split_questions}")
 
-    # 2. 분리된 각 질문을 개별적으로 처리 (서브그래프 활용)
     all_responses = []
     subgraph = _create_subgraph_for_intent(handlers)
     
     for question in split_questions:
-        # 서브그래프에 전달할 초기 상태
         sub_state = {"user_input": question, "response": None}
-        
-        # 서브그래프 실행
         result = subgraph.invoke(sub_state)
-        
-        # 여기서 서브그래프가 반환한 최종 응답만 추출
         response_content = result.get("response", "")
-        
         if response_content:
             all_responses.append(response_content)
     
-    # 3. 모든 답변을 하나로 종합
     final_response = _combine_responses(user_input, all_responses)
     
     print("--- 복합 의도 처리 완료 ---")
     
-    # 최종 상태 업데이트
     state["response"] = final_response
-    state["intent"] = "complex_intent" 
+    state["intent"] = "complex_intent"
     
     return state

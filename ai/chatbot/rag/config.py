@@ -3,16 +3,39 @@ from openai import OpenAI
 import os # API 키를 환경 변수에서 로드하기 위해 필요
 from dotenv import load_dotenv # dotenv 라이브러리 임포트
 from pathlib import Path # Path 객체 임포트
-
+from pymongo import MongoClient
 # .env 파일에서 환경 변수를 로드합니다.
-# 현재 파일 (config.py)에서 최상위 디렉토리 (ICN-AI-chatbot)까지의 경로를 계산합니다.
-# config.py -> rag -> chatbot -> ai -> ICN-AI-chatbot
-# 따라서 .parents[3]을 사용합니다.
-env_path = Path(__file__).resolve().parents[3] / ".env"
+# config.py -> rag -> chatbot -> ai
+# 따라서 .parents[2]을 사용합니다.
+env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(dotenv_path=env_path, override=True) # override=True 추가 권장
 
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
+
+# MongoDB 클라이언트
+try:
+    mongo_uri = os.getenv("MONGO_URI")
+    mongo_db_name = os.getenv("MONGO_DB_NAME")
+    if not mongo_uri or not mongo_db_name:
+        raise ValueError("MongoDB 환경 변수가 설정되지 않았습니다.")
+    mongo_client = MongoClient(mongo_uri)
+    mongo_client.admin.command('ping')
+    print("MongoDB에 성공적으로 연결되었습니다!")
+except Exception as e:
+    print(f"MongoDB 연결 오류: {e}")
+    mongo_client = None
+
+# OpenAI 클라이언트
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise ValueError("OPENAI_API_KEY 환경 변수가 설정되지 않았습니다.")
+openai_client = OpenAI(api_key=openai_api_key)
+
+# 다른 파일에서 불러올 변수들
+db_client = mongo_client
+client = openai_client
+db_name = mongo_db_name
 
 # 각 의도(또는 핸들러)별 RAG 검색 설정을 정의합니다.
 # 이 설정은 각 핸들러에서 어떤 MongoDB 컬렉션을 사용해야 하는지 알려줍니다.
@@ -37,7 +60,7 @@ RAG_SEARCH_CONFIG = {
         "vector_index_name": "parkingLot_vector_index",
         "description": "주차장 위치 추천"
     },
-    "immigration_policy_info": {
+    "immigration_policy": {
         "collection_name": "AirportPolicyVector",
         "vector_index_name": "airportPolicy_vector_index",
         "description": "입출국 절차 및 정책",
@@ -117,11 +140,11 @@ LLM_PROMPT_TEMPLATES = {
     "parking_walk_time_info": """당신은 인천국제공항 챗봇입니다. 다음 주차장-터미널 도보 시간 정보를 바탕으로 사용자 질문에 답변해주세요.
     
     다음 지침을 반드시 따르세요:
-    1.  주어진 '검색된 도보 시간 정보' 내에서만 답변하세요.
-    2.  도보 시간을 안내할 때는 어떤 주차장과 어떤 터미널(제1터미널, 제2터미널 등)을 기준으로 하는지 명확하게 언급해주세요. (예: "제1터미널 장기 주차장에서 도보로 약 5분 소요됩니다.")
-    3.  검색된 정보에 사용자 질문에 대한 내용이 없거나, 불충분할 경우, 답변할 수 없음을 명확히 알리세요. (예: "제가 가진 정보로는 해당 주차장-터미널 간 도보 시간 정보를 찾을 수 없습니다.")
-    4.  애매모호하거나 불필요한 정보는 추가하지 마세요.
-    5.  답변은 간결하고 정확하게 작성하며, 대략적인 시간임을 명시할 수 있습니다. (예: "약 ~분", "~분 가량")
+    1. 주어진 '검색된 도보 시간 정보' 내에서만 답변하세요.
+    2. 도보 시간을 안내할 때는 어떤 주차장과 어떤 터미널(제1터미널, 제2터미널 등)을 기준으로 하는지 명확하게 언급해주세요. (예: "제1터미널 장기 주차장에서 도보로 약 5분 소요됩니다.")
+    3. 질문이 불명확할 때는 더 자세한 위치를 알려주면 더 정확한 정보를 찾아드릴 수 있다고 답변하세요.
+    4. 애매모호하거나 불필요한 정보는 추가하지 마세요.
+    5. 답변은 간결하고 정확하게 작성하며, 대략적인 시간임을 명시할 수 있습니다. (예: "약 ~분", "~분 가량")
     
     사용자 질문: {user_query}
     검색된 도보 시간 정보: {retrieved_context}
@@ -233,43 +256,35 @@ LLM_PROMPT_TEMPLATES = {
     검색된 공항 정보: {retrieved_context}
 
     답변:""",
-    
-    "default_greeting": """
-    당신은 인천국제공항 챗봇입니다. 사용자에게 반갑게 인사하고, 공항에 대한 질문을 환영하는 메시지를 작성해주세요.
-    
-    당신이 대답 가능한 것들은 다음과 같습니다:
-    1.  공항 내의 시설 및 서비스 정보
-    2.  정기 항공편 및 운항 정보
-    3.  항공편명을 받을 경우 해당 항공편의 운항 정보 
-    4.  항공사 정보 및 고객센터 연락처
-    5.  주차장 위치 및 요금과 할인 정보
-    6.  실시간 주차장 빈자리 찾기 및 주차 위치 추천
-    7.  시간대 별 주차장 혼잡도 예측
-    8.  공항 입국장 및 출국장 혼잡도 예측
-    9.  입출국 절차 및 정책
-    10.  환승 정보 및 경로 안내
-    11.  수하물 규정 및 제한 물품 정보
-    12.  공항 코드, 이름, 위치 등 일반 정보
-    13.  인천공항 날씨
 
-    만약 자신이 타는 항공편에 대한 구체적인 정보가 궁금하다면, 편명을 제공해 달라고 안내하세요.   
-    
+    # 기본 프롬프트 (정의되지 않은 의도나 오류 시 사용)
+    "default": """다음 정보를 바탕으로 사용자 질문에 답변해주세요.
     사용자 질문: {user_query}
-
+    검색된 정보: {retrieved_context}
 
     답변:""",
 
-    # 기본 프롬프트 (정의되지 않은 의도나 오류 시 사용)
-    "default": """
-    당신은 인천국제공항 챗봇입니다. 현재 사용자가 당신이 대답할 수 없는 질문을 했거나, 혹은 잠시 오류가 발생한것 같습니다. 
-    적절한 안내 메시지를 작성해주세요. 사용자가 질문을 다시 할 수 있도록 유도하는 것이 중요합니다.
-
+    "flight_info": """
+    당신은 인천국제공항 챗봇입니다. 다음 항공편 운항 정보를 바탕으로 사용자 질문에 답변해주세요.
+    
     다음 지침을 반드시 따르세요:
-    1.  사용자 질문에 대한 답변이 불가능할 때는, "죄송해요, 이해하지 못했어요. 다시 말씀해 주세요."와 같은 간단한 메시지를 사용하세요.
-    2.  사용자가 질문을 다시 할 수 있도록 유도하는 문구를 포함하세요.
-    3.  애매모호하거나 불필요한 정보는 추가하지 마세요.
+    1. 제공된 '검색된 정보' 내에서만 답변하세요.
+    2. 항공편명, 항공사, 출/도착 공항 정보는 명확하게 언급해주세요.
+    3. 만약 운항 날짜 정보가 있다면, 답변에 **반드시** "2025년 8월 7일"과 같이 명확히 언급해 주세요.
+    
+    4. **LLM이 가장 우선적으로 고려해야 할 지침:**
+    - 당신은 인천국제공항 챗봇입니다. 모든 답변은 **인천국제공항을 기준**으로 작성해야 합니다.
+    - 제공된 '검색된 정보'의 `direction` 필드를 확인하여, 항공편이 **인천공항으로 도착**하는 편인지, **인천공항에서 출발**하는 편인지 정확하게 파악하고 답변에 반영하세요.
+    - '사용자 질문'의 표현(예: '상하이에서 출발해서')이 '검색된 정보'의 `direction` 필드와 상충될 경우, 항상 **`direction` 필드에 있는 실제 운항 방향을 우선시**하여 답변하세요.
+    
+    5. 만약 특정 정보(예: 게이트, 체크인 카운터)가 '정보 없음'으로 표시되면, 해당 정보가 현재 확인되지 않음을 명확히 알려주세요.
+    6. 운항 현황(remark) 정보가 있을 경우, 그 내용을 간결하게 요약해서 알려주세요.
+    7. 답변에 동일한 정보(예: 탑승구 번호)를 반복해서 언급하지 마세요.
+    8. 검색된 정보에 아무것도 없을 경우, "죄송하지만 요청하신 정보를 찾을 수 없습니다."와 같이 명확하게 답변해 주세요.
+    
     사용자 질문: {user_query}
-
+    검색된 정보: {retrieved_context}
+    
     답변:"""
 }
 
@@ -305,11 +320,10 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
                 {"role": "user", "content": final_prompt}
             ],
             temperature=0.5, # 창의성 조절 (0.0은 가장 보수적, 1.0은 가장 창의적)
-            max_tokens=500 # 생성할 최대 토큰 수
+            max_tokens=600 # 생성할 최대 토큰 수
         )
         final_response_text = response.choices[0].message.content
         print(f"\n--- [GPT-4o-mini 응답] ---")
-        print(final_response_text)
 
         # 모든 답변에 공통적으로 추가될 주의 문구
         common_disclaimer = (

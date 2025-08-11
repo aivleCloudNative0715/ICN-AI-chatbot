@@ -6,7 +6,9 @@ class ChatState(TypedDict, total=False):
     intent: str
     slots: list
     response: str
-    confidence: float  # confidence 키 추가
-    top_k_intents_and_probs: List[Tuple[str, float]]  # top_k_intents_and_probs 키 추가
+    confidence: float
+    top_k_intents_and_probs: List[Tuple[str, float]]
     pre_message_id: str
     messages: list[BaseMessage]
+    # 📌 수정된 부분: rephrased_query 키 추가
+    rephrased_query: str 
