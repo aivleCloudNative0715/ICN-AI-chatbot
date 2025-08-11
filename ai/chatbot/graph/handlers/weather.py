@@ -11,19 +11,19 @@ common_disclaimer = (
         ) 
 
 def airport_weather_current_handler(state: ChatState) -> ChatState:
-    
     """
     인천공항 날씨에 대한 질문이 들어왔을 때 처리해주는 핸들러
     """
-    user_query = state.get("user_input", "")
-    intent_name = state.get("intent", "airport_weather_current")  # 의도 이름 명시
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
+    intent_name = state.get("intent", "airport_weather_current")
     
-    if not user_query:
+    if not query_to_process:
         print("디버그: 사용자 쿼리가 비어 있습니다.")
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
     
     try:
         collection_ATMOS = get_mongo_collection(collection_name="ATMOS")
@@ -33,18 +33,18 @@ def airport_weather_current_handler(state: ChatState) -> ChatState:
         taf_documents = list(collection_TAF.find({}, {"_id": 0}))
         
     except Exception as e:
-            error_msg = f"죄송합니다. DB 연결 또는 조회 중 오류가 발생했습니다: {e}"
-            print(f"디버그: {error_msg}")
-            return {**state, "response": error_msg}
+        error_msg = f"죄송합니다. DB 연결 또는 조회 중 오류가 발생했습니다: {e}"
+        print(f"디버그: {error_msg}")
+        return {**state, "response": error_msg}
     
     try: 
         prompt_template = (
-            "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다"
-            "당신은 인천국제공항의 날씨에 대한 사용자의 질문에 대답해주어야 합니다"
+            "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다."
+            "당신은 인천국제공항의 날씨에 대한 사용자의 질문에 대답해주어야 합니다."
             "당신이 추가적으로 참고할 수 있는 정보는 두 가지입니다."
-            "{atmos_documents}에서 tm은 데이터가 측정된 시각, l_vis는 시정, ta는 0.1도 단위의 섭씨 온도, hm은 % 단위의 습도, rn은 mm단위 강수량, ws_10은 0.1m/s 단위의 10분 평균 풍속입니다"
-            "{taf_documents}는 공항 예보(TAF)의 전문입니다."
-            "제공받은 정보를 바탕으로, 그리고 당신이 확인 가능한 인천공항의 현 시각 날씨와 날씨 예보 정보를 기반으로 사용자의 질문에 대해서 대답하세요"
+            "'{atmos_documents}'에서 tm은 데이터가 측정된 시각, l_vis는 시정, ta는 0.1도 단위의 섭씨 온도, hm은 % 단위의 습도, rn은 mm단위 강수량, ws_10은 0.1m/s 단위의 10분 평균 풍속입니다."
+            "'{taf_documents}'는 공항 예보(TAF)의 전문입니다."
+            "제공받은 정보를 바탕으로, 그리고 당신이 확인 가능한 인천공항의 현 시각 날씨와 날씨 예보 정보를 기반으로 사용자의 질문에 대해서 대답하세요."
         )
         
         formatted_prompt = prompt_template.format(
@@ -53,13 +53,14 @@ def airport_weather_current_handler(state: ChatState) -> ChatState:
         )
         
         response = client.chat.completions.create(
-            model="gpt-4o-mini", # 사용할 모델 지정
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": formatted_prompt},
-                {"role": "user", "content": user_query}
+                # 📌 수정된 부분: user_query 대신 query_to_process를 LLM에 전달합니다.
+                {"role": "user", "content": query_to_process}
             ],
-            temperature=0.5, # 창의성 조절 (0.0은 가장 보수적, 1.0은 가장 창의적)
-            max_tokens=500 # 생성할 최대 토큰 수
+            temperature=0.5,
+            max_tokens=500
         )
         final_response_text = response.choices[0].message.content
         print(f"\n--- [GPT-4o-mini 응답] ---")

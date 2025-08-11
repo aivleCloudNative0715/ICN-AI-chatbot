@@ -13,26 +13,29 @@ def immigration_policy_handler(state: ChatState) -> ChatState:
     사용자 쿼리를 기반으로 MongoDB에서 입출국 정책 정보를 검색하고 답변을 생성합니다.
     복합 질문(여러 정책 항목)도 처리할 수 있도록 개선되었습니다.
     """
-    user_query = state.get("user_input", "")
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "immigration_policy_info")
 
-    if not user_query:
+    if not query_to_process:
         print("디버그: 사용자 쿼리가 비어 있습니다.")
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
     # ⭐ LLM으로 복합 질문을 분해합니다.
-    parsed_queries = _parse_immigration_policy_query_with_llm(user_query)
+    # 📌 수정된 부분: _parse_immigration_policy_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
+    parsed_queries = _parse_immigration_policy_query_with_llm(query_to_process)
 
     search_queries = []
     if parsed_queries and parsed_queries.get("requests"):
         search_queries = [req.get("query") for req in parsed_queries["requests"]]
     
     if not search_queries:
-        search_queries = [user_query]
-        print("디버그: 복합 질문으로 파악되지 않아 전체 쿼리로 검색을 시도합니다.")
+        # 📌 수정된 부분: 복합 질문으로 파악되지 않으면, 재구성된 쿼리를 사용합니다.
+        search_queries = [query_to_process]
+        print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
 
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
     collection_name = rag_config.get("collection_name")
@@ -47,10 +50,10 @@ def immigration_policy_handler(state: ChatState) -> ChatState:
 
     all_retrieved_docs_text = []
     try:
-        # 분해된 각 질문에 대해 RAG 검색을 개별적으로 수행합니다.
         for query in search_queries:
             print(f"디버그: '{query}'에 대해 검색 시작...")
             
+            # 📌 수정된 부분: 검색을 위해 query_embedding에 query를 전달합니다.
             query_embedding = get_query_embedding(query)
             retrieved_docs_text = perform_vector_search(
                 query_embedding,
@@ -70,7 +73,8 @@ def immigration_policy_handler(state: ChatState) -> ChatState:
         context_for_llm = "\n\n".join(all_retrieved_docs_text)
         print(f"디버그: LLM에 전달될 최종 컨텍스트 길이: {len(context_for_llm)}자.")
 
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+        # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
+        final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
 
         return {**state, "response": final_response}
 
@@ -78,16 +82,19 @@ def immigration_policy_handler(state: ChatState) -> ChatState:
         error_msg = f"죄송합니다. 정보를 검색하는 중 오류가 발생했습니다: {e}"
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
-
+    
 def baggage_claim_info_handler(state: ChatState) -> ChatState:
     """
     여객기 운항 현황 상세 조회 서비스 API를 호출하여 수하물 수취대 정보를 제공하는 핸들러.
     """
     print(f"\n--- 수하물 수취 정보 핸들러 실행 ---")
-    user_query = state.get("user_input", "")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    parsed_queries = _parse_flight_baggage_query_with_llm(user_query)
+    # 📌 수정된 부분: _parse_flight_baggage_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
+    parsed_queries = _parse_flight_baggage_query_with_llm(query_to_process)
 
     if not parsed_queries or not isinstance(parsed_queries, list):
         response_text = "죄송합니다. 요청을 처리하는 중 문제가 발생했습니다. 다시 시도해 주세요."
@@ -104,7 +111,6 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
         airport_code = query.get("airport_code", "")
         
         print(f"디버그: 쿼리 정보 - {query}")
-        # --- 이 부분을 수정하세요. ---
 
         if date_offset == "unsupported" or not isinstance(date_offset, (int, float)) or not (-3 <= date_offset <= 6):
             final_responses.append(f"죄송합니다. 조회일 기준 -3일부터 +6일까지만 조회가 가능합니다.")
@@ -125,30 +131,27 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
             from_dt = now - timedelta(hours=1)
             to_dt = now + timedelta(hours=1)
 
-            # HHMM 형식의 문자열로 변환
             from_time = str(from_dt.strftime("%H%M"))
             to_time = str(to_dt.strftime("%H%M"))
         
         print(f"디버그: 검색일 - {searchday}, 편명 - {flight_id}, 시각 범위 - {from_time} ~ {to_time}, 공항 이름 - {airport_code}")
         
-        print(user_query)
+        # 📌 수정된 부분: 공항 코드 추출 시 재구성된 쿼리를 사용합니다.
         if not airport_code:
-            query_embedding = get_query_embedding(user_query)
+            query_embedding = get_query_embedding(query_to_process)
             print("디버그: 쿼리 임베딩 완료.")
 
-            # MongoDB 벡터 검색
             retrieved_docs_text = perform_vector_search(
                 query_embedding,
                 collection_name="AirportVector",
                 vector_index_name="airport_vector_index",
-                top_k=1 # 검색할 문서 개수
+                top_k=1
             )
             
             airport_code = _parse_airport_code_with_llm(retrieved_docs_text[0]) if retrieved_docs_text else None
             
         print(f"디버그: 공항 코드 - {airport_code}")
 
-        # API 호출
         params = {
             "searchday": searchday,
             "flight_id": flight_id,
@@ -157,14 +160,14 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
             "airport_code": airport_code,
         }
 
-        # None 값 제거
         clean_params = {k: v for k, v in params.items() if v is not None}
 
         arrival_info = call_arrival_flight_api(clean_params)
         
         print(f"디버그: API 호출 결과 - {arrival_info}")
         
-        llm_reponse = _generate_final_answer_with_llm(arrival_info, user_query)
+        # 📌 수정된 부분: 최종 답변 생성 시에도 재구성된 쿼리를 사용합니다.
+        llm_reponse = _generate_final_answer_with_llm(arrival_info, query_to_process)
         final_responses.append(llm_reponse)
 
     
@@ -174,12 +177,12 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
         response_text = final_responses
         
     disclaimer = (
-        "\n\n"  # 시각적 구분을 위한 줄바꿈
+        "\n\n"
         "⚠️ 주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다.\n"
         "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
     )
     if isinstance(response_text, list):
-        response_text = "\n".join(response_text)  # 리스트 → 문자열 변환
+        response_text = "\n".join(response_text)
 
     response_text += disclaimer
     
@@ -191,26 +194,29 @@ def baggage_rule_query_handler(state: ChatState) -> ChatState:
     사용자 쿼리를 기반으로 MongoDB에서 수하물 규정 정보를 검색하고 답변을 생성합니다.
     복합 질문(여러 수하물 항목)도 처리할 수 있도록 개선되었습니다.
     """
-    user_query = state.get("user_input", "")
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "baggage_rule_query")
 
-    if not user_query:
+    if not query_to_process:
         print("디버그: 사용자 쿼리가 비어 있습니다.")
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
     # ⭐ LLM으로 복합 질문을 분해합니다.
-    parsed_queries = _parse_baggage_rule_query_with_llm(user_query)
+    # 📌 수정된 부분: _parse_baggage_rule_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
+    parsed_queries = _parse_baggage_rule_query_with_llm(query_to_process)
 
     search_queries = []
     if parsed_queries and parsed_queries.get("requests"):
         search_queries = [req.get("query") for req in parsed_queries["requests"]]
     
     if not search_queries:
-        search_queries = [user_query]
-        print("디버그: 복합 질문으로 파악되지 않아 전체 쿼리로 검색을 시도합니다.")
+        # 📌 수정된 부분: 복합 질문으로 파악되지 않으면, 재구성된 쿼리를 사용합니다.
+        search_queries = [query_to_process]
+        print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
 
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
     collection_name = rag_config.get("collection_name")
@@ -225,10 +231,10 @@ def baggage_rule_query_handler(state: ChatState) -> ChatState:
 
     all_retrieved_docs_text = []
     try:
-        # 분해된 각 질문에 대해 RAG 검색을 개별적으로 수행합니다.
         for query in search_queries:
             print(f"디버그: '{query}'에 대해 검색 시작...")
             
+            # 📌 수정된 부분: 검색을 위해 query_embedding에 query를 전달합니다.
             query_embedding = get_query_embedding(query)
             retrieved_docs_text = perform_vector_search(
                 query_embedding,
@@ -248,7 +254,8 @@ def baggage_rule_query_handler(state: ChatState) -> ChatState:
         context_for_llm = "\n\n".join(all_retrieved_docs_text)
         print(f"디버그: LLM에 전달될 최종 컨텍스트 길이: {len(context_for_llm)}자.")
 
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+        # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
+        final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
 
         return {**state, "response": final_response}
 

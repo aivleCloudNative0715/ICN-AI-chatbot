@@ -14,9 +14,16 @@ def airport_congestion_prediction_handler(state: ChatState) -> ChatState:
     복합 질문을 처리하고, '하루 전체' 및 '특정 시간' 데이터를 모두 조회하도록 개선되었습니다.
     """
     print(f"\n--- 공항 혼잡도 예측 핸들러 실행 ---")
-    user_query = state.get("user_input", "")
     
-    parsed_query = _parse_query_with_llm(user_query)
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
+    
+    if not query_to_process:
+        response_text = "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."
+        return {**state, "response": response_text}
+    
+    # 📌 수정된 부분: _parse_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
+    parsed_query = _parse_query_with_llm(query_to_process)
 
     if parsed_query is None:
         response_text = "죄송합니다. 요청을 처리하는 중 문제가 발생했습니다. 다시 시도해 주세요."

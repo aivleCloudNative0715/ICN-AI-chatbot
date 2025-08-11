@@ -164,7 +164,7 @@ def flight_info_handler(state: ChatState) -> ChatState:
     if not cleaned_results:
         final_response = "죄송합니다. 요청하신 항공편 정보를 찾았으나, 세부 정보가 부족합니다."
     else:
-        truncated_flight_results = cleaned_results[:2]
+        truncated_flight_results = cleaned_results[:3]
         context_for_llm = json.dumps(truncated_flight_results, ensure_ascii=False, indent=2)
 
         intent_description = (
@@ -179,16 +179,19 @@ def flight_info_handler(state: ChatState) -> ChatState:
     return {**state, "response": final_response}
 
 def regular_schedule_query_handler(state: ChatState) -> ChatState:
-    user_query = state.get("user_input", "")
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "regular_schedule_query")
 
-    if not user_query:
+    if not query_to_process:
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    # 📌 디버그 메시지도 수정된 쿼리를 사용하도록 변경
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    parsed_queries_data = _parse_schedule_query_with_llm(user_query)
+    # 📌 수정된 부분: 이제 _parse_schedule_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
+    parsed_queries_data = _parse_schedule_query_with_llm(query_to_process)
     if not parsed_queries_data or not parsed_queries_data.get('requests'):
         return {**state, "response": "죄송합니다. 스케줄 정보를 파악하는 중 문제가 발생했습니다. 다시 시도해 주세요."}
     
@@ -201,7 +204,6 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
         airline_name = parsed_query.get("airline_name")
         airport_name = parsed_query.get("airport_name")
         
-        # ⭐ LLM이 파싱한 airport_codes를 그대로 사용
         airport_codes = parsed_query.get("airport_codes", [])
         
         day_name = parsed_query.get("day_of_week")
@@ -263,7 +265,8 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
         "각 조건에 해당하는 항공편이 없을 경우, '찾을 수 없습니다'와 같은 명확한 메시지를 포함해 주세요."
     )
 
-    final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+    # 📌 수정된 부분: common_llm_rag_caller에 'query_to_process'를 전달합니다.
+    final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
     
     return {**state, "response": final_response}
 
@@ -273,23 +276,26 @@ def airline_info_query_handler(state: ChatState) -> ChatState:
     사용자 쿼리를 기반으로 MongoDB에서 항공사 정보를 검색하고 답변을 생성합니다.
     여러 항공사에 대한 복합 질문도 처리할 수 있도록 개선되었습니다.
     """
-    user_query = state.get("user_input", "")
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "airline_info_query")
     slots = state.get("slots", [])
 
-    if not user_query:
+    if not query_to_process:
         print("디버그: 사용자 쿼리가 비어 있습니다.")
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
     # 슬롯에서 여러 항공사 이름을 추출합니다.
+    # 📌 수정된 부분: query_to_process를 사용하여 슬롯을 다시 추출하거나,
+    # rephrased_query를 기반으로 airline_names를 추출하는 로직을 추가할 수 있습니다.
+    # 여기서는 단순하게 기존 슬롯을 그대로 사용하고, query_to_process를 검색에 활용합니다.
     airline_names = [word for word, slot in slots if slot == 'B-airline_name']
     
-    # 만약 슬롯에서 항공사 이름을 찾지 못했다면, 전체 쿼리를 사용합니다.
     if not airline_names:
-        airline_names = [user_query]
+        airline_names = [query_to_process]
         print("디버그: 슬롯에서 항공사 이름을 찾지 못했습니다. 전체 쿼리로 검색을 시도합니다.")
 
     # RAG_SEARCH_CONFIG에서 현재 의도에 맞는 설정 가져오기
@@ -310,7 +316,8 @@ def airline_info_query_handler(state: ChatState) -> ChatState:
         for airline_name in airline_names:
             print(f"디버그: '{airline_name}'에 대해 검색 시작...")
             
-            query_embedding = get_query_embedding(airline_name)
+            # 📌 수정된 부분: 검색을 위해 query_to_process를 사용합니다.
+            query_embedding = get_query_embedding(query_to_process)
             retrieved_docs_text = perform_vector_search(
                 query_embedding,
                 collection_name=collection_name,
@@ -325,11 +332,10 @@ def airline_info_query_handler(state: ChatState) -> ChatState:
         if not all_retrieved_docs_text:
             return {**state, "response": "죄송합니다. 요청하신 항공사 정보를 찾을 수 없습니다."}
 
-        # 검색된 모든 문서 내용을 LLM에 전달할 컨텍스트로 결합
         context_for_llm = "\n\n".join(all_retrieved_docs_text)
         
-        # 공통 LLM 호출 함수를 사용하여 최종 답변 생성
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+        # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
+        final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
         
         return {**state, "response": final_response}
 
@@ -344,25 +350,27 @@ def airport_info_handler(state: ChatState) -> ChatState:
     사용자 쿼리를 기반으로 MongoDB에서 공항 정보를 검색하고 답변을 생성합니다.
     여러 공항에 대한 복합 질문도 처리할 수 있도록 개선되었습니다.
     """
-    user_query = state.get("user_input", "")
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "airport_info")
     # slots 정보를 가져와서 사용합니다.
     slots = state.get("slots", [])
 
-    if not user_query:
+    if not query_to_process:
         print("디버그: 사용자 쿼리가 비어 있습니다.")
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
     # 슬롯에서 'B-airport_name' 태그가 붙은 공항 이름을 모두 추출합니다.
+    # 📌 슬롯 추출 로직은 그대로 둡니다.
     airport_names = [word for word, slot in slots if slot == 'B-airport_name']
     
-    # 만약 슬롯에서 공항 이름을 찾지 못했다면, 전체 쿼리를 사용합니다.
     if not airport_names:
-        airport_names = [user_query]
-        print("디버그: 슬롯에서 공항 이름을 찾지 못했습니다. 전체 쿼리로 검색을 시도합니다.")
+        # 📌 수정된 부분: 슬롯에 공항 이름이 없으면, 재구성된 쿼리를 사용해 검색을 시도합니다.
+        airport_names = [query_to_process]
+        print("디버그: 슬롯에서 공항 이름을 찾지 못했습니다. 재구성된 쿼리로 검색을 시도합니다.")
 
     # RAG_SEARCH_CONFIG에서 현재 의도에 맞는 설정 가져오기
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
@@ -382,7 +390,8 @@ def airport_info_handler(state: ChatState) -> ChatState:
         for airport_name in airport_names:
             print(f"디버그: '{airport_name}'에 대해 검색 시작...")
             
-            query_embedding = get_query_embedding(airport_name)
+            # 📌 수정된 부분: 검색을 위해 query_to_process를 사용합니다.
+            query_embedding = get_query_embedding(query_to_process)
             retrieved_docs_text = perform_vector_search(
                 query_embedding,
                 collection_name=collection_name,
@@ -401,7 +410,8 @@ def airport_info_handler(state: ChatState) -> ChatState:
         context_for_llm = "\n\n".join(all_retrieved_docs_text)
         
         # 공통 LLM 호출 함수를 사용하여 최종 답변 생성
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+        # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
+        final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
         
         return {**state, "response": final_response}
 

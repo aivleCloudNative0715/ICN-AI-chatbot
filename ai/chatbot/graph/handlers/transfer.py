@@ -10,25 +10,25 @@ def transfer_info_handler(state: ChatState) -> ChatState:
     사용자 쿼리를 기반으로 MongoDB에서 환승 관련 일반 정보를 검색하고 답변을 생성합니다.
     여러 환승 주제에 대한 복합 질문도 처리할 수 있도록 개선되었습니다.
     """
-    user_query = state.get("user_input", "")
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "transfer_info")
-    # slots 정보를 가져와서 사용합니다.
     slots = state.get("slots", [])
 
-    if not user_query:
+    if not query_to_process:
         print("디버그: 사용자 쿼리가 비어 있습니다.")
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
     # 슬롯에서 'B-transfer_topic' 태그가 붙은 키워드를 모두 추출합니다.
     search_keywords = [word for word, slot in slots if slot == 'B-transfer_topic']
 
-    # 만약 슬롯에서 키워드를 찾지 못했다면, 전체 쿼리를 사용합니다.
     if not search_keywords:
-        search_keywords = [user_query]
-        print("디버그: 슬롯에서 환승 주제를 찾지 못했습니다. 전체 쿼리로 검색을 시도합니다.")
+        # 📌 수정된 부분: 슬롯에 키워드가 없으면, 재구성된 쿼리를 사용해 검색을 시도합니다.
+        search_keywords = [query_to_process]
+        print("디버그: 슬롯에서 환승 주제를 찾지 못했습니다. 재구성된 쿼리로 검색을 시도합니다.")
 
     # RAG_SEARCH_CONFIG에서 현재 의도에 맞는 설정 가져오기
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
@@ -44,29 +44,32 @@ def transfer_info_handler(state: ChatState) -> ChatState:
 
     all_retrieved_docs_text = []
     try:
-        # 추출된 각 키워드에 대해 RAG 검색을 개별적으로 수행합니다.
         for keyword in search_keywords:
             print(f"디버그: '{keyword}'에 대해 검색 시작...")
 
-            # 키워드 임베딩 및 벡터 검색
+            # 📌 수정된 부분: 검색을 위해 query_embedding에 keyword를 전달합니다.
             query_embedding = get_query_embedding(keyword)
             retrieved_docs_text = perform_vector_search(
                 query_embedding,
                 collection_name=collection_name,
                 vector_index_name=vector_index_name,
                 query_filter=query_filter,
-                top_k=5 # 검색할 문서 개수
+                top_k=5
             )
             all_retrieved_docs_text.extend(retrieved_docs_text)
 
         print(f"디버그: MongoDB에서 총 {len(all_retrieved_docs_text)}개 문서 검색 완료.")
+        
+        if not all_retrieved_docs_text:
+            return {**state, "response": "죄송합니다. 요청하신 환승 정보를 찾을 수 없습니다."}
 
         # 3. 검색된 문서 내용을 LLM에 전달할 컨텍스트로 결합
         context_for_llm = "\n\n".join(all_retrieved_docs_text)
         print(f"디버그: LLM에 전달될 최종 컨텍스트 길이: {len(context_for_llm)}자.")
         
         # 4. 공통 LLM 호출 함수를 사용하여 최종 답변 생성
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+        # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
+        final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
 
         return {**state, "response": final_response}
 
@@ -81,26 +84,29 @@ def transfer_route_guide_handler(state: ChatState) -> ChatState:
     사용자 쿼리를 기반으로 TransitPathVector와 ConnectionTimeVector에서 환승 경로 및 최저 환승 시간 정보를 검색하고 답변을 생성합니다.
     복합 질문(여러 출발지-도착지 쌍)도 처리할 수 있도록 개선되었습니다.
     """
-    user_query = state.get("user_input", "")
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "transfer_route_guide")
 
-    if not user_query:
+    if not query_to_process:
         print("디버그: 사용자 쿼리가 비어 있습니다.")
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
     # ⭐ LLM으로 복합 질문을 분해합니다.
-    parsed_queries = _parse_transfer_route_query_with_llm(user_query)
+    # 📌 수정된 부분: _parse_transfer_route_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
+    parsed_queries = _parse_transfer_route_query_with_llm(query_to_process)
 
     search_queries = []
     if parsed_queries and parsed_queries.get("requests"):
         search_queries = [req.get("query") for req in parsed_queries["requests"]]
     
     if not search_queries:
-        search_queries = [user_query]
-        print("디버그: 복합 질문으로 파악되지 않아 전체 쿼리로 검색을 시도합니다.")
+        # 📌 수정된 부분: 복합 질문으로 파악되지 않으면, 재구성된 쿼리를 사용합니다.
+        search_queries = [query_to_process]
+        print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
 
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
     main_collection_info = rag_config.get("main_collection", {})
@@ -119,6 +125,7 @@ def transfer_route_guide_handler(state: ChatState) -> ChatState:
         for query in search_queries:
             print(f"디버그: '{query}'에 대해 검색 시작...")
             
+            # 📌 수정된 부분: 검색을 위해 query_embedding에 query를 전달합니다.
             query_embedding = get_query_embedding(query)
             print(f"디버그: '{query}' 쿼리 임베딩 완료.")
 
@@ -154,7 +161,8 @@ def transfer_route_guide_handler(state: ChatState) -> ChatState:
 
         context_for_llm = "\n\n".join(all_retrieved_docs_text)
         print(f"디버그: LLM에 전달될 최종 컨텍스트 길이: {len(context_for_llm)}자.")
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+        # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
+        final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
 
         return {**state, "response": final_response}
 
