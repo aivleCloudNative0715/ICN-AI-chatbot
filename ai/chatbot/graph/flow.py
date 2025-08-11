@@ -41,7 +41,6 @@ def build_chat_graph():
     # LLM 검증 노드 추가
     builder.add_node("llm_verify_intent", llm_verify_intent_node)
     
-    # LLM이 검증한 최종 의도에 따라 핸들러로 라우팅하는 함수
     def route_final_intent_to_handler(state):
         final_intent = state.get("intent")
         if final_intent:
@@ -56,18 +55,18 @@ def build_chat_graph():
     def route_after_initial_classification(state: ChatState) -> str:
         top_k_intents = state.get('top_k_intents_and_probs', [])
         slots = state.get("slots", [])
-
+    
         # 1. 복합 의도 감지
         slot_groups = {
-             'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
-             'facility_info': {'B-facility_name', 'B-location_keyword'},
-             'flight_info': {'B-airline_flight', 'B-flight_status', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-arrival_type', 'B-departure_type', 'B-destination', 'B-gate', 'B-terminal'},
-             'baggage_info': {'B-baggage_type', 'B-luggage_term'},
-             'policy': {'B-document', 'B-organization', 'B-person_type', 'B-item', 'B-transfer_topic'},
-             'weather': {'B-weather_topic'},
-             'time': {'B-date', 'B-time', 'B-season', 'B-day_of_week'},
-             'general_topic': {'B-topic'},
-             'congestion': {'B-congestion_topic', 'B-congestion_status'}
+            'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
+            'facility_info': {'B-facility_name', 'B-location_keyword'},
+            'flight_info': {'B-airline_flight', 'B-flight_status', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-arrival_type', 'B-departure_type', 'B-destination', 'B-gate', 'B-terminal'},
+            'baggage_info': {'B-baggage_type', 'B-luggage_term'},
+            'policy': {'B-document', 'B-organization', 'B-person_type', 'B-item', 'B-transfer_topic'},
+            'weather': {'B-weather_topic'},
+            'time': {'B-date', 'B-time', 'B-season', 'B-day_of_week'},
+            'general_topic': {'B-topic'},
+            'congestion': {'B-congestion_topic', 'B-congestion_status'}
         }
         found_groups = set()
         for _, tag in slots:
@@ -80,10 +79,17 @@ def build_chat_graph():
         if len(specific_groups) > 1:
             print("DEBUG: 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
             return "handle_complex_intent"
-            
-        # 2. 단일 의도 신뢰도 기반 라우팅
+        
+        # 2. 단일 의도 신뢰도 기반 라우팅 (수정된 로직)
         top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
         
+        # 수정: 신뢰도와 관계없이 이전 질문 있으면 LLM으로 보내기
+        user_query = state.get("user_input", "")
+        if len(state.get("messages", [])) > 1:
+            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅")
+            return "llm_verify_intent"
+
+        # 신뢰도가 충분히 높은 경우 바로 핸들러로 이동
         if top_conf >= 0.9:
             print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
             return f"{top_intent}_handler"

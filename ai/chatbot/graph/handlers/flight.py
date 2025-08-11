@@ -25,16 +25,18 @@ load_dotenv()
 SERVICE_KEY = os.getenv("SERVICE_KEY")
 
 def flight_info_handler(state: ChatState) -> ChatState:
-    user_query = state.get("user_input", "")
+    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
+    query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "flight_info_query")
 
-    if not user_query:
+    if not query_to_process:
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    print(f"디버그: 사용자 쿼리 - '{user_query}'")
+    print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    parsed_queries = _parse_flight_query_with_llm(user_query)
+    # 📌 수정된 부분: 이제 _parse_flight_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
+    parsed_queries = _parse_flight_query_with_llm(query_to_process)
 
     if not parsed_queries or not any(q.get("flight_id") or q.get("airport_name") or q.get("departure_airport_name") for q in parsed_queries):
         return {**state, "response": "죄송합니다. 요청하신 항공편 정보를 찾을 수 없습니다."}
@@ -49,21 +51,17 @@ def flight_info_handler(state: ChatState) -> ChatState:
         direction = query.get("direction", "departure")
         schedule_time = query.get("scheduleDateTime")
 
-        # 시간 파라미터 계산을 위한 새로운 리스트
         time_to_check = []
         if schedule_time:
             try:
                 normalized_time = _normalize_time(schedule_time)
                 time_obj = datetime.strptime(normalized_time, "%H%M")
                 
-                # 오전/오후 모호성 처리: 1시~11시 사이의 시간이면 오전과 오후 모두 검색
                 if 1 <= time_obj.hour < 12:
-                    # 오전 시간
                     from_time_am = (time_obj - timedelta(hours=1)).strftime("%H%M")
                     to_time_am = (time_obj + timedelta(hours=1)).strftime("%H%M")
                     time_to_check.append({"from": from_time_am, "to": to_time_am})
                     
-                    # 오후 시간
                     time_obj_pm = time_obj + timedelta(hours=12)
                     from_time_pm = (time_obj_pm - timedelta(hours=1)).strftime("%H%M")
                     to_time_pm = (time_obj_pm + timedelta(hours=1)).strftime("%H%M")
@@ -81,7 +79,6 @@ def flight_info_handler(state: ChatState) -> ChatState:
 
         api_result = {"data": [], "total_count": 0}
         
-        # 각 시간대에 대해 API를 호출하고 결과를 합산
         for time_params in time_to_check:
             current_from_time = time_params["from"]
             current_to_time = time_params["to"]
@@ -176,10 +173,8 @@ def flight_info_handler(state: ChatState) -> ChatState:
             "응답에는 찾은 정보만 포함하고, 정보가 없는 항목은 언급하지 마세요. "
         )
         
-        if len(all_flight_results) > 2:
-            intent_description += "또한, 더 많은 결과가 있지만 2개만 보여주고 있다는 메시지를 추가해 주세요."
-
-        final_response = common_llm_rag_caller(user_query, context_for_llm, intent_description, intent_name)
+        # 📌 수정된 부분: common_llm_rag_caller에도 재구성된 쿼리를 전달합니다.
+        final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
 
     return {**state, "response": final_response}
 

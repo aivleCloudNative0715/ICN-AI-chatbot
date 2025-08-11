@@ -16,7 +16,7 @@ client = OpenAI(api_key=api_key)
 def llm_verify_intent_node(state: ChatState) -> ChatState:
     user_input = state["user_input"]
     initial_intent = state["intent"]
-    messages = state.get("messages", []) # 대화 기록 가져오기
+    messages = state.get("messages", [])
     
     supported_intents_with_desc = {
         "airport_congestion_prediction": "공항 혼잡도 예측 정보",
@@ -44,50 +44,54 @@ def llm_verify_intent_node(state: ChatState) -> ChatState:
         [f"- {k}: {v}" for k, v in supported_intents_with_desc.items() if k != "unhandled"]
     )
 
-    # --- 수정된 부분: 메시지 리스트를 messages 파라미터로 전달 ---
-    # 메시지 리스트의 마지막 대화(사용자의 현재 질문)가 아닌 전체 대화를 LLM에 전달
+    # 📌 수정된 부분: 프롬프트에 재구성된 질문(rephrased_query) 반환 지시를 추가하고,
+    #                JSON 응답 형식도 rephrased_query 키를 포함하도록 명시합니다.
+    system_prompt = f"""
+    당신은 의도 분류 전문가입니다. 이전 대화 기록을 참고하여 사용자의 마지막 질문에 대한 최종 의도를 판단하고, **질문을 이전 대화 맥락을 포함하여 명확하게 재구성하세요.**
+
+    사용 가능한 의도 목록:
+    {supported_intents_list_str}
+    
+    지침:
+    1. '예측된 의도'가 완벽하게 일치하면, 최종 의도와 함께 재구성된 질문을 반환하세요.
+    2. '예측된 의도'가 부적절하다고 판단되면, 사용 가능한 의도 목록에서 가장 적합한 의도를 찾아 새로운 의도와 함께 재구성된 질문을 반환하세요.
+    3. 어떤 의도에도 해당되지 않으면, 그대로 예측된 의도와 재구성된 질문을 반환하세요.
+    4. 절대 다른 설명이나 문장은 추가하지 말고, 오직 JSON 객체만 반환하세요.
+
+    예측된 의도: {initial_intent}
+    
+    JSON 응답: {{"final_intent": "예시_의도명", "rephrased_query": "예시_재구성된 질문"}}
+    """
+
     messages_for_llm = [
-        {"role": "system", "content": "당신은 의도 분류 전문가입니다. 질문과 예측 의도를 검증하고 최종 의도명을 JSON으로 반환합니다."},
+        {"role": "system", "content": system_prompt}
     ]
-    # 이전 대화 기록을 messages 리스트에 추가
+    # 전체 대화 기록을 `messages_for_llm`에 추가
     for msg in messages:
         if isinstance(msg, HumanMessage):
             messages_for_llm.append({"role": "user", "content": msg.content})
         elif isinstance(msg, AIMessage):
             messages_for_llm.append({"role": "assistant", "content": msg.content})
-    
-    # 마지막으로 LLM에게 검증 프롬프트와 함께 대화 기록을 전달
-    messages_for_llm.append({"role": "user", "content": f"""
-    아래 정보를 참고하여, 이전 대화 맥락을 포함한 사용자 질문에 대한 최종 의도를 판단해줘.
-    
-    사용 가능한 의도 목록:
-    {supported_intents_list_str}
-    
-    지침:
-    1. '예측된 의도'가 완벽하게 일치하면, {{"final_intent": "{initial_intent}"}}를 반환하세요.
-    2. '예측된 의도'가 부적절하다고 판단되면, 사용 가능한 의도 목록에서 가장 적합한 의도를 찾아 {{"final_intent": "새로운_의도명"}} 형식으로 반환하세요.
-    3. 어떤 의도에도 해당되지 않으면, 그대로 {{"final_intent": "{initial_intent}"}}를 반환하세요.
-    4. 절대 다른 설명이나 문장은 추가하지 말고, 오직 JSON 객체만 반환하세요.
 
-    사용자 질문: "{user_input}"
-    예측된 의도: {initial_intent}
-    
-    JSON 응답:"""})
-    # --- 수정된 부분 끝 ---
-    
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=messages_for_llm, # 수정된 메시지 리스트 전달
+            messages=messages_for_llm,
             temperature=0.1,
             response_format={"type": "json_object"}
         )
         
         result = response.choices[0].message.content
-        final_intent = json.loads(result)["final_intent"]
+        parsed_result = json.loads(result)
         
-        print(f"디버그: LLM 검증 결과, 최종 의도: {final_intent}")
-        state["intent"] = final_intent
+        final_intent = parsed_result.get("final_intent")
+        rephrased_query = parsed_result.get("rephrased_query", "")
+
+        # 📌 수정된 부분: 재구성된 질문도 state에 저장
+        if final_intent:
+            print(f"디버그: LLM 검증 결과, 최종 의도: {final_intent}, 재구성된 질문: '{rephrased_query}'")
+            state["intent"] = final_intent
+            state["rephrased_query"] = rephrased_query
         
     except Exception as e:
         print(f"디버그: LLM 의도 검증 또는 파싱 실패 - {e}")
