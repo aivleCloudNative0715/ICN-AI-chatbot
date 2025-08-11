@@ -15,7 +15,7 @@ export default function AdminPage() {
     // 실제 애플리케이션에서는 백엔드와 토큰을 검증해야 합니다.
     // 현재는 임시 로그인 시 설정된 'user_role' localStorage 값을 사용합니다.
     const userRole = localStorage.getItem('user_role');
-    if (userRole === 'admin') {
+    if (userRole === 'ADMIN' || userRole === 'SUPER') {
       setIsAdmin(true);
     } else {
       setIsAdmin(false);

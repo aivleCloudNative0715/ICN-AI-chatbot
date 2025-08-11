@@ -11,9 +11,10 @@ import { useRouter } from 'next/navigation';// useRouter 임포트
 interface ChatSidebarProps {
   isLoggedIn: boolean;
   onClose?: () => void; // 사이드바 닫기 핸들러
+  onDeleteAccount: () => void;
 }
 
-export default function ChatSidebar({ isLoggedIn, onClose }: ChatSidebarProps) {
+export default function ChatSidebar({ isLoggedIn, onClose, onDeleteAccount }: ChatSidebarProps) {
   const router = useRouter();// useRouter 훅 초기화 
   // const boardLinkRef = useRef<HTMLDivElement>(null); // 이제 직접적인 ref 대신 ID를 사용할 것임
 
@@ -26,8 +27,12 @@ export default function ChatSidebar({ isLoggedIn, onClose }: ChatSidebarProps) {
 
   // 계정 삭제 핸들러 (API-09-26034)
   const handleDeleteAccount = () => {
-    if (confirm('계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-      alert('계정이 삭제되었습니다.'); // TODO: 실제 API 호출
+    const confirmDelete = window.confirm(
+      '정말로 계정을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.\n\n삭제 후 30일 동안은 같은 아이디(이메일)로 다시 회원가입이 불가능합니다.'
+    );
+
+    if (confirmDelete) {
+      onDeleteAccount();
     }
   };
 

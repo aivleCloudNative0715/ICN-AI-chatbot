@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@stomp/stompjs": "^7.1.1",
     "next": "15.4.2",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.6",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "sockjs-client": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -22,6 +24,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sockjs-client": "^1.5.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.4.2",

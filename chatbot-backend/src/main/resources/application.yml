@@ -24,6 +24,11 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
 
   security:
     oauth2:
@@ -55,6 +60,9 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
 
+ai-server:
+  url: ${AI_SERVER_URL}
+
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -73,7 +81,7 @@ spring:
       on-profile: default
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
 ---
 
@@ -86,7 +94,7 @@ spring:
       on-profile: local-ssl
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
 server:
   port: 8443
@@ -116,4 +124,4 @@ spring:
         enabled: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate

@@ -15,6 +15,9 @@ public class ChatMessage {
     @Id
     private String id; // message_id
 
+    @Field("user_id")
+    private String userId;
+
     @Field("session_id")
     private String sessionId;
 
