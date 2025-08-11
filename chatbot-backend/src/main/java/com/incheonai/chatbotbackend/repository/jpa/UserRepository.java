@@ -29,4 +29,5 @@ public interface UserRepository extends JpaRepository<User, String> {
      */
     @Query(value = "SELECT * FROM users WHERE google_id = :googleId ORDER BY created_at DESC LIMIT 1", nativeQuery = true)
     Optional<User> findLastByGoogleIdWithDeleted(@Param("googleId") String googleId);
+    boolean existsByUserId(String userId);
 }

@@ -71,7 +71,7 @@ public class Inquiry {
         this.content = content;
         this.category = category;
         this.urgency = urgency;
-        this.status = status;
+        this.status = (status == null) ? InquiryStatus.PENDING : status;
     }
 
     // Setters for mutable fields

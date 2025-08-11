@@ -17,7 +17,8 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Integer> {
     long countByStatusAndCreatedAtBetween(InquiryStatus status, LocalDateTime start, LocalDateTime end);
 
     /** 특정 유저 ID + 상태에 따른 문의 목록 페이징 */
-    Page<Inquiry> findByUserIdAndStatusContaining(String userId, String status, Pageable pageable);
+    Page<Inquiry> findByUserIdAndStatus(String userId, String status, Pageable pageable);
+    Page<Inquiry> findByUserId(String userId, Pageable pageable);
 
     /** 사용자 ID + 문의 ID로 조회 */
     Optional<Inquiry> findByInquiryIdAndUserId(Integer inquiryId, String userId);
