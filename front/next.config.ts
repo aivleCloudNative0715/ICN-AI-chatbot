@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/lib/api";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -14,7 +15,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.API_BASE_URL}/api/:path*`,
+        destination: `${API_BASE_URL}/api/:path*`,
       },
     ];
   },
