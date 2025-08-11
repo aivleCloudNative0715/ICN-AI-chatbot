@@ -2,16 +2,17 @@
 import InquiryForm from '@/components/board/InquiryForm';
 import React from 'react';
 
-interface NewInquiryPageProps {
-  searchParams?: {
-    id?: string; // 수정 모드일 경우 문의 ID를 쿼리 파라미터로 받음
-  };
+interface PageProps {
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default function NewInquiryPage({ searchParams }: NewInquiryPageProps) {
-  const inquiryIdToEdit = searchParams?.id;
+export default function NewInquiryPage({ searchParams }: PageProps) {
+  const idParam = searchParams.id;
+
+  // 만약 idParam이 배열이면 첫 번째 요소를, 아니면 그 값을 그대로 사용합니다.
+  const inquiryId = Array.isArray(idParam) ? idParam[0] : idParam;
 
   return (
-    <InquiryForm inquiryId={inquiryIdToEdit} />
+    <InquiryForm inquiryId={inquiryId} />
   );
 }
