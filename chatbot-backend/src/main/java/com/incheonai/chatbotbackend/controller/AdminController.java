@@ -22,6 +22,7 @@ import com.incheonai.chatbotbackend.dto.InquiryDto;
 import com.incheonai.chatbotbackend.dto.KnowledgeFileDto;
 import com.incheonai.chatbotbackend.dto.StatusUpdateRequestDto;
 import com.incheonai.chatbotbackend.dto.UrgencyUpdateRequestDto;
+import com.incheonai.chatbotbackend.dto.ApiMessage;
 import com.incheonai.chatbotbackend.service.AdminService;
 import com.incheonai.chatbotbackend.service.AdminInquiryService;
 import com.incheonai.chatbotbackend.service.KnowledgeFileService;
@@ -106,20 +107,20 @@ public class AdminController {
 
     /** 문의 긴급도 수정 */
     @PatchMapping("/inquiries/{inquiry_id}/urgency")
-    public ResponseEntity<Void> updateUrgency(
+    public ResponseEntity<ApiMessage> updateUrgency(
             @PathVariable("inquiry_id") Integer inquiryId,
             @RequestBody UrgencyUpdateRequestDto request) {
         adminInquiryService.updateUrgency(inquiryId.toString(), request.urgency());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiMessage("긴급도가 수정되었습니다."));
     }
 
     /** 문의 상태 수정 */
     @PatchMapping("/inquiries/{inquiry_id}/status")
-    public ResponseEntity<Void> updateStatus(
+    public ResponseEntity<ApiMessage> updateStatus(
             @PathVariable("inquiry_id") Integer inquiryId,
             @RequestBody StatusUpdateRequestDto request) {
         adminInquiryService.updateStatus(inquiryId, request.status());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiMessage("문의 상태가 수정되었습니다."));
     }
 
     /** 답변 등록 */
@@ -134,20 +135,20 @@ public class AdminController {
 
     /** 답변 수정 */
     @PatchMapping("/inquiries/{inquiry_id}/answers/{answer_id}")
-    public ResponseEntity<Void> updateAnswer(
+    public ResponseEntity<ApiMessage> updateAnswer(
             @PathVariable("inquiry_id") Integer inquiryId,
             @PathVariable("answer_id") Integer answerId,
             @RequestBody InquiryAnswerRequestDto request) {
         adminInquiryService.updateAnswer(inquiryId, answerId, request);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiMessage("답변이 수정되었습니다."));
     }
 
     /** 문의 삭제 */
     @DeleteMapping("/inquiries/{inquiry_id}")
-    public ResponseEntity<Void> deleteInquiry(
+    public ResponseEntity<ApiMessage> deleteInquiry(
             @PathVariable("inquiry_id") Integer inquiryId) {
         adminInquiryService.deleteInquiry(inquiryId.toString());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiMessage("문의가 삭제되었습니다."));
     }
 
     /** 파일 목록 조회 */

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,22 +51,22 @@ public class InquiryController {
 
     /** 내 문의 수정 */
     @PutMapping("/{inquiryId}")
-    public ResponseEntity<Void> updateMyInquiry(
+    public ResponseEntity<Map<String, String>> updateMyInquiry(
             @RequestParam String userId,
             @PathVariable Integer inquiryId,
             @RequestBody InquiryRequestDto requestDto
     ) {
         inquiryService.updateMyInquiry(userId, inquiryId, requestDto);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("message", "문의가 수정되었습니다."));
     }
 
     /** 내 문의 삭제 */
     @DeleteMapping("/{inquiryId}")
-    public ResponseEntity<Void> deleteMyInquiry(
+    public ResponseEntity<Map<String, String>> deleteMyInquiry(
             @RequestParam String userId,
             @PathVariable Integer inquiryId
     ) {
         inquiryService.deleteMyInquiry(userId, inquiryId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(Map.of("message", "문의가 삭제되었습니다."));
     }
 }
