@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-d@a4((a7$ee25l()2qyt_)-pyp2v9ew!2ektql3c1muh#5aj3y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', "20.41.115.165", 'icnchatbotapi-cgezcfgmcmcwc4ae.koreacentral-01.azurewebsites.net', 'chatbot-ai.koreacentral.cloudapp.azure.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', "20.41.115.165", 'chatbot-ai.koreacentral.cloudapp.azure.com']
 
 
 REST_FRAMEWORK = {
