@@ -28,8 +28,14 @@ SECRET_KEY = 'django-insecure-d@a4((a7$ee25l()2qyt_)-pyp2v9ew!2ektql3c1muh#5aj3y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'icnchatbotapi-cgezcfgmcmcwc4ae.koreacentral-01.azurewebsites.net']
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
 
 # Application definition
 
