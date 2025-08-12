@@ -199,10 +199,8 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
     parsed_queries = parsed_queries_data['requests']
     
     all_retrieved_docs = []
-    not_found_messages = []
-
+    
     for parsed_query in parsed_queries:
-        # 📌 수정된 부분: 요청 연도 확인 로직
         requested_year = parsed_query.get("requested_year")
         current_year = datetime.now().year
 
@@ -217,23 +215,34 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
         time_period = parsed_query.get("time_period")
         direction = parsed_query.get('direction', '출발')
         
+        # 📌 수정된 부분: _get_schedule_from_db에 day_name을 전달
         retrieved_db_docs = _get_schedule_from_db(
             direction=direction,
             airport_codes=airport_codes, 
-            day_name=day_name,
+            day_name=day_name, # 파싱된 day_name을 전달
             time_period=time_period,
             airline_name=airline_name
         )
 
         if isinstance(retrieved_db_docs, str):
-            not_found_messages.append(f"데이터 조회 중 오류가 발생했습니다: {retrieved_db_docs}")
+            print(f"디버그: 데이터 조회 오류 - {retrieved_db_docs}")
             continue
 
-        retrieved_db_docs.sort(key=lambda x: x.get("scheduled_time", "99:99"))
-        top_5_docs = retrieved_db_docs[:5]
+        # 📌 수정된 부분: 운항 기간이 유효한 스케줄만 필터링
+        active_schedules = [
+            doc for doc in retrieved_db_docs
+            if doc.get('last_date') and doc['last_date'] >= datetime.now()
+        ]
+
+        active_schedules.sort(key=lambda x: x.get("scheduled_time", "99:99"))
+        top_5_docs = active_schedules[:5]
         
+        # 📌 수정된 부분: 데이터가 없으면 빈 리스트를 추가하여 LLM이 처리하도록 함
         if not top_5_docs:
-            not_found_messages.append(f"죄송합니다. '{airport_name}'에서 오는 {day_name} {time_period} {direction} 스케줄 정보를 찾을 수 없습니다.")
+            query_meta = {
+                "query_info": { "airport": airport_name, "day": day_name, "direction": direction },
+                "schedules": []
+            }
         else:
             sanitized_schedules = []
             for doc in top_5_docs:
@@ -256,12 +265,12 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
                 },
                 "schedules": sanitized_schedules
             }
-            all_retrieved_docs.append(query_meta)
+        
+        all_retrieved_docs.append(query_meta)
 
+    # 📌 수정된 부분: all_retrieved_docs가 비어있을 때만 오류 메시지 반환
     if not all_retrieved_docs:
-        final_response_text = "\n".join(not_found_messages)
-        if not final_response_text:
-            final_response_text = "죄송합니다. 요청하신 조건에 맞는 정보를 찾을 수 없습니다."
+        final_response_text = "죄송합니다. 요청하신 조건에 맞는 정보를 찾을 수 없습니다."
         return {**state, "response": final_response_text}
     
     context_for_llm = json.dumps(all_retrieved_docs, ensure_ascii=False, indent=2)
