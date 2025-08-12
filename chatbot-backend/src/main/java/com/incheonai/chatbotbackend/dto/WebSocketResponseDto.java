@@ -2,6 +2,7 @@
 
 package com.incheonai.chatbotbackend.dto;
 
+import com.incheonai.chatbotbackend.domain.mongodb.ChatMessage;
 import com.incheonai.chatbotbackend.domain.mongodb.MessageType;
 import com.incheonai.chatbotbackend.domain.mongodb.SenderType;
 import lombok.Builder;
@@ -28,4 +29,21 @@ public class WebSocketResponseDto {
     private MessageType messageType;
 
     private LocalDateTime createdAt;
+
+    /**
+     * ChatMessage 엔티티를 WebSocketResponseDto로 변환하는 정적 팩토리 메소드
+     * @param entity 변환할 ChatMessage 객체
+     * @return 변환된 WebSocketResponseDto 객체
+     */
+    public static WebSocketResponseDto from(ChatMessage entity) {
+        return WebSocketResponseDto.builder()
+                .messageId(entity.getId())
+                .userMessageId(entity.getParentId()) // ChatMessage의 parentId가 userMessageId에 해당
+                .sessionId(entity.getSessionId())
+                .sender(entity.getSender())
+                .content(entity.getContent())
+                .messageType(entity.getMessageType())
+                .createdAt(entity.getCreatedAt())
+                .build();
+    }
 }
