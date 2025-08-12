@@ -21,7 +21,8 @@ public class WebConfig {
                         .allowedOrigins(frontendUrl)
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowCredentials(true); // 이게 필요한 경우에만 추가
+                        .allowCredentials(true) // 쿠키/인증 정보 포함을 허용하는 핵심 설정
+                        .maxAge(3600);
             }
         };
     }

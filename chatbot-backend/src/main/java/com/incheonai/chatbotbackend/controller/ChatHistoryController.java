@@ -44,7 +44,7 @@ public class ChatHistoryController {
 
     /**
      * 채팅 내역 초기화
-     * POST /chat/history/reset (상태를 변경하므로 POST가 더 적합합니다)
+     * POST /chat/history/reset
      */
     @PostMapping("/history/reset")
     public ResponseEntity<Map<String, Object>> resetChatHistory(@RequestBody Map<String, String> payload) {
