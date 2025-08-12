@@ -46,21 +46,21 @@ def flight_info_handler(state: ChatState) -> ChatState:
         airline_name = query.get("airline_name")
         departure_airport_name = query.get("departure_airport_name")
         direction = query.get("direction", "departure")
+        terminal = query.get("terminal") # 📌 수정된 부분: 터미널 정보 추가
         
         from_time = query.get("from_time")
         to_time = query.get("to_time")
         
         if from_time and to_time and from_time == to_time:
             time_obj = datetime.strptime(from_time, "%H%M")
-            from_time = (time_obj - timedelta(hours=2)).strftime("%H%M")
-            to_time = (time_obj + timedelta(hours=2)).strftime("%H%M")
+            from_time = (time_obj - timedelta(hours=0)).strftime("%H%M")
+            to_time = (time_obj + timedelta(hours=3)).strftime("%H%M")
             
         if not from_time and not to_time:
             from_time = datetime.now().strftime("%H%M")
             to_time = "2359"
             print(f"디버그: 특정 시간 언급이 없어 현재 시각({from_time}) 이후로 검색합니다.")
         
-        # 📌 수정된 부분: date_offset을 사용하여 날짜 계산
         date_offset = query.get("date_offset", 0)
         search_date = datetime.now() + timedelta(days=date_offset)
         search_date_str = search_date.strftime("%Y%m%d")
@@ -137,6 +137,16 @@ def flight_info_handler(state: ChatState) -> ChatState:
                 airline_name=airline_name,
                 departure_airport_name=departure_airport_name
             )
+
+        # 📌 수정된 부분: 터미널 정보를 활용한 필터링 로직 추가
+        if terminal:
+            # P01은 제1터미널, P03은 제2터미널에 해당합니다.
+            # 터미널 값에 따라 API 응답을 필터링합니다.
+            terminal_code = "P01" if terminal == "T1" else "P03"
+            retrieved_info = [
+                info for info in retrieved_info if info.get("터미널") == terminal_code
+            ]
+            print(f"디버그: '{terminal}'으로 필터링 완료. 남은 항목 수: {len(retrieved_info)}")
 
         if not retrieved_info:
             continue

@@ -30,6 +30,7 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "- `to_time`: 검색 종료 시간 (HHMM 형식). '오후 7시 이후'는 '2359', '오전 8시 이전'은 '0800', '오전 8시'는 '0800'으로 추출해줘. 시간 정보가 없으면 null로 추출해줘.\n"
         "- `info_type`: 사용자가 얻고자 하는 정보의 유형 (예: '체크인 카운터', '탑승구', '운항 정보'). 정보가 없으면 '운항 정보'로 추출해줘.\n"
         "- `date_offset`: '오늘'이면 0, '내일'이면 1, '모레'이면 2, '어제'면 -1처럼 오늘을 기준으로 한 날짜 차이를 정수로 추출해줘. 정보가 없으면 0으로 추출해줘.\n"
+        "- `terminal`: 사용자가 요청한 터미널 정보. '1터미널' 또는 '제1터미널'은 'T1'으로, '2터미널' 또는 '제2터미널'은 'T2'로 추출해줘. 정보가 없으면 null로 추출해줘.\n" # 📌 수정된 부분
         
         "지침: "
         "1. **시간 모호성**: '3시 반'처럼 모호한 시간은, 오전과 오후를 모두 포함하는 2개의 독립된 요청으로 분리해서 반환해줘. 각 요청에는 from_time과 to_time이 동일하게 추출돼야 해.\n"
@@ -40,13 +41,11 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "응답 시 다른 설명 없이 오직 JSON 객체만 반환해야 해."
         "\n\n예시: "
         "사용자: 오늘 뉴욕가는거 오후 2시 이후에 어떤거 있어?"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"뉴욕\", \"airport_codes\": [\"JFK\", \"LGA\", \"EWR\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"1400\", \"to_time\": \"2359\", \"info_type\": \"운항 정보\", \"date_offset\": 0}]}```"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"뉴욕\", \"airport_codes\": [\"JFK\", \"LGA\", \"EWR\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"1400\", \"to_time\": \"2359\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
         "사용자: 인천 도착하는 3시 반 비행기"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"arrival\", \"from_time\": \"0330\", \"to_time\": \"0330\", \"info_type\": \"운항 정보\", \"date_offset\": 0}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"도착\", \"from_time\": \"1530\", \"to_time\": \"1530\", \"info_type\": \"운항 정보\", \"date_offset\": 0}]}```"
-        "사용자: 오늘 저녁 8시 이전에 출발하는 일본행 비행기 있어?"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"일본\", \"airport_codes\": [\"NRT\", \"HND\", \"KIX\", \"FUK\", \"CTS\", \"OKA\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"0000\", \"to_time\": \"2000\", \"info_type\": \"운항 정보\", \"date_offset\": 0}]}```"
-        "사용자: 내일 오후 2시쯤 뉴욕 가는 비행기"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"뉴욕\", \"airport_codes\": [\"JFK\", \"LGA\", \"EWR\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"1400\", \"to_time\": \"1400\", \"info_type\": \"운항 정보\", \"date_offset\": 1}]}```"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"arrival\", \"from_time\": \"0330\", \"to_time\": \"0330\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"도착\", \"from_time\": \"1530\", \"to_time\": \"1530\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
+        "사용자: 1터미널 9시 비행기 알려줘"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"0900\", \"to_time\": \"0900\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": \"T1\"}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"2100\", \"to_time\": \"2100\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": \"T1\"}]}```"
     )
 
     messages = [
