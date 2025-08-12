@@ -20,10 +20,11 @@ interface LoginResponseData {
 
 interface RegisterFormProps {
   // 성공 콜백의 파라미터 타입을 LoginResponseData로 변경
-  onRegisterSuccess: (data: LoginResponseData) => void;
+  onRegisterSuccess: (data: any) => void;
+  anonymousSessionId: string | null;
 }
 
-export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
+export default function RegisterForm({ onRegisterSuccess, anonymousSessionId }: RegisterFormProps) {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -118,6 +119,11 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
       alert('네트워크 오류가 발생했습니다.');
     }
   };
+
+  // ✅ Google 로그인 URL 동적 생성
+    const googleLoginUrl = anonymousSessionId
+      ? `${API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
+      : `${API_BASE_URL}/api/auth/oauth2/start`;
 
   return (
     <form onSubmit={handleRegister} className="p-fluid">
@@ -222,7 +228,7 @@ export default function RegisterForm({ onRegisterSuccess }: RegisterFormProps) {
 
       {/* "Google로 계속하기" 버튼 스타일 적용 */}
       {/* a 태그로 감싸서 백엔드 OAuth2 로그인 URL로 이동시킵니다. */}
-      <a href={`${API_BASE_URL}/api/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
+      <a href={googleLoginUrl} style={{ textDecoration: 'none' }}>
         <Button
           type="button" // form submit을 방지하기 위해 type="button"으로 설정
           pt={{

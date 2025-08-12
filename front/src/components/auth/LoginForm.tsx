@@ -60,7 +60,7 @@ export default function LoginForm({ onLoginSuccess, anonymousSessionId }: LoginF
           console.log("세션 마이그레이션을 위해 익명 세션 ID를 포함하여 로그인 요청:", anonymousSessionId);
         }
 
-        const response = await fetch(`}/api/auth/login`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(requestBody),
@@ -84,6 +84,13 @@ export default function LoginForm({ onLoginSuccess, anonymousSessionId }: LoginF
       }
     }
   };
+
+  // ✅ Google 로그인 URL을 동적으로 생성
+  const googleLoginUrl = anonymousSessionId
+    ? `${API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
+    : `${API_BASE_URL}/api/auth/oauth2/start`;
+
+  console.log(googleLoginUrl)
 
   return (
     <form onSubmit={handleSubmit} className="p-fluid">
@@ -171,7 +178,7 @@ export default function LoginForm({ onLoginSuccess, anonymousSessionId }: LoginF
 
       {/* "Google로 계속하기" 버튼 스타일 적용 */}
       {/* a 태그로 감싸서 백엔드 OAuth2 로그인 URL로 이동시킵니다. */}
-      <a href={`${API_BASE_URL}/api/oauth2/authorization/google`} style={{ textDecoration: 'none' }}>
+      <a href={googleLoginUrl} style={{ textDecoration: 'none' }}>
         <Button
           type="button" // form submit을 방지하기 위해 type="button"으로 설정
           pt={{

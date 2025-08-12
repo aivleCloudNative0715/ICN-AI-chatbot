@@ -21,7 +21,7 @@ interface WebSocketMessageDto {
   parentId: string | null;
 }
 
-interface WebSocketResponseDto {
+export interface WebSocketResponseDto {
   messageId: string;
   userMessageId: string | null;
   sessionId: string;
@@ -34,15 +34,26 @@ interface WebSocketResponseDto {
 interface ChatBotScreenProps {
   isLoggedIn: boolean;
   sessionId: string | null;
+  // 부모로부터 초기 채팅 내역을 받을 prop
+  initialHistory: WebSocketResponseDto[];
 }
 
-export default function ChatBotScreen({ sessionId }: ChatBotScreenProps) {
+export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScreenProps) {
   const stompClientRef = useRef<Client | null>(null);
-  const [chatMessages, setChatMessages] = useState<WebSocketResponseDto[]>([]);
+  // 채팅 메시지 상태의 초기값을 부모에게서 받은 initialHistory로 설정
+  const [chatMessages, setChatMessages] = useState<WebSocketResponseDto[]>(initialHistory);
   const [messageInputValue, setMessageInputValue] = useState('');
   const [flightNumberInputValue, setFlightNumberInputValue] = useState('');
   const [recommendedQuestions, setRecommendedQuestions] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+
+  /**
+   * 부모로부터 받은 initialHistory가 변경될 때마다(예: 로그아웃) 
+   * 화면의 채팅 메시지 목록을 업데이트하기 위한 useEffect를 추가합니다.
+   */
+  useEffect(() => {
+    setChatMessages(initialHistory);
+  }, [initialHistory]);
 
   // 웹소켓 연결 및 구독 로직
   useEffect(() => {
@@ -203,7 +214,7 @@ export default function ChatBotScreen({ sessionId }: ChatBotScreenProps) {
               message={{
                  messageId: msg.messageId,
                  content: msg.content,
-                 sender: msg.sender,
+                sender: msg.sender as 'user' | 'chatbot',
                  userMessageId: msg.userMessageId
               }}
               onEdit={handleEditMessage}

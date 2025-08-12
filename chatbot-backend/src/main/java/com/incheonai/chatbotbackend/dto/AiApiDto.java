@@ -49,9 +49,6 @@ public class AiApiDto {
         private String messageId;
 
         private String content; // JSON 키와 필드명이 동일
-
-        @JsonProperty("user_id")
-        private String userId;
     }
 
     /**

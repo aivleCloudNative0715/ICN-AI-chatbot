@@ -1,5 +1,6 @@
 package com.incheonai.chatbotbackend.service;
 
+import com.incheonai.chatbotbackend.config.oauth.CustomOAuth2User;
 import com.incheonai.chatbotbackend.domain.jpa.User;
 import com.incheonai.chatbotbackend.dto.oauth.OAuthAttributes;
 import com.incheonai.chatbotbackend.exception.BusinessException;
@@ -41,10 +42,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         User user = saveOrUpdate(attributes);
 
-        return new DefaultOAuth2User(
+        // ✅ DefaultOAuth2User 대신 CustomOAuth2User를 생성하여 반환합니다.
+        //    이제 이 객체 안에는 DB에서 조회/저장한 User 엔티티 정보가 포함됩니다.
+        return new CustomOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes.getAttributes(),
-                attributes.getNameAttributeKey()
+                attributes.getNameAttributeKey(),
+                user // User 객체를 함께 전달
         );
     }
 
