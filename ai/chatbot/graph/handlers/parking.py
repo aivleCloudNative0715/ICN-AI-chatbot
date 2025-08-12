@@ -177,12 +177,6 @@ def parking_location_recommendation_handler(state: ChatState) -> ChatState:
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
 
-common_disclaimer = (
-            "\n\n---"
-            "\n주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
-            "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
-        )    
-
 def parking_availability_query_handler(state: ChatState) -> ChatState:
     """
     'parking_availability_query' 의도에 대한 RAG 기반 핸들러.
@@ -229,9 +223,14 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
             "사용자 질문에 다음 정보를 바탕으로 답변해주세요.\n"
             "사용자 질문: {user_query}\n"
             "검색된 정보: {items}\n"
-            "T1은 인천국제공항 제1여객터미널, T2는 제2여객터미널입니다."
-            "datetmp은 YYYY-MM-DD HH:MM:SS 형식입니다. 주차장 상태를 마지막으로 확인한 시간입니다. 이것을 가장 먼저 언급하세요."
-            "주차장 이용 가능 여부를 알려주세요. 주차장 이름과 현재 이용 가능 여부를 포함하세요. 사용자가 보기 좋은 형태로 출력하세요."
+            "T1은 인천국제공항 제1여객터미널, T2는 제2여객터미널입니다. "
+            "datetmp은 YYYY-MM-DD HH:MM:SS 형식입니다. 주차장 상태를 마지막으로 확인한 시간입니다. 이 시간을 가장 먼저 언급하세요. "
+            "주차장 이용 가능 여부를 알려주세요. 주차장 이름과 현재 이용 가능 여부를 포함하세요. 사용자가 보기 좋은 형태로 출력하세요.\n"
+            "\n"
+            "**지침: 답변에서 중요한 정보나 키워드는 Markdown의 볼드체(`**키워드**`)를 사용하여 강조해줘.**"
+            "**주차장별 정보를 나열할 경우, 각 주차장을 번호가 있는 목록(`1. 2. 3. ...`)으로 구분하고,** "
+            "**각 항목 안에서도 정보들을 깔끔하게 줄바꿈하여 보여줘.**"
+            "**예를 들어, `- 주차장 이름: [이름]`처럼 구체적인 형식을 지켜서 정리해줘.**"
         )
         
         # 📌 수정된 부분: formatted_prompt에 query_to_process를 전달
@@ -243,13 +242,11 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
                 {"role": "user", "content": formatted_prompt}
             ],
             temperature=0.5,
-            max_tokens=500
+            max_tokens=600
         )
         final_response_text = llm_response.choices[0].message.content
         print(f"\n--- [GPT-4o-mini 응답] ---")
         print(final_response_text)
-
-        final_response = final_response_text + common_disclaimer
         
     except requests.RequestException as e:
         print(f"디버그: API 호출 중 오류 발생 - {e}")
@@ -258,7 +255,7 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
         print(f"디버그: 응답 처리 중 오류 발생 - {e}")
         final_response = "주차장 현황 정보를 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
 
-    return {**state, "response": final_response}
+    return {**state, "response": final_response_text}
 
 def parking_walk_time_info_handler(state: ChatState) -> ChatState:
     """
