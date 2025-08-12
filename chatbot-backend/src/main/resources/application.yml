@@ -76,6 +76,9 @@ super:
     password: ${SUPER_ADMIN_PASSWORD}
     name: ${SUPER_ADMIN_NAME}
 
+file:
+  upload-dir: ${FILE_DIR}
+
 ---
 
 # ======================================================
@@ -130,4 +133,4 @@ spring:
         enabled: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
