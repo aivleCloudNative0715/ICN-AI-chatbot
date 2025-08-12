@@ -27,9 +27,6 @@ spring:
     hibernate:
       ddl-auto: validate
 
-  flyway:
-    enabled: true
-
   security:
     oauth2:
       client:
@@ -72,6 +69,12 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     display-request-duration: true
+
+super:
+  admin:
+    id: ${SUPER_ADMIN_ID}
+    password: ${SUPER_ADMIN_PASSWORD}
+    name: ${SUPER_ADMIN_NAME}
 
 ---
 
