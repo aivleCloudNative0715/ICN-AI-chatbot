@@ -61,50 +61,18 @@ def build_chat_graph():
             print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅")
             return "llm_verify_intent"
 
-        # 1. 단일 의도 신뢰도 기반 라우팅을 먼저 수행
-        top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
-        
-        # 📌 수정된 로직: 의도 간 확신도 차이로 모호성 판단
-        second_intent_conf = top_k_intents[1][1] if len(top_k_intents) > 1 else 0.0
-        confidence_difference = top_conf - second_intent_conf
-        
-        # 상위 의도의 확신도가 0.85 이상이고, 2위와의 점수 차이가 0.15 이상이면 단일 의도로 간주
-        # 이 임계값(threshold)은 필요에 따라 조정 가능
-        if top_conf >= 0.85 and confidence_difference >= 0.15:
-            print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
-            return f"{top_intent}_handler"
-        
-        # 2. 복합 의도 감지
-        slot_groups = {
-            'parking_fee_info': {'B-parking_type', 'B-parking_lot', 'B-fee_topic', 'B-vehicle_type', 'B-payment_method'},
-            'parking_availability_query': {'B-parking_type', 'B-parking_lot', 'B-availability_status'},
-            'parking_location_recommendation': {'B-parking_lot', 'B-location_keyword'},
-            'parking_congestion_prediction': {'B-congestion_topic'},
-            'flight_info': {'B-airline_flight', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-destination', 'B-departure_airport', 'B-arrival_airport', 'B-gate', 'B-flight_status'},
-            'airline_info_query': {'B-airline_name', 'B-airline_info'},
-            'baggage_claim_info': {'B-luggage_term', 'B-baggage_issue'},
-            'baggage_rule_query': {'B-baggage_type', 'B-rule_type', 'B-item'},
-            'facility_guide': {'B-facility_name', 'B-location_keyword'},
-            'airport_info': {'B-airport_name', 'B-airport_code'},
-            'immigration_policy': {'B-organization', 'B-person_type', 'B-rule_type', 'B-document'},
-            'transfer_info': {'B-transfer_topic'},
-            'transfer_route_guide': {'B-transfer_topic'},
-            'airport_weather_current': {'B-weather_topic'},
-            'airport_congestion_prediction': {'B-congestion_topic'},
-            'time_general': {'B-date', 'B-time', 'B-vague_time', 'B-season', 'B-day_of_week', 'B-relative_time', 'B-minute', 'B-hour', 'B-time_period'},
-            'general_topic': {'B-topic'}
-        }
-        found_groups = set()
-        for _, tag in slots:
-            if tag.startswith('B-'):
-                for group_name, tags in slot_groups.items():
-                    if tag in tags:
-                        found_groups.add(group_name)
-        
-        specific_groups = found_groups - {'general_topic'}
-        if len(specific_groups) > 1:
-            print("DEBUG: 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
+        # 1. 복합 의도 감지 (classify_intent에서 이미 판별됨)
+        if state.get("is_multi_intent", False) or state.get("intent") == "complex_intent":
+            detected_intents = [intent for intent, _ in state.get("detected_intents", [])]
+            print(f"복합 의도 감지: {detected_intents} -> handle_complex_intent로 라우팅")
             return "handle_complex_intent"
+            
+        # 2. 단일 의도인 경우 직접 핸들러로 라우팅
+        intent = state.get("intent")
+        if intent and intent != "complex_intent":
+            handler_name = f"{intent}_handler"
+            print(f"DEBUG: 단일 의도 감지 -> {handler_name}로 라우팅")
+            return handler_name
             
         # 3. 신뢰도가 낮거나 모호한 경우 LLM 재확인
         print("DEBUG: 낮은 신뢰도 또는 모호한 의도 감지 -> llm_verify_intent로 라우팅")

@@ -23,7 +23,7 @@ def transfer_info_handler(state: ChatState) -> ChatState:
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
     # 슬롯에서 'B-transfer_topic' 태그가 붙은 키워드를 모두 추출합니다.
-    search_keywords = [word for word, slot in slots if slot == 'B-transfer_topic']
+    search_keywords = [word for word, slot in slots if slot == ['B-transfer_topic', 'I-transfer_topic']]
 
     if not search_keywords:
         # 📌 수정된 부분: 슬롯에 키워드가 없으면, 재구성된 쿼리를 사용해 검색을 시도합니다.
