@@ -54,7 +54,7 @@ def facility_guide_handler(state: ChatState) -> ChatState:
                 collection_name=collection_name,
                 vector_index_name=vector_index_name,
                 query_filter=query_filter,
-                top_k=20 # 📌 더 많은 문서를 가져오기 위해 top_k를 높게 설정
+                top_k=10 # 📌 더 많은 문서를 가져오기 위해 top_k를 높게 설정
             )
             all_retrieved_docs_text.extend(retrieved_docs_text)
             
@@ -67,7 +67,15 @@ def facility_guide_handler(state: ChatState) -> ChatState:
         if not final_context:
             return {**state, "response": "죄송합니다. 요청하신 시설 정보를 찾을 수 없습니다."}
             
-        final_response = common_llm_rag_caller(query_to_process, final_context, intent_description, intent_name)
+        final_docs_list = final_context.split('\n\n')
+        truncated_docs_list = final_docs_list[:5]
+        
+        # 다시 문자열로 합쳐서 LLM에 전달합니다.
+        final_context_truncated = "\n\n".join(truncated_docs_list)
+        
+        print(f"디버그: 최종 답변 생성을 위해 {len(truncated_docs_list)}개 문서만 사용합니다.")
+
+        final_response = common_llm_rag_caller(query_to_process, final_context_truncated, intent_description, intent_name)
 
     except Exception as e:
         error_msg = f"죄송합니다. 정보를 검색하는 중 오류가 발생했습니다: {e}"

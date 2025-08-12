@@ -106,30 +106,17 @@ def _parse_schedule_query_with_llm(user_query: str) -> dict | None:
         "- `day_of_week`: 요일 (예: '월요일', '오늘'). 요일 정보가 없으면 '오늘'로 간주해줘.\n"
         "- `direction`: 운항 방향 ('도착' 또는 '출발'). 정보가 없으면 '출발'로 간주해줘.\n"
         "- `time_period`: 시간대 (예: '오전', '오후', '저녁', '새벽'). 정보가 없으면 null로 추출해줘.\n"
+        "- `requested_year`: 사용자가 요청한 연도. '내년'은 현재 연도 + 1, '작년'은 현재 연도 - 1, '2026년'은 2026과 같이 정수로 추출해줘. 정보가 없으면 현재 연도(`{}`)를 추출해줘.\n" # 📌 수정된 부분
         "응답 시 다른 설명 없이 오직 JSON 리스트만 반환해야 해."
-        "\n\n응답 형식: "
-        "```json"
-        "{"
-        "  \"requests\": ["
-        "     {{"
-        "        \"airline_name\": \"[항공사명 (string), 없으면 null]\", "
-        "        \"airport_name\": \"[공항명 (string), 없으면 null]\", "
-        "        \"airport_codes\": [\"[IATA 코드 리스트]\"], "
-        "        \"day_of_week\": \"[요일 (string), 없으면 '오늘']\", "
-        "        \"direction\": \"[도착|출발]\", "
-        "        \"time_period\": \"[오전|오후|저녁|새벽|null]\""
-        "     }}"
-        "  ]"
-        "}"
-        "```"
+        f"\n\n응답 형식: ```json\n{{\"requests\": [{{\"[필드1]\": \"[값1]\", \"[필드2]\": \"[값2]\", ...}}]}}```"
         "\n\n예시: "
         "사용자: 일요일에 일본에서 오는거 있어?"
-        "응답: ```json\n{\"requests\": [{\"airline_name\": null, \"airport_name\": \"일본\", \"airport_codes\": [\"NRT\", \"HND\", \"KIX\", \"FUK\", \"CTS\", \"OKA\"], \"day_of_week\": \"일요일\", \"direction\": \"도착\", \"time_period\": null}]}```"
+        "응답: ```json\n{\"requests\": [{\"airline_name\": null, \"airport_name\": \"일본\", \"airport_codes\": [\"NRT\", \"HND\", \"KIX\", \"FUK\", \"CTS\", \"OKA\"], \"day_of_week\": \"일요일\", \"direction\": \"도착\", \"time_period\": null, \"requested_year\": 2025}]}```"
         "사용자: 대한항공 월요일 하노이 도착 스케줄"
-        "응답: ```json\n{\"requests\": [{\"airline_name\": \"대한항공\", \"airport_name\": \"하노이\", \"airport_codes\": [\"HAN\"], \"day_of_week\": \"월요일\", \"direction\": \"도착\", \"time_period\": null}]}```"
-        "사용자: 일요일 도쿄행이랑 월요일 오사카행 스케줄"
-        "응답: ```json\n{\"requests\": [{\"airline_name\": null, \"airport_name\": \"도쿄\", \"airport_codes\": [\"NRT\", \"HND\"], \"day_of_week\": \"일요일\", \"direction\": \"출발\", \"time_period\": null}, {\"airline_name\": null, \"airport_name\": \"오사카\", \"airport_codes\": [\"KIX\", \"ITM\"], \"day_of_week\": \"월요일\", \"direction\": \"출발\", \"time_period\": null}]}```"
-    )
+        "응답: ```json\n{\"requests\": [{\"airline_name\": \"대한항공\", \"airport_name\": \"하노이\", \"airport_codes\": [\"HAN\"], \"day_of_week\": \"월요일\", \"direction\": \"도착\", \"time_period\": null, \"requested_year\": 2025}]}```"
+        "사용자: 내년 일요일 도쿄행 스케줄"
+        "응답: ```json\n{\"requests\": [{\"airline_name\": null, \"airport_name\": \"도쿄\", \"airport_codes\": [\"NRT\", \"HND\"], \"day_of_week\": \"일요일\", \"direction\": \"출발\", \"time_period\": null, \"requested_year\": 2026}]}```" # 📌 수정된 부분
+    ).format(datetime.now().year)
 
     messages = [
         {"role": "system", "content": prompt_content},

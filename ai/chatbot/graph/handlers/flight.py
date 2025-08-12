@@ -183,7 +183,6 @@ def flight_info_handler(state: ChatState) -> ChatState:
     return {**state, "response": final_response}
 
 def regular_schedule_query_handler(state: ChatState) -> ChatState:
-    # 📌 수정된 부분: rephrased_query를 먼저 확인하고, 없으면 user_input을 사용합니다.
     query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "regular_schedule_query")
 
@@ -191,10 +190,8 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
 
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
-    # 📌 디버그 메시지도 수정된 쿼리를 사용하도록 변경
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # 📌 수정된 부분: 이제 _parse_schedule_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
     parsed_queries_data = _parse_schedule_query_with_llm(query_to_process)
     if not parsed_queries_data or not parsed_queries_data.get('requests'):
         return {**state, "response": "죄송합니다. 스케줄 정보를 파악하는 중 문제가 발생했습니다. 다시 시도해 주세요."}
@@ -205,11 +202,17 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
     not_found_messages = []
 
     for parsed_query in parsed_queries:
+        # 📌 수정된 부분: 요청 연도 확인 로직
+        requested_year = parsed_query.get("requested_year")
+        current_year = datetime.now().year
+
+        if requested_year and requested_year != current_year:
+            response_text = f"죄송합니다. {requested_year}년 운항 스케줄은 아직 확정되지 않았습니다. 현재는 올해({current_year}년) 정보만 제공 가능합니다."
+            return {**state, "response": response_text}
+            
         airline_name = parsed_query.get("airline_name")
         airport_name = parsed_query.get("airport_name")
-        
         airport_codes = parsed_query.get("airport_codes", [])
-        
         day_name = parsed_query.get("day_of_week")
         time_period = parsed_query.get("time_period")
         direction = parsed_query.get('direction', '출발')
@@ -269,7 +272,6 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
         "각 조건에 해당하는 항공편이 없을 경우, '찾을 수 없습니다'와 같은 명확한 메시지를 포함해 주세요."
     )
 
-    # 📌 수정된 부분: common_llm_rag_caller에 'query_to_process'를 전달합니다.
     final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
     
     return {**state, "response": final_response}
