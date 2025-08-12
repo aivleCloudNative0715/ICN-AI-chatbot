@@ -177,12 +177,6 @@ def parking_location_recommendation_handler(state: ChatState) -> ChatState:
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
 
-common_disclaimer = (
-            "\n\n---"
-            "\n주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
-            "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
-        )    
-
 def parking_availability_query_handler(state: ChatState) -> ChatState:
     """
     'parking_availability_query' 의도에 대한 RAG 기반 핸들러.
@@ -253,8 +247,6 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
         final_response_text = llm_response.choices[0].message.content
         print(f"\n--- [GPT-4o-mini 응답] ---")
         print(final_response_text)
-
-        final_response = final_response_text + common_disclaimer
         
     except requests.RequestException as e:
         print(f"디버그: API 호출 중 오류 발생 - {e}")
@@ -263,7 +255,7 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
         print(f"디버그: 응답 처리 중 오류 발생 - {e}")
         final_response = "주차장 현황 정보를 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
 
-    return {**state, "response": final_response}
+    return {**state, "response": final_response_text}
 
 def parking_walk_time_info_handler(state: ChatState) -> ChatState:
     """

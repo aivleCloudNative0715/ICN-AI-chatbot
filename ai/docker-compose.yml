@@ -2,7 +2,7 @@ version: '3'
 
 services:
   web:
-    image: meatcarrot/chatbot:250811
+    image: meatcarrot/chatbot:250812
     env_file:
       - .env
     command: gunicorn chatbot_core.wsgi:application --bind 0.0.0.0:8000 --workers 6 --timeout 120
