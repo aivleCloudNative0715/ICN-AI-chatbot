@@ -39,7 +39,7 @@ export default function AuthModal({ onClose, initialMode = 'login', onLoginSucce
     <Modal isOpen={true} onClose={onClose} title={isRegisterMode ? '회원가입' : '로그인'}>
       {isRegisterMode ? (
         // 회원가입 성공 시 onLoginSuccess를 직접 호출
-        <RegisterForm onRegisterSuccess={onLoginSuccess} />
+        <RegisterForm onRegisterSuccess={onLoginSuccess} anonymousSessionId={anonymousSessionId}/>
       ) : (
         // 로그인 폼에 익명 세션 ID 전달
         <LoginForm onLoginSuccess={onLoginSuccess} anonymousSessionId={anonymousSessionId} />
