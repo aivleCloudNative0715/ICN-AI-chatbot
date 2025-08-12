@@ -17,6 +17,11 @@ def llm_verify_intent_node(state: ChatState) -> ChatState:
     user_input = state["user_input"]
     initial_intent = state["intent"]
     messages = state.get("messages", [])
+    current_slots = state.get("slots", [])
+
+    # ✅ 추가된 로직: 현재 슬롯을 다음 턴에서 사용할 수 있도록 previous_slots에 저장
+    if current_slots:
+        state["previous_slots"] = current_slots
     
     supported_intents_with_desc = {
         "airport_congestion_prediction": "공항 혼잡도 예측 정보",
@@ -44,8 +49,6 @@ def llm_verify_intent_node(state: ChatState) -> ChatState:
         [f"- {k}: {v}" for k, v in supported_intents_with_desc.items() if k != "unhandled"]
     )
 
-    # 📌 수정된 부분: 프롬프트에 재구성된 질문(rephrased_query) 반환 지시를 추가하고,
-    #                JSON 응답 형식도 rephrased_query 키를 포함하도록 명시합니다.
     system_prompt = f"""
     당신은 의도 분류 전문가입니다. 이전 대화 기록을 참고하여 사용자의 마지막 질문에 대한 최종 의도를 판단하고, **질문을 이전 대화 맥락을 포함하여 명확하게 재구성하세요.**
 
@@ -90,7 +93,6 @@ def llm_verify_intent_node(state: ChatState) -> ChatState:
         final_intent = parsed_result.get("final_intent")
         rephrased_query = parsed_result.get("rephrased_query", "")
 
-        # 📌 수정된 부분: 재구성된 질문도 state에 저장
         if final_intent:
             print(f"디버그: LLM 검증 결과, 최종 의도: {final_intent}, 재구성된 질문: '{rephrased_query}'")
             state["intent"] = final_intent

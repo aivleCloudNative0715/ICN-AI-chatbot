@@ -2,6 +2,7 @@ import importlib
 import pkgutil
 from functools import partial
 from langgraph.graph import StateGraph, END
+from typing import Set
 
 from chatbot.graph.state import ChatState
 from chatbot.graph.nodes.classifiy_intent import classify_intent
@@ -53,28 +54,9 @@ def build_chat_graph():
     
     def route_after_initial_classification(state: ChatState) -> str:
         top_k_intents = state.get('top_k_intents_and_probs', [])
-        slots = state.get("slots", [])
-        user_query = state.get("user_input", "")
-
-        # 이전 대화 감지 로직을 최상단으로 이동 (기존 로직 유지)
-        if len(state.get("messages", [])) > 1:
-            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅")
-            return "llm_verify_intent"
-
-        # 1. 단일 의도 신뢰도 기반 라우팅을 먼저 수행
-        top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
+        current_slots = state.get("slots", [])
         
-        # 📌 수정된 로직: 의도 간 확신도 차이로 모호성 판단
-        second_intent_conf = top_k_intents[1][1] if len(top_k_intents) > 1 else 0.0
-        confidence_difference = top_conf - second_intent_conf
-        
-        # 상위 의도의 확신도가 0.85 이상이고, 2위와의 점수 차이가 0.15 이상이면 단일 의도로 간주
-        # 이 임계값(threshold)은 필요에 따라 조정 가능
-        if top_conf >= 0.85 and confidence_difference >= 0.15:
-            print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
-            return f"{top_intent}_handler"
-        
-        # 2. 복합 의도 감지
+        # ⚠️ 수정된 로직: 이전 대화 맥락과 현재 슬롯을 모두 고려하여 복합 의도 감지를 먼저 수행
         slot_groups = {
             'parking_fee_info': {'B-parking_type', 'B-parking_lot', 'B-fee_topic', 'B-vehicle_type', 'B-payment_method'},
             'parking_availability_query': {'B-parking_type', 'B-parking_lot', 'B-availability_status'},
@@ -94,8 +76,19 @@ def build_chat_graph():
             'time_general': {'B-date', 'B-time', 'B-vague_time', 'B-season', 'B-day_of_week', 'B-relative_time', 'B-minute', 'B-hour', 'B-time_period'},
             'general_topic': {'B-topic'}
         }
-        found_groups = set()
-        for _, tag in slots:
+        
+        found_groups: Set[str] = set()
+        
+        # 현재 질문에서 추출된 슬롯으로 그룹 찾기
+        for _, tag in current_slots:
+            if tag.startswith('B-'):
+                for group_name, tags in slot_groups.items():
+                    if tag in tags:
+                        found_groups.add(group_name)
+
+        # 이전 대화에서 저장된 슬롯으로 그룹 찾기
+        previous_slots = state.get("previous_slots", [])
+        for _, tag in previous_slots:
             if tag.startswith('B-'):
                 for group_name, tags in slot_groups.items():
                     if tag in tags:
@@ -103,11 +96,20 @@ def build_chat_graph():
         
         specific_groups = found_groups - {'general_topic'}
         if len(specific_groups) > 1:
-            print("DEBUG: 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
+            print("DEBUG: 현재/이전 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
             return "handle_complex_intent"
             
-        # 3. 신뢰도가 낮거나 모호한 경우 LLM 재확인
-        print("DEBUG: 낮은 신뢰도 또는 모호한 의도 감지 -> llm_verify_intent로 라우팅")
+        # 1. 단일 의도 신뢰도 기반 라우팅
+        top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
+        second_intent_conf = top_k_intents[1][1] if len(top_k_intents) > 1 else 0.0
+        confidence_difference = top_conf - second_intent_conf
+        
+        if top_conf >= 0.85 and confidence_difference >= 0.15:
+            print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
+            return f"{top_intent}_handler"
+        
+        # 2. 신뢰도가 낮거나 모호한 경우 LLM 재확인
+        print("DEBUG: 낮은 신뢰도, 모호한 의도 또는 이전 대화 맥락 확인 필요 -> llm_verify_intent로 라우팅")
         return "llm_verify_intent"
 
     # 그래프의 시작점과 엣지 연결
