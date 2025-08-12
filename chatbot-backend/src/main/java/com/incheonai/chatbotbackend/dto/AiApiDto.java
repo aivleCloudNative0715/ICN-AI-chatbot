@@ -11,32 +11,52 @@ import java.util.List;
 
 public class AiApiDto {
 
-    // POST /chatbot/generate 요청 DTO
+    /**
+     * POST /api/generate 요청 DTO
+     * 자바의 camelCase 필드를 JSON의 snake_case 키에 매핑합니다.
+     */
     @Getter
     @Builder
     public static class GenerateRequest {
+        @JsonProperty("session_id")
         private String sessionId;
+
+        @JsonProperty("message_id")
         private String messageId;
+
+        @JsonProperty("parent_id")
         private String parentId;
-        private String content;
+
+        private String content; // JSON 키와 필드명이 동일하므로 어노테이션 생략 가능
     }
 
-    // POST /chatbot/generate 응답 DTO
+    /**
+     * POST /api/generate 응답 DTO
+     */
     @Getter @Setter @NoArgsConstructor
     public static class GenerateResponse {
-        private String answer;
+        private String answer; // JSON 키와 필드명이 동일
     }
 
-    // POST /chatbot/recommend 요청 DTO
+    /**
+     * POST /api/recommend 요청 DTO
+     * 자바의 camelCase 필드를 JSON의 snake_case 키에 매핑합니다.
+     */
     @Getter
     @Builder
     public static class RecommendRequest {
+        @JsonProperty("message_id")
         private String messageId;
-        private String content;
+
+        private String content; // JSON 키와 필드명이 동일
+
+        @JsonProperty("user_id")
         private String userId;
     }
 
-    // POST /chatbot/recommend 응답 DTO
+    /**
+     * POST /api/recommend 응답 DTO
+     */
     @Getter @Setter @NoArgsConstructor
     public static class RecommendResponse {
         @JsonProperty("recommended_questions")
