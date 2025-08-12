@@ -145,15 +145,23 @@ class GenerateAPIView(APIView):
         
         
         # 필수 필드 누락 체크
-        if not all([session_id, message_id,user_message]):
+        if not all([session_id, message_id, user_message]):
+            print("DEBUG POST DATA:", request.data)
             return Response(
-                {"error": "Missing required fields."},
+                {
+                    "error": f"Missing required fields. "
+                            f"user_message: {user_message}, "
+                            f"session_id: {session_id}, "
+                            f"message_id: {message_id}"
+                },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         if not user_message:
             return Response(
-                {"error": "질문 내용(content) 필드가 필요합니다."},
+                {
+                    "error": "질문 내용(content) 필드가 필요합니다."
+                },
                 status=status.HTTP_400_BAD_REQUEST
             )        
         
