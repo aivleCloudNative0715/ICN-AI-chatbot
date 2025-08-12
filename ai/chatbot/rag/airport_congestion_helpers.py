@@ -79,8 +79,9 @@ def _get_congestion_data_from_db(date_str: str, hour: int) -> dict | None:
         db = db_client[db_name]
         collection = db.AirportCongestionPredict
         
-        time_slot = f"{hour:02d}_{hour+1:02d}"
-        
+        next_hour = (hour + 1) % 24
+        time_slot = f"{hour:02d}_{next_hour:02d}"
+
         congestion_data = collection.find_one({
             "date": date_str,
             "time": time_slot
@@ -102,9 +103,10 @@ def _get_congestion_data_from_db(date_str: str, hour: int) -> dict | None:
         print(f"디버그: MongoDB 조회 중 알 수 없는 오류 발생 - {e}")
         return None
 
+
 def _get_daily_congestion_data_from_db() -> dict | None:
     """
-    MongoDB에서 특정 날짜의 '합계' 혼잡도 예측 데이터를 가져오는 함수.
+    MongoDB에서 하루 합계 혼잡도 예측 데이터를 가져오는 함수.
     """
     try:
         db = db_client[db_name]
@@ -124,19 +126,17 @@ def _get_daily_congestion_data_from_db() -> dict | None:
     except Exception as e:
         print(f"디버그: 하루 합계 데이터 조회 중 오류 발생 - {e}")
         return None
-
+    
 def _parse_query_with_llm(user_query: str) -> dict | None:
-    # '하루 전체' 요청 시 time 필드를 "합계"로 설정하도록 프롬프트 강화
+    # 📌 수정된 부분: 프롬프트 지시사항을 더 명확하게 강화
     prompt_content = (
         "사용자 쿼리에서 인천국제공항의 혼잡도 예측 정보를 JSON 형식으로 추출해줘."
         "질문에서 복수 터미널, 구역, 날짜, 시간 정보가 있다면, 각각의 요청을 'requests' 리스트의 개별 객체로 만들어줘."
-        "만약 '하루', '오늘 전체'와 같은 키워드가 포함되어 있다면, 해당 요청 객체에 'is_daily': true 필드를 추가하고 'time'은 '합계'라는 문자열로 설정해줘."
-        "날짜는 'today', 'tomorrow' 또는 'unsupported'로 응답해줘. 날짜가 언급되지 않으면 오늘로 간주해줘."
+        "만약 '하루', '오늘 전체' 또는 **특정 시간 언급 없이 '공항 혼잡도'와 같이 하루 전체를 묻는 질문이라면, 해당 요청 객체에 'is_daily': true 필드를 반드시 추가하고 'time'은 '합계'라는 문자열로 설정해줘.**"
+        "날짜는 'today', 'tomorrow', 'unsupported'로 응답해줘. 날짜가 언급되지 않으면 오늘로 간주해줘."
         "시간은 0~23의 정수여야 해. 언급되지 않으면 null로 추출해줘. 단, 하루 전체에 대한 질문인 경우 '합계'로 설정해줘."
         "터미널 번호는 1 또는 2 중 하나이고, 언급되지 않으면 null로 추출해줘."
         "구역은 '입국장' 또는 '출국장'과 알파벳/숫자를 조합한 형태(예: '입국장A', '출국장1')여야 해. 언급되지 않으면 null로 추출해줘."
-        "유효하지 않은 구역 조합(예: 출국장에 알파벳)은 'area'를 null로 추출해줘."
-        "질문이 혼잡도 전체에 대한 내용이면 'requests' 리스트에 터미널 정보(terminal: 1, area: null)와 같이 명시적으로 넣어줘."
         "응답 시 다른 설명 없이 오직 JSON 객체만 반환해야 해."
         
         "\n\n응답 형식: "
@@ -158,8 +158,12 @@ def _parse_query_with_llm(user_query: str) -> dict | None:
         "응답: ```json\n{\"requests\": [{\"date\": \"today\", \"time\": \"합계\", \"terminal\": 1, \"area\": null, \"is_daily\": true}, {\"date\": \"today\", \"time\": null, \"terminal\": 2, \"area\": \"출국장1\", \"is_daily\": false}]}```"
         "사용자: 1터미널과 2터미널 혼잡도 알려줘"
         "응답: ```json\n{\"requests\": [{\"date\": \"today\", \"time\": null, \"terminal\": 1, \"area\": null, \"is_daily\": false}, {\"date\": \"today\", \"time\": null, \"terminal\": 2, \"area\": null, \"is_daily\": false}]}```"
+        "사용자: 11일 공항혼잡도"
+        "응답: ```json\n{\"requests\": [{\"date\": \"unsupported\", \"time\": \"합계\", \"terminal\": null, \"area\": null, \"is_daily\": true}]}```"
         "사용자: 1터미널 하루 전체 혼잡도 알려줘"
         "응답: ```json\n{\"requests\": [{\"date\": \"today\", \"time\": \"합계\", \"terminal\": 1, \"area\": null, \"is_daily\": true}]}```"
+        "사용자: 공항 혼잡도"
+        "응답: ```json\n{\"requests\": [{\"date\": \"today\", \"time\": \"합계\", \"terminal\": null, \"area\": null, \"is_daily\": true}]}```"
     )
 
     messages = [
@@ -167,21 +171,20 @@ def _parse_query_with_llm(user_query: str) -> dict | None:
         {"role": "user", "content": user_query}
     ]
 
+    # 📌 수정된 부분: response_format을 사용하여 LLM이 JSON을 반환하도록 강제
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
-        temperature=0.0
+        temperature=0.0,
+        response_format={"type": "json_object"}
     )
     
     llm_output = response.choices[0].message.content.strip()
     
-    # 📌 추가된 부분: LLM이 반환한 원본 응답 출력
     print(f"디버그: LLM 원본 응답 -> {llm_output}")
 
     try:
-        if llm_output.startswith("```json"):
-            llm_output = llm_output.lstrip("```json").rstrip("```").strip()
-
+        # response_format을 사용하면 ````json`과 같은 마크다운 제거 불필요
         parsed_data = json.loads(llm_output)
         return parsed_data
     except json.JSONDecodeError as e:
