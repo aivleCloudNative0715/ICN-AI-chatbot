@@ -2,6 +2,7 @@ import importlib
 import pkgutil
 from functools import partial
 from langgraph.graph import StateGraph, END
+from typing import Set
 
 from chatbot.graph.state import ChatState
 from chatbot.graph.nodes.classifiy_intent import classify_intent
@@ -53,28 +54,41 @@ def build_chat_graph():
     
     def route_after_initial_classification(state: ChatState) -> str:
         top_k_intents = state.get('top_k_intents_and_probs', [])
-        slots = state.get("slots", [])
-        user_query = state.get("user_input", "")
-
-        # 📌 수정된 부분: 이전 대화 감지 로직을 최상단으로 이동
-        if len(state.get("messages", [])) > 1:
-            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅")
-            return "llm_verify_intent"
-
-        # 1. 복합 의도 감지 (기존 로직 그대로)
+        current_slots = state.get("slots", [])
+        
+        # ⚠️ 수정된 로직: 이전 대화 맥락과 현재 슬롯을 모두 고려하여 복합 의도 감지를 먼저 수행
         slot_groups = {
-            'parking': {'B-parking_type', 'B-parking_lot', 'B-parking_area', 'B-vehicle_type', 'B-payment_method', 'B-availability_status'},
-            'facility_info': {'B-facility_name', 'B-location_keyword'},
-            'flight_info': {'B-airline_flight', 'B-flight_status', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-arrival_type', 'B-departure_type', 'B-destination', 'B-gate', 'B-terminal'},
-            'baggage_info': {'B-baggage_type', 'B-luggage_term'},
-            'policy': {'B-document', 'B-organization', 'B-person_type', 'B-item', 'B-transfer_topic'},
-            'weather': {'B-weather_topic'},
-            'time': {'B-date', 'B-time', 'B-season', 'B-day_of_week'},
-            'general_topic': {'B-topic'},
-            'congestion': {'B-congestion_topic', 'B-congestion_status'}
+            'parking_fee_info': {'B-parking_type', 'B-parking_lot', 'B-fee_topic', 'B-vehicle_type', 'B-payment_method'},
+            'parking_availability_query': {'B-parking_type', 'B-parking_lot', 'B-availability_status'},
+            'parking_location_recommendation': {'B-parking_lot', 'B-location_keyword'},
+            'parking_congestion_prediction': {'B-congestion_topic'},
+            'flight_info': {'B-airline_flight', 'B-airline_name', 'B-airport_name', 'B-airport_code', 'B-destination', 'B-departure_airport', 'B-arrival_airport', 'B-gate', 'B-flight_status'},
+            'airline_info_query': {'B-airline_name', 'B-airline_info'},
+            'baggage_claim_info': {'B-luggage_term', 'B-baggage_issue'},
+            'baggage_rule_query': {'B-baggage_type', 'B-rule_type', 'B-item'},
+            'facility_guide': {'B-facility_name', 'B-location_keyword'},
+            'airport_info': {'B-airport_name', 'B-airport_code'},
+            'immigration_policy': {'B-organization', 'B-person_type', 'B-rule_type', 'B-document'},
+            'transfer_info': {'B-transfer_topic'},
+            'transfer_route_guide': {'B-transfer_topic'},
+            'airport_weather_current': {'B-weather_topic'},
+            'airport_congestion_prediction': {'B-congestion_topic'},
+            'time_general': {'B-date', 'B-time', 'B-vague_time', 'B-season', 'B-day_of_week', 'B-relative_time', 'B-minute', 'B-hour', 'B-time_period'},
+            'general_topic': {'B-topic'}
         }
-        found_groups = set()
-        for _, tag in slots:
+        
+        found_groups: Set[str] = set()
+        
+        # 현재 질문에서 추출된 슬롯으로 그룹 찾기
+        for _, tag in current_slots:
+            if tag.startswith('B-'):
+                for group_name, tags in slot_groups.items():
+                    if tag in tags:
+                        found_groups.add(group_name)
+
+        # 이전 대화에서 저장된 슬롯으로 그룹 찾기
+        previous_slots = state.get("previous_slots", [])
+        for _, tag in previous_slots:
             if tag.startswith('B-'):
                 for group_name, tags in slot_groups.items():
                     if tag in tags:
@@ -82,18 +96,21 @@ def build_chat_graph():
         
         specific_groups = found_groups - {'general_topic'}
         if len(specific_groups) > 1:
-            print("DEBUG: 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
+            print("DEBUG: 현재/이전 슬롯 기반 복합 의도 감지 -> handle_complex_intent로 라우팅")
             return "handle_complex_intent"
             
-        # 2. 단일 의도 신뢰도 기반 라우팅
+        # 1. 단일 의도 신뢰도 기반 라우팅
         top_intent, top_conf = top_k_intents[0] if top_k_intents else ("default", 0.0)
+        second_intent_conf = top_k_intents[1][1] if len(top_k_intents) > 1 else 0.0
+        confidence_difference = top_conf - second_intent_conf
         
-        if top_conf >= 0.9:
+        if top_conf >= 0.85 and confidence_difference >= 0.15:
             print(f"DEBUG: 높은 신뢰도 단일 의도 감지 -> {top_intent}_handler로 바로 라우팅")
             return f"{top_intent}_handler"
-        else:
-            print("DEBUG: 낮은 신뢰도 또는 모호한 의도 감지 -> llm_verify_intent로 라우팅")
-            return "llm_verify_intent"
+        
+        # 2. 신뢰도가 낮거나 모호한 경우 LLM 재확인
+        print("DEBUG: 낮은 신뢰도, 모호한 의도 또는 이전 대화 맥락 확인 필요 -> llm_verify_intent로 라우팅")
+        return "llm_verify_intent"
 
     # 그래프의 시작점과 엣지 연결
     builder.set_entry_point("classify_intent")

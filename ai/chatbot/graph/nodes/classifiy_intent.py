@@ -31,5 +31,8 @@ def classify_intent(state: ChatState) -> ChatState:
     state["confidence"] = confidence
     state["top_k_intents_and_probs"] = top_k_intents_and_probs
     state["slots"] = slots
-    
+
+    # 📌 컨피던스 점수 출력 추가
+    print(f"디버그: 최종 의도: '{state['intent']}', 확신도: {state['confidence']:.2f}")
+        
     return state

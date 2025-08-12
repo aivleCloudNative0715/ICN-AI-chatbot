@@ -5,7 +5,7 @@ from chatbot.graph.flow import build_chat_graph
 # 챗봇 그래프를 빌드합니다.
 chat_graph = build_chat_graph()
 
-# # 대화 기록을 담을 리스트를 초기 상태에 설정합니다.
+# 대화 기록을 담을 리스트를 초기 상태에 설정합니다.
 # state = {
 #     "messages": []
 # }

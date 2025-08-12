@@ -14,7 +14,6 @@ BASE_URL = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp"
 SERVICE_KEY = os.getenv("SERVICE_KEY")
 
 def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
-    # 📌 수정된 프롬프트: direction을 영어로 파싱하도록 지시
     system_prompt = (
         "사용자의 질문을 분석하여 항공편 정보에 대한 필수 정보를 JSON 리스트 형식으로 추출해줘. "
         "응답은 반드시 'requests'라는 키를 가진 JSON 객체여야 해. "
@@ -30,21 +29,23 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "- `from_time`: 검색 시작 시간 (HHMM 형식). '오후 7시 이후'는 '1900', '오전 8시 이전'은 '0000', '오전 8시'는 '0800'으로 추출해줘. 시간 정보가 없으면 null로 추출해줘.\n"
         "- `to_time`: 검색 종료 시간 (HHMM 형식). '오후 7시 이후'는 '2359', '오전 8시 이전'은 '0800', '오전 8시'는 '0800'으로 추출해줘. 시간 정보가 없으면 null로 추출해줘.\n"
         "- `info_type`: 사용자가 얻고자 하는 정보의 유형 (예: '체크인 카운터', '탑승구', '운항 정보'). 정보가 없으면 '운항 정보'로 추출해줘.\n"
+        "- `date_offset`: '오늘'이면 0, '내일'이면 1, '모레'이면 2, '어제'면 -1처럼 오늘을 기준으로 한 날짜 차이를 정수로 추출해줘. 정보가 없으면 0으로 추출해줘.\n"
+        "- `terminal`: 사용자가 요청한 터미널 정보. '1터미널' 또는 '제1터미널'은 'T1'으로, '2터미널' 또는 '제2터미널'은 'T2'로 추출해줘. 정보가 없으면 null로 추출해줘.\n" # 📌 수정된 부분
         
         "지침: "
         "1. **시간 모호성**: '3시 반'처럼 모호한 시간은, 오전과 오후를 모두 포함하는 2개의 독립된 요청으로 분리해서 반환해줘. 각 요청에는 from_time과 to_time이 동일하게 추출돼야 해.\n"
         "2. **시간 범위**: '오전 8시 이후'는 from_time을 '0800'으로, to_time을 '2359'로 추출해줘. '오후 8시 이전'은 from_time을 '0000'으로, to_time을 '2000'으로 추출해줘.\n"
         "3. **특정 시간**: '오후 3시'처럼 특정 시점의 시간은 from_time과 to_time에 동일한 시간(예: '1500')을 추출해줘. 핸들러에서 이 값을 기준으로 검색 범위를 계산할 거야.\n"
-        "4. **국가명**: '일본'과 같은 국가명은 'airport_name'으로 추출하고, 동시에 'airport_codes'에 주요 공항 코드 리스트를 3개까지 추가해줘. '도쿄'와 같은 도시명도 마찬가지야.\n"
+        "4. **국가명**: '일본'과 같은 국가명은 'airport_name'으로 추출하고, 동시에 'airport_codes'에 주요 공항 코드 리스트를 반드시 추가해줘. '도쿄'와 같은 도시명도 마찬가지야.\n"
         
         "응답 시 다른 설명 없이 오직 JSON 객체만 반환해야 해."
         "\n\n예시: "
         "사용자: 오늘 뉴욕가는거 오후 2시 이후에 어떤거 있어?"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"뉴욕\", \"airport_codes\": [\"JFK\", \"LGA\", \"EWR\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"1400\", \"to_time\": \"2359\", \"info_type\": \"운항 정보\"}]}```"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"뉴욕\", \"airport_codes\": [\"JFK\", \"LGA\", \"EWR\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"1400\", \"to_time\": \"2359\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
         "사용자: 인천 도착하는 3시 반 비행기"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"arrival\", \"from_time\": \"0330\", \"to_time\": \"0330\", \"info_type\": \"운항 정보\"}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"arrival\", \"from_time\": \"1530\", \"to_time\": \"1530\", \"info_type\": \"운항 정보\"}]}```"
-        "사용자: 오늘 저녁 8시 이전에 출발하는 일본행 비행기 있어?"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"일본\", \"airport_codes\": [\"NRT\", \"HND\", \"KIX\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"0000\", \"to_time\": \"2000\", \"info_type\": \"운항 정보\"}]}```"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"arrival\", \"from_time\": \"0330\", \"to_time\": \"0330\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"도착\", \"from_time\": \"1530\", \"to_time\": \"1530\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
+        "사용자: 1터미널 9시 비행기 알려줘"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"0900\", \"to_time\": \"0900\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": \"T1\"}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"2100\", \"to_time\": \"2100\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": \"T1\"}]}```"
     )
 
     messages = [
@@ -186,69 +187,3 @@ def _extract_flight_info_from_response(
         extracted_info.append(info)
     
     return extracted_info
-
-
-# def _get_airport_code_with_llm(airport_name: str) -> Optional[str]:
-#     system_prompt = (
-#         f"'{airport_name}'과(와) 관련된 공항의 IATA 코드를 찾아줘. "
-#         f"만약 국가 이름이라면 해당 국가의 가장 주요한 국제공항 코드를 찾아줘. "
-#         f"예를 들어, '파리' 또는 '프랑스'는 'CDG'야. '일본'은 'NRT' 또는 'HND' 중 'NRT'를 선택해줘. "
-#         "오직 공항 코드만 답변해야 하며, 다른 설명은 포함하지 마."
-#     )
-    
-#     try:
-#         response = client.chat.completions.create(
-#             model="gpt-4o-mini",
-#             messages=[
-#                 {"role": "system", "content": system_prompt},
-#                 {"role": "user", "content": airport_name}
-#             ],
-#             temperature=0.1
-#         )
-#         airport_code = response.choices[0].message.content.strip()
-        
-#         if 2 <= len(airport_code) <= 5 and airport_code.isupper() and airport_code.isalnum():
-#             print(f"디버그: LLM이 '{airport_name}'에 대한 공항 코드로 '{airport_code}'를 반환했습니다.")
-#             return airport_code
-#         else:
-#             print(f"디버그: LLM이 반환한 공항 코드 '{airport_code}'가 유효하지 않습니다.")
-#             return None
-    
-#     except Exception as e:
-#         print(f"디버그: LLM을 사용한 공항 코드 추출 실패 - {e}")
-#         return None
-
-# # --- 새로운 헬퍼 함수 추가 ---
-# def _normalize_time(time_str: str) -> str:
-#     """
-#     다양한 시간 문자열을 'HH:MM' 형식으로 표준화합니다.
-#     """
-#     time_str = time_str.strip().replace(":", "").replace(" ", "").upper()
-
-#     # '오후7시' -> 1900
-#     if "오후" in time_str:
-#         hour = int(re.search(r'\d+', time_str).group())
-#         if hour < 12:
-#             hour += 12
-#         return f"{hour:02d}00"
-    
-#     # '7 PM' -> 1900
-#     if "PM" in time_str:
-#         hour = int(re.search(r'\d+', time_str).group())
-#         if hour < 12:
-#             hour += 12
-#         return f"{hour:02d}00"
-
-#     # '7' -> 0700
-#     if len(time_str) <= 2:
-#         return f"{int(time_str):02d}00"
-    
-#     # '19:00' -> 1900
-#     if len(time_str) == 4 and time_str.isdigit():
-#         return time_str
-    
-#     # 19:20과 같은 형식도 처리
-#     if re.match(r'^\d{2}:\d{2}$', time_str):
-#         return time_str.replace(':', '')
-
-#     return time_str

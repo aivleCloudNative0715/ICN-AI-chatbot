@@ -1,6 +1,10 @@
+import json
 from typing import Dict, Any, List
 from langgraph.graph import StateGraph, END
+from openai import OpenAI
+from functools import partial
 from chatbot.graph.state import ChatState
+from langchain_core.messages import HumanMessage, AIMessage
 from chatbot.graph.nodes.classifiy_intent import classify_intent
 
 # 환경 변수를 로드합니다.
@@ -12,139 +16,116 @@ from openai import OpenAI
 client = OpenAI()
 
 
-def _create_subgraph_for_intent(handlers: Dict[str, Any]):
-    """개별 질문 처리를 위한 서브그래프를 생성합니다."""
-    subgraph = StateGraph(ChatState)
-    subgraph.add_node("classify_intent", classify_intent)
-    
-    for name, handler in handlers.items():
-        subgraph.add_node(name, handler)
-        subgraph.add_edge(name, END)
-    
-    def route_single_intent_to_handler(state):
-        intent = state.get("intent")
-        if intent:
-            node_name = f"{intent}_handler"
-            if node_name in handlers:
-                return node_name
-        return None 
-    
-    subgraph.set_entry_point("classify_intent")
-    all_handler_names = list(handlers.keys())
-    
-    subgraph.add_conditional_edges(
-        "classify_intent", 
-        route_single_intent_to_handler,
-        all_handler_names
-    )
-    
-    return subgraph.compile()
+def _decompose_and_classify_queries(user_query: str, supported_intents: List[str], messages: List[Any]) -> List[Dict[str, str]]:
+    """
+    LLM을 사용하여 복합 의도 질문을 단일 질문으로 분해하고 의도를 분류합니다.
+    이전 대화 맥락을 활용하여 후속 질문을 처리합니다.
+    """
+    client = OpenAI() # OpenAI 클라이언트 초기화
+    supported_intents_str = ", ".join(supported_intents)
 
+    system_prompt = f"""
+    당신은 사용자의 복합적인 질문을 단일 의도 질문으로 분해하는 전문가입니다. 
+    전체 대화 기록과 사용자의 마지막 질문을 참고하여 질문을 분해하고, 각 부분에 가장 적합한 단일 의도를 찾아 JSON 형식으로 반환하세요.
 
-def _split_intents(user_input: str, supported_intents: List[str]) -> List[str]:
-    """LLM을 사용하여 복합 의도 질문을 독립적인 하위 질문으로 분해합니다."""
-    
-    prompt = f"""
-    당신은 사용자의 질문을 분석하여, 여러 의도가 포함된 질문을 독립적인 하위 질문들로 분해하는 데 능숙한 전문가입니다.
+    사용 가능한 의도 목록:
+    {supported_intents_str}
 
-    ### 지시사항
-    1. 사용자의 질문이 **하나의 주제에 대한 여러 요청**인지, 아니면 **서로 다른 주제에 대한 여러 요청**인지 판단하세요.
-    2. 주제가 서로 다른 경우에만 질문을 분리하세요.
-    3. 질문을 분리할 때, 주차장, 시설, 비행, 날씨 등의 키워드를 기준으로 주제를 판단하세요.
-    4. 분리된 각 질문은 완전한 문장 형태여야 하며, 쉼표(,)로 구분하여 한 줄로 반환하세요.
-    5. 질문이 분리될 수 없다면 (단일 의도라면), 원래 질문을 그대로 반환하세요.
-    6. 절대 다른 설명이나 문장은 추가하지 말고, 오직 분리된 질문들만 반환하세요.
-    7. 지원되는 의도 목록은 {', '.join(supported_intents)}입니다.
+    지침:
+    1. 현재 질문이 이전 대화의 후속 질문이라면, 이전 맥락을 포함하여 질문을 재구성하세요. 
+       예시: "장기주차장 현황" -> "요금은?" -> "장기주차장 요금은?"
+    2. 분해된 각 질문에 가장 적절한 단일 의도를 할당하세요.
+    3. 질문을 분해할 필요가 없다면, 전체 질문과 하나의 의도만 반환하세요.
+    4. 다른 설명이나 문장은 추가하지 말고, 오직 JSON 객체만 반환하세요.
 
-    ### 예시
-    - 사용자 질문: "주차 요금이랑 카페 위치 알려줘"
-    - 출력: 주차 요금 알려줘, 카페 위치 알려줘
-
-    - 사용자 질문: "지금 공항 날씨 어때요? 내일은요?"
-    - 출력: 지금 공항 날씨 어때요? 내일은요?
-
-    - 사용자 질문: "제1터미널 주차장 요금 알려줘"
-    - 출력: 제1터미널 주차장 요금 알려줘
-
-    사용자 질문: "{user_input}"
-    출력:
+    JSON 응답 형식:
+    {{
+      "decomposed_queries": [
+        {{"question": "질문 1", "intent": "의도명1"}},
+        {{"question": "질문 2", "intent": "의도명2"}}
+      ]
+    }}
     """
     
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "당신은 사용자의 질문 의도를 정확하게 분석하고, 복합적인 질문을 여러 개의 단일 의도로 분리하는 데 능숙한 전문가입니다. 특히 인천국제공항과 관련된 질문을 가장 잘 처리합니다."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.0
-    )
+    messages_for_llm = [
+        {"role": "system", "content": system_prompt}
+    ]
+    # 전체 대화 기록을 프롬프트에 추가
+    for msg in messages:
+        if isinstance(msg, HumanMessage):
+            messages_for_llm.append({"role": "user", "content": msg.content})
+        elif isinstance(msg, AIMessage):
+            messages_for_llm.append({"role": "assistant", "content": msg.content})
     
-    result_text = response.choices[0].message.content
-    split_questions = [q.strip() for q in result_text.split(',') if q.strip()]
-    print("분리된 질문 :", split_questions)
+    # 현재 질문을 가장 마지막에 추가
+    messages_for_llm.append({"role": "user", "content": user_query})
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=messages_for_llm,
+            temperature=0.1,
+            response_format={"type": "json_object"}
+        )
+        result = response.choices[0].message.content
+        parsed_result = json.loads(result)
+        return parsed_result.get("decomposed_queries", [])
+    except Exception as e:
+        print(f"디버그: LLM 질문 분해 및 의도 분류 실패 - {e}")
+        # 실패 시 원래 질문과 기본 의도를 반환
+        return [{"question": user_query, "intent": "default"}]
+
+def _initial_dispatch(state: ChatState, handlers: Dict[str, Any]) -> ChatState:
+    """서브그래프 내에서 핸들러로 라우팅하기 위한 더미 노드입니다."""
+    return state
+
+def _combine_responses(original_query: str, responses: List[str]) -> str:
+    """여러 핸들러의 응답을 하나의 응답으로 결합합니다."""
+    if len(responses) == 1:
+        return responses[0]
     
-    if not split_questions:
-        return [user_input]
-        
-    return split_questions
-
-def _combine_responses(original_question: str, responses: List[str]) -> str:
-    """LLM을 사용하여 여러 답변을 하나의 자연스러운 문장으로 종합합니다."""
-    if not responses:
-        return "죄송합니다. 요청하신 정보에 대한 답변을 찾을 수 없습니다."
-        
-    prompt = f"""
-    당신은 사용자의 원래 질문 '{original_question}'과 그에 대한 여러 정보를 종합하여 하나의 자연스러운 답변을 만듭니다.
-
-    ### 지시사항
-    1. 제공된 정보들을 분석하여 답변 간의 관계와 사용자의 숨겨진 의도를 파악하세요.
-    2. 파악된 의도를 바탕으로, 모든 정보를 유기적으로 연결하여 하나의 완성된 답변을 만드세요.
-    3. 만약 정보 간에 연결점이 없다면, 각 답변을 명확하게 분리하여 나열하되, 답변이 자연스럽게 이어지도록 정리하세요.
-    4. 제공된 정보에 없는 내용은 절대로 추가하거나 추론하지 마세요.
-
-    ### 예시
-    - 사용자 질문: '도착하자마자 화장실에 가고싶은데 어디에 주차하는게 좋아?'
-    - 제공된 정보: ['탑승동 3층 중앙 안내소 부근에 화장실이 있습니다.', '제1터미널에는 P1, P2 장기주차장이 있습니다.']
-    - 예상 답변: '탑승동 3층 중앙 안내소 부근에 화장실이 있습니다. 이와 가까운 제1터미널 P1, P2 장기주차장을 이용하시면 편리합니다.'
-
-    ### 제공된 정보:
-    {'- ' + '\\n- '.join(responses)}
-    """
+    combined_text = "사용자님의 여러 질문에 대한 답변입니다.\n\n"
+    for idx, response in enumerate(responses, 1):
+        combined_text += f"{idx}. {response}\n"
     
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": "당신은 사용자의 질문에 대해 가장 핵심적인 정보를 바탕으로 간결하고 정확하게 답변을 종합하는 전문가입니다. 특히 복합 의도가 있는 질문의 경우, 여러 정보를 연결하여 하나의 완성된 답변을 만드는 데 능숙합니다."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.2
-    )
-    
-    combined_response_text = response.choices[0].message.content
+    return combined_text
 
-    common_disclaimer = (
-        "\n\n---"
-        "\n주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
-        "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
-    )
-    
-    return combined_response_text + common_disclaimer
-
+# ----------------------------------------------------------------------
+# 챗봇의 메인 그래프에서 호출되는 함수
 def handle_complex_intent(state: ChatState, handlers: Dict[str, Any], supported_intents: List[str]):
     """복합 의도 질문을 분리하고 처리하는 메인 함수"""
     user_input = state["user_input"]
+    messages = state.get("messages", [])
     print("--- 복합 의도 처리 시작 ---")
 
-    print(f"디버그: handle_complex_intent에 전달된 핸들러 목록: {handlers.keys()}")
-
-    split_questions: List[str] = _split_intents(user_input, supported_intents)
-    print(f"분해된 질문: {split_questions}")
+    # 📌 핵심 변경점: LLM을 사용하여 전체 맥락을 고려한 질문 분해
+    decomposed_queries = _decompose_and_classify_queries(user_input, supported_intents, messages)
+    print(f"분해된 질문: {decomposed_queries}")
 
     all_responses = []
-    subgraph = _create_subgraph_for_intent(handlers)
     
-    for question in split_questions:
-        sub_state = {"user_input": question, "response": None}
+    # 단일 의도 처리를 위한 서브그래프 생성
+    subgraph_builder = StateGraph(ChatState)
+    subgraph_builder.add_node("entry_point", partial(_initial_dispatch, handlers=handlers))
+    for name, handler in handlers.items():
+        subgraph_builder.add_node(name, handler)
+        subgraph_builder.add_edge(name, END)
+    
+    subgraph_builder.set_entry_point("entry_point")
+    
+    def subgraph_router(state):
+        intent = state.get("intent")
+        return f"{intent}_handler" if f"{intent}_handler" in handlers else "default_handler"
+
+    subgraph_builder.add_conditional_edges("entry_point", subgraph_router)
+    subgraph = subgraph_builder.compile()
+
+    for item in decomposed_queries:
+        question = item["question"]
+        intent = item["intent"]
+        
+        # 분해된 각 질문에 대해 새로운 상태를 만들고 서브그래프 호출
+        sub_state = {"user_input": question, "intent": intent, "response": None}
         result = subgraph.invoke(sub_state)
         response_content = result.get("response", "")
         if response_content:
