@@ -140,13 +140,12 @@ class GenerateAPIView(APIView):
         session_id = request.data.get("session_id")
         message_id = request.data.get("message_id", '') # 새로운 메시지의 ID
         parent_id = request.data.get("parent_id") # 수정/재생성일 경우 이전 메시지 ID(없으면 null)
-        user_id = request.data.get("user_id")
         
         user_message = request.data.get("content")
         
         
         # 필수 필드 누락 체크
-        if not all([session_id, message_id, user_id, user_message]):
+        if not all([session_id, message_id,user_message]):
             return Response(
                 {"error": "Missing required fields."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -249,10 +248,9 @@ class RecommendAPIView(APIView):
         # 요청으로부터 JSON 데이터 추출
         message_id = request.data.get("message_id")
         content = request.data.get("content")
-        user_id = request.data.get("user_id")
         
         # 필수 필드 누락 체크
-        if not all([message_id, content, user_id]):
+        if not all([message_id, content]):
             return Response(
                 {"error": "Missing required fields."},
                 status=status.HTTP_400_BAD_REQUEST
