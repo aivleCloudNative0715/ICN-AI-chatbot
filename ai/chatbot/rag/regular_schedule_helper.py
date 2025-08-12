@@ -98,52 +98,42 @@ def _get_schedule_from_db(
 def _parse_schedule_query_with_llm(user_query: str) -> dict | None:
     prompt_content = (
         "사용자 쿼리에서 정기 운항 스케줄 관련 정보를 JSON 리스트 형식으로 추출해줘."
-        "만약 질문에 여러 개의 독립적인 검색 조건이 있다면, 각각의 조건을 하나의 JSON 객체로 만들고, 이들을 리스트에 담아줘."
+        "질문에 여러 개의 독립적인 검색 조건이 있다면, 각각의 조건을 하나의 JSON 객체로 만들고, 이들을 리스트에 담아줘."
         "아래 필드들을 추출해줘: "
-        "- `airline_name`: 사용자가 언급한 항공사 이름과 가장 유사한 공식 항공사 이름(예: '대한항공', '아시아나항공', '티웨이항공'). 정확한 항공사 이름을 찾을 수 없으면 null로 추출해줘.\n"
-        "- `airport_name`: 도시명 또는 공항 이름 (예: '도쿄', '후쿠오카'). 정보가 없으면 null로 추출해줘.\n"
-        "- `airport_codes`: **해당 공항의 IATA 코드 리스트**. 아래 예시를 참고하여 정확한 코드를 추출해줘. 정보가 없으면 빈 리스트로 추출해줘.\n"
-        "- `day_of_week`: 요일 (예: '월요일', '오늘'). 요일 정보가 없으면 '오늘'로 간주해줘.\n"
+        "- `airline_name`: 사용자가 언급한 항공사 이름과 가장 유사한 공식 항공사 이름. 정확한 항공사 이름을 찾을 수 없으면 null로 추출해줘.\n"
+        "- `airport_name`: 도시명 또는 공항 이름. 정보가 없으면 null로 추출해줘.\n"
+        "- `airport_codes`: 해당 공항의 IATA 코드 리스트. 정보가 없으면 빈 리스트로 추출해줘.\n"
+        "- `day_of_week`: 요일. 정보가 없으면 '오늘'로 간주해줘.\n"
         "- `direction`: 운항 방향 ('도착' 또는 '출발'). 정보가 없으면 '출발'로 간주해줘.\n"
-        "- `time_period`: 시간대 (예: '오전', '오후', '저녁', '새벽'). 정보가 없으면 null로 추출해줘.\n"
-        "- `requested_year`: 사용자가 요청한 연도. '내년'은 현재 연도 + 1, '작년'은 현재 연도 - 1, '2026년'은 2026과 같이 정수로 추출해줘. 정보가 없으면 현재 연도(`{}`)를 추출해줘.\n" # 📌 수정된 부분
-        "응답 시 다른 설명 없이 오직 JSON 리스트만 반환해야 해."
-        f"\n\n응답 형식: ```json\n{{\"requests\": [{{\"[필드1]\": \"[값1]\", \"[필드2]\": \"[값2]\", ...}}]}}```"
+        "- `time_period`: 시간대. 정보가 없으면 null로 추출해줘.\n"
+        "- `requested_year`: 사용자가 요청한 연도. '내년'은 현재 연도 + 1, '작년'은 현재 연도 - 1, '2026년'은 2026과 같이 정수로 추출해줘. 정보가 없으면 현재 연도({0})를 추출해줘.\n"
+        "응답은 반드시 'requests'라는 키를 가진 JSON 객체여야 해. 다른 설명 없이 오직 JSON 객체만 반환해야 해."
         "\n\n예시: "
         "사용자: 일요일에 일본에서 오는거 있어?"
-        "응답: ```json\n{\"requests\": [{\"airline_name\": null, \"airport_name\": \"일본\", \"airport_codes\": [\"NRT\", \"HND\", \"KIX\", \"FUK\", \"CTS\", \"OKA\"], \"day_of_week\": \"일요일\", \"direction\": \"도착\", \"time_period\": null, \"requested_year\": 2025}]}```"
+        "응답: ```json\n{{\"requests\": [{{\"airline_name\": null, \"airport_name\": \"일본\", \"airport_codes\": [\"NRT\", \"HND\", \"KIX\", \"FUK\", \"CTS\", \"OKA\"], \"day_of_week\": \"일요일\", \"direction\": \"도착\", \"time_period\": null, \"requested_year\": {0}}}]}}```"
         "사용자: 대한항공 월요일 하노이 도착 스케줄"
-        "응답: ```json\n{\"requests\": [{\"airline_name\": \"대한항공\", \"airport_name\": \"하노이\", \"airport_codes\": [\"HAN\"], \"day_of_week\": \"월요일\", \"direction\": \"도착\", \"time_period\": null, \"requested_year\": 2025}]}```"
+        "응답: ```json\n{{\"requests\": [{{\"airline_name\": \"대한항공\", \"airport_name\": \"하노이\", \"airport_codes\": [\"HAN\"], \"day_of_week\": \"월요일\", \"direction\": \"도착\", \"time_period\": null, \"requested_year\": {0}}}]}}```"
         "사용자: 내년 일요일 도쿄행 스케줄"
-        "응답: ```json\n{\"requests\": [{\"airline_name\": null, \"airport_name\": \"도쿄\", \"airport_codes\": [\"NRT\", \"HND\"], \"day_of_week\": \"일요일\", \"direction\": \"출발\", \"time_period\": null, \"requested_year\": 2026}]}```" # 📌 수정된 부분
-    ).format(datetime.now().year)
-
-    messages = [
-        {"role": "system", "content": prompt_content},
-        {"role": "user", "content": user_query}
-    ]
-
+        "응답: ```json\n{{\"requests\": [{{\"airline_name\": null, \"airport_name\": \"도쿄\", \"airport_codes\": [\"NRT\", \"HND\"], \"day_of_week\": \"일요일\", \"direction\": \"출발\", \"time_period\": null, \"requested_year\": {1}}}]}}```"
+    ).format(datetime.now().year, datetime.now().year + 1)
+    
+    # ... (이하 동일) ...
+    # 'response_format' 옵션 사용이 더 강력합니다.
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=messages,
-        temperature=0.0
+        messages=[
+            {"role": "system", "content": prompt_content},
+            {"role": "user", "content": user_query}
+        ],
+        temperature=0.0,
+        response_format={"type": "json_object"}  # 📌 LLM이 반드시 JSON을 반환하도록 강제
     )
-    
+
     llm_output = response.choices[0].message.content.strip()
 
     try:
-        if llm_output.startswith("```json") and llm_output.endswith("```"):
-            llm_output = llm_output[7:-3].strip()
-        
         parsed_data = json.loads(llm_output)
-        
         return parsed_data
-    except json.JSONDecodeError as e:
-        print("디버그: LLM 응답이 올바른 JSON 형식이 아닙니다.")
-        print(f"디버그: LLM 원본 응답 -> {llm_output}")
-        print(f"디버그: JSONDecodeError -> {e}")
     except Exception as e:
-        print(f"디버그: 알 수 없는 오류 발생 -> {e}")
-        print(f"디버그: LLM 원본 응답 -> {llm_output}")
-        
-    return None
+        print(f"디버그: LLM 응답 파싱 실패 - {e}")
+        return None
