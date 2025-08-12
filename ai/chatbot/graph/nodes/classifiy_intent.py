@@ -1,6 +1,6 @@
 from chatbot.graph.state import ChatState
-from shared.config import MODEL_PATH, INTENT2IDX_PATH, SLOT2IDX_PATH
-from intent_classifier.inference import predict_top_k_intents_and_slots
+from shared.predict_intent_and_slots import predict_with_bce
+from shared.config import INTENT_CLASSIFICATION
 
 
 def classify_intent(state: ChatState) -> ChatState:
@@ -19,20 +19,32 @@ def classify_intent(state: ChatState) -> ChatState:
         # 대화가 첫 번째 턴일 경우, 사용자 입력만 사용합니다.
         text_to_classify = state["user_input"]
 
-    # 📌 수정된 부분: 컨텍스트가 포함된 텍스트를 분류 함수에 전달합니다.
-    top_k_intents_and_probs, slots = predict_top_k_intents_and_slots(text_to_classify, k=3)
+    # 📌 수정된 부분: BCE 기반 예측 함수를 사용하여 복합 의도 감지
+    result = predict_with_bce(text_to_classify, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
+    
+    # 결과에서 필요한 데이터 추출
+    top_k_intents_and_probs = result['all_top_intents']
+    high_confidence_intents = result['high_confidence_intents']
+    slots = result['slots']
+    is_multi_intent = result['is_multi_intent']
 
     if top_k_intents_and_probs:
         top_intent, confidence = top_k_intents_and_probs[0]
     else:
         top_intent, confidence = "default", 0.0
 
-    state["intent"] = top_intent
+    # 복합 의도인 경우 "complex_intent"로 설정
+    if is_multi_intent:
+        state["intent"] = "complex_intent"
+        state["detected_intents"] = high_confidence_intents
+    else:
+        state["intent"] = top_intent
+        state["detected_intents"] = [top_k_intents_and_probs[0]]
+    
     state["confidence"] = confidence
     state["top_k_intents_and_probs"] = top_k_intents_and_probs
     state["slots"] = slots
+    state["is_multi_intent"] = is_multi_intent
 
-    # 📌 컨피던스 점수 출력 추가
-    print(f"디버그: 최종 의도: '{state['intent']}', 확신도: {state['confidence']:.2f}")
         
     return state

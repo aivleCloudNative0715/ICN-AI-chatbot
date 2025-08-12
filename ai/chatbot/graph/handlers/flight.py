@@ -302,7 +302,7 @@ def airline_info_query_handler(state: ChatState) -> ChatState:
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
     # 📌 수정된 로직: 슬롯에서 항공사 이름을 먼저 찾습니다.
-    airline_names = [word for word, slot in slots if slot == 'B-airline_name']
+    airline_names = [word for word, slot in slots if slot in ['B-airline_name', 'I-airline_name']]
     
     # 📌 수정된 로직: 슬롯에 항공사 이름이 없으면, LLM을 사용해 쿼리에서 추출합니다.
     if not airline_names:
@@ -380,7 +380,7 @@ def airport_info_handler(state: ChatState) -> ChatState:
 
     # 슬롯에서 'B-airport_name' 태그가 붙은 공항 이름을 모두 추출합니다.
     # 📌 슬롯 추출 로직은 그대로 둡니다.
-    airport_names = [word for word, slot in slots if slot == 'B-airport_name']
+    airport_names = [word for word, slot in slots if slot in ['B-airport_name', 'I-airport_name']]
     
     if not airport_names:
         # 📌 수정된 부분: 슬롯에 공항 이름이 없으면, 재구성된 쿼리를 사용해 검색을 시도합니다.
