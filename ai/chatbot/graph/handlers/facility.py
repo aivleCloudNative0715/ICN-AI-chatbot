@@ -84,7 +84,7 @@ def facility_guide_handler(state: ChatState) -> ChatState:
                 truncated_docs_list = final_context.split('\n\n')[:10]
                 final_context_truncated = "\n\n".join(truncated_docs_list)
                 
-                sub_query_to_process = f"'{facility_name}'에 대한 정보"
+                sub_query_to_process = f"'{location_keyword}'에 있는 '{facility_name}'에 대한 정보"
                 
                 final_response_text = common_llm_rag_caller(
                     sub_query_to_process,
