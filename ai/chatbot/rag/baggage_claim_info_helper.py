@@ -212,7 +212,7 @@ def _generate_final_answer_with_llm(document: dict, user_query: str) -> str:
     response = client.chat.completions.create(
         model="gpt-4o-mini", # 사용할 모델 지정
         messages=[
-            {"role": "system", "content": formatted_prompt},
+            {"role": "system", "content": formatted_prompt + " 답변에 적절한 이모지를 1-2개 정도 포함해서 더 친근하게 만들어주세요."},
             {"role": "user", "content": user_query}
         ],
         temperature=0.5, # 창의성 조절 (0.0은 가장 보수적, 1.0은 가장 창의적)

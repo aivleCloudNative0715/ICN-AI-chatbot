@@ -25,7 +25,7 @@ def default_handler(state: ChatState) -> ChatState:
         response = client.chat.completions.create(
             model="gpt-4o-mini", # 사용할 모델 지정
             messages=[
-                {"role": "system", "content": "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다."},
+                {"role": "system", "content": "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다. 답변에 적절한 이모지를 1-2개 정도 포함해서 더 친근하게 만들어주세요."},
                 {"role": "user", "content": prompt_template}
             ],
             temperature=0.5, # 창의성 조절 (0.0은 가장 보수적, 1.0은 가장 창의적)
