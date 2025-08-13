@@ -10,6 +10,7 @@ import com.incheonai.chatbotbackend.dto.LoginResponseDto;
 import com.incheonai.chatbotbackend.exception.BusinessException;
 import com.incheonai.chatbotbackend.repository.jpa.AdminRepository;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
+import com.incheonai.chatbotbackend.repository.mongodb.ChatMessageRepository;
 import com.incheonai.chatbotbackend.repository.mongodb.ChatSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -35,6 +37,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final ChatSessionRepository chatSessionRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     /**
      * 아이디 중복을 확인합니다. (재가입 정책, 관리자 계정, Redis 임시 ID 확인 포함)
@@ -77,38 +80,7 @@ public class AuthService {
 
     @Transactional
     public Object login(LoginRequestDto requestDto) {
-        // 1. User 테이블에서 아이디 확인
-        Optional<User> userOptional = userRepository.findByUserId(requestDto.userId());
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            if (!passwordEncoder.matches(requestDto.password(), user.getPassword())) {
-                throw new BusinessException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
-            }
-            user.updateLastLogin();
-            String token = jwtTokenProvider.createToken(user.getUserId());
-
-            redisTemplate.opsForValue().set(token, user.getUserId(), jwtTokenProvider.getTokenValidTime(), TimeUnit.MILLISECONDS);
-            log.info("로컬 로그인 성공. Redis에 토큰 저장. Key: {}", token);
-
-            // 세션 마이그레이션
-            String sessionId = null;
-            if (requestDto.anonymousSessionId() != null && !requestDto.anonymousSessionId().isEmpty()) {
-                Optional<ChatSession> sessionOpt = chatSessionRepository.findById(requestDto.anonymousSessionId());
-                if(sessionOpt.isPresent()) {
-                    ChatSession session = sessionOpt.get();
-                    // 익명 세션(userId=null)을 찾아 로그인한 사용자의 ID를 연결
-                    session.setUserId(String.valueOf(user.getId())); // User의 id(Long)를 String으로 변환하여 저장
-                    chatSessionRepository.save(session);
-                    sessionId = session.getId(); // 마이그레이션된 세션 ID를 사용
-                    log.info("익명 세션 {}을 사용자 {}에게 마이그레이션했습니다.", sessionId, user.getUserId());
-                }
-            }
-
-            // 사용자용 응답 DTO 반환
-            return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider(), sessionId);
-        }
-
-        // 2. Admin 테이블에서 아이디 확인 (관리자는 세션 마이그레이션 없음)
+        // Admin 테이블에서 아이디 확인 (관리자는 세션 마이그레이션 없음)
         Optional<Admin> adminOptional = adminRepository.findByAdminId(requestDto.userId());
         if (adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
@@ -123,8 +95,78 @@ public class AuthService {
             return new AdminLoginResponseDto(token, admin.getId(), admin.getAdminId(), admin.getAdminName(), admin.getRole());
         }
 
-        // 3. 어디에도 아이디가 없는 경우
-        throw new BusinessException(HttpStatus.NOT_FOUND, "아이디 또는 비밀번호가 일치하지 않습니다.");
+        // User 테이블에서 아이디 확인
+        User user = userRepository.findByUserId(requestDto.userId())
+                .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "아이디 또는 비밀번호가 일치하지 않습니다."));
+
+        if (!passwordEncoder.matches(requestDto.password(), user.getPassword())) {
+            throw new BusinessException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
+        }
+        user.updateLastLogin();
+
+        // ✨ 새로 만든 세션 관리 메서드를 호출하여 정확한 세션 ID를 가져옵니다.
+        String sessionId = findOrCreateActiveSessionForUser(user, requestDto.anonymousSessionId());
+
+        String token = jwtTokenProvider.createToken(user.getUserId());
+        redisTemplate.opsForValue().set(token, user.getUserId(), jwtTokenProvider.getTokenValidTime(), TimeUnit.MILLISECONDS);
+        log.info("로컬 로그인 성공. Redis에 토큰 저장. Key: {}", token);
+
+        return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider(), sessionId);
+    }
+
+    /**
+     * ✨ 로그인/회원가입 시 사용자의 최종 세션 ID를 결정하는 핵심 메서드
+     * @param user 로그인/가입한 사용자 객체
+     * @param anonymousSessionId 프론트에서 전달받은 비회원 세션 ID (null일 수 있음)
+     * @return 최종적으로 사용될 세션 ID
+     */
+    public String findOrCreateActiveSessionForUser(User user, String anonymousSessionId) {
+        // 1순위: 비회원 세션 ID가 유효하고, 만료되지 않았으며, 채팅 기록이 존재하면 마이그레이션
+        if (anonymousSessionId != null && !anonymousSessionId.isEmpty()) {
+            Optional<ChatSession> anonymousSessionOpt = chatSessionRepository.findById(anonymousSessionId);
+
+            if (anonymousSessionOpt.isPresent()) {
+                ChatSession session = anonymousSessionOpt.get();
+
+                boolean isSessionActive = session.getExpiresAt() != null && session.getExpiresAt().isAfter(LocalDateTime.now());
+
+                if (isSessionActive && chatMessageRepository.existsBySessionId(anonymousSessionId)) {
+                    session.setUserId(String.valueOf(user.getId()));
+                    chatSessionRepository.save(session);
+                    log.info("채팅 기록이 있는 활성 익명 세션 {}을 사용자 {}에게 마이그레이션했습니다.", session.getId(), user.getUserId());
+                    return session.getId();
+                }
+            }
+        }
+
+        // 2순위 & 3순위: (마이그레이션 조건 미충족 시) 사용자의 기존 활성 세션을 찾거나, 없으면 새로 생성
+        return findActiveSessionOrCreateNew(user);
+    }
+
+    /**
+     * ✨ 사용자의 활성 세션을 찾고, 없으면 새로 생성하는 헬퍼 메서드
+     */
+    private String findActiveSessionOrCreateNew(User user) {
+        // 2순위: 사용자의 마지막 활성 세션(24시간 이내)을 찾음
+        Optional<ChatSession> existingSession = chatSessionRepository
+                .findFirstByUserIdAndExpiresAtAfterOrderByCreatedAtDesc(String.valueOf(user.getId()), LocalDateTime.now());
+
+        if (existingSession.isPresent()) {
+            log.info("사용자 {}의 기존 활성 세션 {}을(를) 재사용합니다.", user.getUserId(), existingSession.get().getId());
+            return existingSession.get().getId();
+        }
+
+        // 3순위: 활성 세션이 없으면 새로 생성
+        ChatSession newSession = ChatSession.builder()
+                .id(UUID.randomUUID().toString())
+                .userId(String.valueOf(user.getId()))
+                .createdAt(LocalDateTime.now())
+                .lastActivatedAt(LocalDateTime.now())
+                .expiresAt(LocalDateTime.now().plusHours(24))
+                .build();
+        chatSessionRepository.save(newSession);
+        log.info("사용자 {}의 새 채팅 세션 {}을(를) 생성합니다.", user.getUserId(), newSession.getId());
+        return newSession.getId();
     }
 
     public void logout(String accessToken) {

@@ -27,18 +27,15 @@ public class SecurityConfig {
     private final RedisTemplate<String, Object> redisTemplate;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint; // 방금 만든 클래스 주입
+    private final OAuth2FailureHandler oAuth2FailureHandler; // FailureHandler 주입 추가
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CorsConfigurationSource corsConfigurationSource;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    // ✨ PasswordEncoder는 이제 주입받기만 합니다.
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, OAuth2FailureHandler oAuth2FailureHandler, CorsConfigurationSource corsConfigurationSource) throws Exception {
         http
-//                .cors(cors -> cors.configure(http))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
                 .formLogin(formLogin -> formLogin.disable())

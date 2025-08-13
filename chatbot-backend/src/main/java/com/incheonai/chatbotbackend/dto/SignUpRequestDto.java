@@ -14,5 +14,7 @@ public record SignUpRequestDto(
         String password,
 
         @NotBlank
-        String passwordConfirm
+        String passwordConfirm,
+
+        String anonymousSessionId
 ) {}

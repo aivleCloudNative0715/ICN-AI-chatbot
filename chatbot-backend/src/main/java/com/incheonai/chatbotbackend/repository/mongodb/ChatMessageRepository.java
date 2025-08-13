@@ -15,4 +15,10 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
      * @return 채팅 메시지 목록
      */
     List<ChatMessage> findBySessionIdOrderByCreatedAtAsc(String sessionId);
+
+    /**
+     * 해당 세션 ID를 가진 문서(채팅 메시지)가 하나라도 존재하는지 확인하는 메서드.
+     * count 쿼리를 사용하여 성능에 유리합니다.
+     */
+    boolean existsBySessionId(String sessionId);
 }

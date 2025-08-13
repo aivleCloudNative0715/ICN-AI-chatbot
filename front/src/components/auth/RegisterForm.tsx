@@ -59,6 +59,7 @@ export default function RegisterForm({ onSubmit, anonymousSessionId }: RegisterF
         userId,
         password,
         passwordConfirm: confirmPassword,
+        anonymousSessionId
       });
     }
   };
