@@ -34,6 +34,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ChatSessionRepository chatSessionRepository;
+    private final AuthService authService;
 
     @Transactional
     public LoginResponseDto signup(SignUpRequestDto requestDto) {
@@ -76,18 +77,9 @@ public class UserService {
         log.info("회원가입 성공. 자동 로그인을 위해 Redis에 토큰 저장. Key: {}", token);
 
         // 6. 회원가입과 동시에 새로운 채팅 세션 생성
-        ChatSession newSession = ChatSession.builder()
-                .id(UUID.randomUUID().toString())
-                .userId(String.valueOf(user.getId())) // 새로 가입한 사용자의 ID 연결
-                .createdAt(LocalDateTime.now())
-                .lastActivatedAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusHours(24))
-                .build();
-        chatSessionRepository.save(newSession);
-        log.info("회원가입 성공. 사용자 {}의 첫 채팅 세션 {} 생성.", user.getUserId(), newSession.getId());
+        String sessionId = authService.findOrCreateActiveSessionForUser(user, requestDto.anonymousSessionId());
 
-
-        return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider(), newSession.getId());
+        return new LoginResponseDto(token, user.getId(), user.getUserId(), user.getGoogleId(), user.getLoginProvider(), sessionId);
     }
 
     /**
