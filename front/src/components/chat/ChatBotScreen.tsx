@@ -11,10 +11,12 @@ import RecommendedQuestions from '@/components/chat/RecommendedQuestions'; // Re
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { API_BASE_URL } from '@/lib/api';
+import LoadingBubble from './LoadingBubble';
 
 type MessageType = 'text' | 'recommendation' | 'flightinfo' | 'edit' | 'again';
 
 interface WebSocketMessageDto {
+  messageId: string; // ✨ 사용자 메시지의 UUID를 담을 필드
   sessionId: string;
   content: string;
   messageType: MessageType;
@@ -46,6 +48,17 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
   const [flightNumberInputValue, setFlightNumberInputValue] = useState('');
   const [recommendedQuestions, setRecommendedQuestions] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [isBotReplying, setIsBotReplying] = useState(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      // scrollHeight는 스크롤 가능한 전체 높이를 의미합니다.
+      // scrollTop을 scrollHeight로 설정하여 스크롤을 맨 아래로 내립니다.
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatMessages, isBotReplying]);
 
   /**
    * 부모로부터 받은 initialHistory가 변경될 때마다(예: 로그아웃) 
@@ -65,21 +78,45 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
         setIsConnected(true);
         console.log('✅ STOMP: 연결 성공');
         
-        // 서버로부터 메시지를 받는 구독 로직 수정
+        // ✅ 서버로부터 메시지를 받는 구독 로직을 수정합니다.
         client.subscribe(`/topic/chat/${sessionId}`, (message) => {
           const receivedMessage: WebSocketResponseDto = JSON.parse(message.body);
           console.log('📥 STOMP: 메시지 수신', receivedMessage);
+          
+          setIsBotReplying(false); // 로딩 종료
 
           if (receivedMessage.messageType === 'recommendation') {
-            // 추천 질문은 화면에 그리지 않고, 추천 질문 목록 상태만 업데이트
             setRecommendedQuestions(receivedMessage.content.split(';'));
           } else {
-            // 그 외 모든 메시지(사용자 질문 포함)는 chatMessages 상태에 추가
-            setChatMessages((prevMessages) => [...prevMessages, receivedMessage]);
+            // 챗봇의 답변이고, 이 답변이 어떤 사용자 질문에 대한 것인지 식별 가능할 때 (수정/재생성)
+            if (receivedMessage.sender === 'chatbot' && receivedMessage.userMessageId) {
+              setChatMessages(prevMessages => {
+                // 기존 대화 목록에서, 동일한 사용자 질문에 대한 챗봇의 이전 답변을 찾습니다.
+                const oldBotMessageIndex = prevMessages.findIndex(
+                  msg => msg.sender === 'chatbot' && msg.userMessageId === receivedMessage.userMessageId
+                );
+
+                if (oldBotMessageIndex !== -1) {
+                  // ✨ 만약 이전 답변을 찾았다면, 그 답변을 새로 받은 메시지로 '교체'합니다.
+                  const updatedMessages = [...prevMessages];
+                  updatedMessages[oldBotMessageIndex] = receivedMessage;
+                  return updatedMessages;
+                } else {
+                  // 이전 답변을 찾지 못했다면 (첫 답변), 그냥 목록에 추가합니다.
+                  return [...prevMessages, receivedMessage];
+                }
+              });
+            } else {
+              // 사용자 메시지이거나, userMessageId가 없는 일반 챗봇 메시지는 그냥 추가합니다.
+              setChatMessages((prevMessages) => [...prevMessages, receivedMessage]);
+            }
           }
         });
       },
-      onStompError: (frame) => console.error('❌ STOMP 오류:', frame.headers['message']),
+      onStompError: (frame) => {
+        console.error('❌ STOMP 오류:', frame.headers['message']);
+        setIsBotReplying(false);
+      },
     });
 
     client.activate();
@@ -101,6 +138,9 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
       destination: '/app/chat.sendMessage',
       body: JSON.stringify(dto),
     });
+
+    // 메시지를 보낸 직후, 로딩 상태를 시작합니다.
+    setIsBotReplying(true);
     console.log('📤 STOMP: 메시지 발신', dto);
   };
   
@@ -108,22 +148,25 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
   const handleSendNewMessage = (content: string, type: 'text' | 'flightinfo' | 'recommendation') => {
     if (!content.trim() || !sessionId) return;
     
-    // --- 1. 사용자 메시지를 화면에 즉시 표시하기 위한 객체 생성 ---
+    // ✨ 프론트엔드에서 UUID를 직접 생성합니다.
+    const newUuid = crypto.randomUUID();
+
     const userMessage: WebSocketResponseDto = {
-        messageId: `local-user-${Date.now()}`, // 임시 로컬 ID 부여
+        // ✨ 생성한 UUID를 사용합니다.
+        messageId: newUuid,
         userMessageId: null,
         sessionId: sessionId,
         sender: 'user',
         content: content.trim(),
-        messageType: 'text', // 사용자 메시지는 항상 'text'로 화면에 표시
+        messageType: 'text',
         createdAt: new Date().toISOString(),
     };
 
-    // --- 2. 생성한 객체를 chatMessages 상태에 바로 추가 ---
     setChatMessages((prev) => [...prev, userMessage]);
     
-    // --- 3. 서버로 메시지 전송 (기존 로직) ---
     publishMessage({
+        // ✨ 생성한 UUID를 백엔드로 전송합니다.
+        messageId: newUuid,
         sessionId,
         content: content.trim(),
         messageType: type,
@@ -135,34 +178,74 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
     setRecommendedQuestions([]);
   };
 
-  // 2. 질문 수정 (parentId: 원본 질문 ID)
-  const handleEditMessage = (originalMessageId: string, newContent: string) => {
+// 이 함수는 수정 내용을 최종 '저장(커밋)'하는 역할을 합니다.
+const handleCommitEdit = (originalMessageId: string, newContent: string) => {
     if (!newContent.trim() || !sessionId) return;
-    
+
+    const newEditUuid = crypto.randomUUID();
+
+    setChatMessages(prevMessages => {
+        const filteredMessages = prevMessages.filter(
+            msg => !(msg.sender === 'chatbot' && msg.userMessageId === originalMessageId)
+        );
+        const updatedMessages = filteredMessages.map(msg =>
+            msg.messageId === originalMessageId
+                ? { ...msg, content: newContent.trim() }
+                : msg
+        );
+        return updatedMessages;
+    });
+
     publishMessage({
+      messageId: newEditUuid,
       sessionId,
       content: newContent.trim(),
       messageType: 'edit',
-      parentId: originalMessageId, // 수정할 원본 질문 ID
+      parentId: originalMessageId,
     });
+    
+    setEditingMessageId(null);
   };
 
-  // 3. 답변 재생성 (parentId: 원본 질문 ID)
+  // 답변 재생성 (parentId: 원본 질문 ID)
   const handleRegenerateAnswer = (originalUserMessageId: string) => {
     if (!sessionId) return;
 
+    setChatMessages(prevMessages => 
+      prevMessages.filter(msg => !(msg.sender === 'chatbot' && msg.userMessageId === originalUserMessageId))
+    );
+
     publishMessage({
+      // ✨ 규칙: 재생성 요청의 messageId와 parentId는 동일하게 원본 질문 ID로 설정합니다.
+      messageId: originalUserMessageId, 
       sessionId,
       content: '', // 내용은 비워도 됨
       messageType: 'again',
-      parentId: originalUserMessageId, // 답변을 다시 받을 원본 질문 ID
+      parentId: originalUserMessageId,
     });
+  };
+
+  const handleStartEdit = (messageId: string) => {
+    setEditingMessageId(messageId);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
   };
 
   const handleMessageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setMessageInputValue(e.target.value);
   const handleMessageInputSend = () => handleSendNewMessage(messageInputValue, 'text');
   const handleFlightNumberInputSend = () => handleSendNewMessage(flightNumberInputValue, 'flightinfo');
   const handleRecommendedQuestionClick = (question: string) => handleSendNewMessage(question, 'recommendation');
+
+  // 배열의 마지막 요소 인덱스를 찾는 헬퍼 함수
+  const findLastIndex = <T,>(array: T[], predicate: (value: T, index: number, obj: T[]) => boolean): number => {
+    let l = array.length;
+    while (l--) {
+      if (predicate(array[l], l, array)) return l;
+    }
+    return -1;
+  };
   // 하단 SearchInput의 높이를 고려하여 padding-bottom을 설정 (예시: 80px 또는 p-20)
   const paddingBottomClass = 'pb-20'; // 대략적인 SearchInput 높이에 맞춰 여유 공간 확보
 
@@ -207,22 +290,40 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
 
       {/* 채팅 메시지 표시 영역 */}
       {chatMessages.length > 0 && (
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {chatMessages.map((msg) => (
-            <ChatBubble
-              key={msg.messageId} // 고유 키는 messageId 사용
-              message={{
-                 messageId: msg.messageId,
-                 content: msg.content,
-                sender: msg.sender as 'user' | 'chatbot',
-                 userMessageId: msg.userMessageId
-              }}
-              onEdit={handleEditMessage}
-              onRegenerate={handleRegenerateAnswer}
+        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+          {(() => {
+            // 렌더링 전에 마지막 사용자 메시지와 챗봇 메시지의 인덱스를 찾습니다.
+            const lastUserMessageIndex = findLastIndex(chatMessages, msg => msg.sender === 'user');
+            const lastBotMessageIndex = findLastIndex(chatMessages, msg => msg.sender === 'chatbot');
+
+            return chatMessages.map((msg, index) => {
+              // 2. 현재 메시지가 각 타입의 마지막 메시지인지 판별합니다.
+              const isLastUserMessage = msg.sender === 'user' && index === lastUserMessageIndex;
+              const isLastBotMessage = msg.sender === 'chatbot' && index === lastBotMessageIndex;
+
+              return (
+                <ChatBubble
+                  key={msg.messageId}
+                  message={msg}
+                  isLastUserMessage={isLastUserMessage}
+                  isLastBotMessage={isLastBotMessage}
+                  isEditing={editingMessageId === msg.messageId}
+                  isBotReplying={isBotReplying}
+                  onStartEdit={handleStartEdit}
+                  onCommitEdit={handleCommitEdit}
+                  onCancelEdit={handleCancelEdit}
+                  onRegenerate={handleRegenerateAnswer}
+                />
+              );
+            });
+          })()}
+
+          {isBotReplying && <LoadingBubble />}
+          {recommendedQuestions.length > 0 && !isBotReplying && (
+            <RecommendedQuestions 
+              questions={recommendedQuestions} 
+              onQuestionClick={handleRecommendedQuestionClick} 
             />
-          ))}
-          {recommendedQuestions.length > 0 && (
-            <RecommendedQuestions questions={recommendedQuestions} onQuestionClick={handleRecommendedQuestionClick} />
           )}
         </div>
       )}
@@ -231,10 +332,10 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-blue-50 shadow-md">
         <SearchInput
           placeholder="무엇이든 물어보세요!"
-          value={messageInputValue} // 메시지 입력 필드 상태 사용
-          onChange={handleMessageInputChange} // 메시지 입력 핸들러
-          onSend={handleMessageInputSend} // 메시지 전송 핸들러
-          disabled={!isConnected} //  연결 안됐으면 입력 비활성화
+          value={messageInputValue}
+          onChange={handleMessageInputChange}
+          onSend={handleMessageInputSend}
+          disabled={!isConnected || isBotReplying} 
         />
       </div>
     </div>

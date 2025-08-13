@@ -41,8 +41,6 @@ public class ChatService {
     @Value("${ai-server.url}")
     private String aiServerUrl;
 
-    // processMessage, handleNewMessage, handleEditQuestion, handleRegenerateAnswer 메소드는
-    // 기존 코드와 동일하므로 생략합니다.
     public void processMessage(WebSocketMessageDto messageDto) {
         String userId = getUserIdFromSecurityContext();
         MessageType messageType = messageDto.getMessageType();
@@ -60,13 +58,14 @@ public class ChatService {
                 break;
             default:
                 log.warn("Unsupported message type: {}", messageType);
-                sendError(messageDto.getSessionId(), "지원하지 않는 메시지 타입입니다.");
+                sendError(messageDto.getSessionId(), messageDto.getMessageId(), "지원하지 않는 메시지 타입입니다.", messageType);
                 break;
         }
     }
+
     private void handleNewMessage(WebSocketMessageDto messageDto, String userId) {
         ChatMessage userMessage = ChatMessage.builder()
-                .id(UUID.randomUUID().toString())
+                .id(messageDto.getMessageId())
                 .sessionId(messageDto.getSessionId())
                 .userId(userId)
                 .sender(SenderType.user)
@@ -75,6 +74,7 @@ public class ChatService {
                 .createdAt(LocalDateTime.now())
                 .build();
         chatMessageRepository.save(userMessage);
+
         AiApiDto.GenerateRequest generateRequest = AiApiDto.GenerateRequest.builder()
                 .sessionId(userMessage.getSessionId())
                 .messageId(userMessage.getId())
@@ -82,9 +82,10 @@ public class ChatService {
                 .build();
         callGenerateApiAndRespond(generateRequest, userMessage);
     }
+
     private void handleEditQuestion(WebSocketMessageDto messageDto, String userId) {
         ChatMessage editedUserMessage = ChatMessage.builder()
-                .id(UUID.randomUUID().toString())
+                .id(messageDto.getMessageId())
                 .sessionId(messageDto.getSessionId())
                 .userId(userId)
                 .parentId(messageDto.getParentId())
@@ -94,20 +95,24 @@ public class ChatService {
                 .createdAt(LocalDateTime.now())
                 .build();
         chatMessageRepository.save(editedUserMessage);
+
         AiApiDto.GenerateRequest generateRequest = AiApiDto.GenerateRequest.builder()
                 .sessionId(editedUserMessage.getSessionId())
                 .messageId(editedUserMessage.getId())
                 .parentId(editedUserMessage.getParentId())
                 .content(editedUserMessage.getContent())
                 .build();
-        callGenerateApiAndRespond(generateRequest, editedUserMessage);
+
+        callGenerateApiAndRespond(generateRequest, editedUserMessage, MessageType.edit);
     }
+
     private void handleRegenerateAnswer(WebSocketMessageDto messageDto, String userId) {
         ChatMessage parentQuestion = chatMessageRepository.findById(messageDto.getParentId())
                 .orElseThrow(() -> new IllegalArgumentException("재생성을 위한 원본 메시지를 찾을 수 없습니다: " + messageDto.getParentId()));
+
         AiApiDto.GenerateRequest generateRequest = AiApiDto.GenerateRequest.builder()
                 .sessionId(parentQuestion.getSessionId())
-                .messageId(UUID.randomUUID().toString())
+                .messageId(parentQuestion.getId())
                 .parentId(parentQuestion.getId())
                 .content(parentQuestion.getContent())
                 .build();
@@ -120,24 +125,23 @@ public class ChatService {
      */
     private void callGenerateApiAndRespond(AiApiDto.GenerateRequest generateRequest, ChatMessage userMessage, MessageType responseMessageType) {
         String url = aiServerUrl + "/chatbot/generate";
+        String originalQuestionId = (generateRequest.getParentId() != null)
+                ? generateRequest.getParentId()
+                : userMessage.getId();
+
         try {
             HttpEntity<AiApiDto.GenerateRequest> requestEntity = new HttpEntity<>(generateRequest);
-
             log.info("Request to AI Server ({}): {}", url, objectMapper.writeValueAsString(generateRequest));
-
-            // 2. RestTemplate으로 AI 서버에 POST 요청
             ResponseEntity<AiApiDto.GenerateResponse> responseEntity =
                     restTemplate.postForEntity(url, requestEntity, AiApiDto.GenerateResponse.class);
-
             AiApiDto.GenerateResponse aiResponse = responseEntity.getBody();
             log.info("Response from AI Server: {}", objectMapper.writeValueAsString(aiResponse));
 
             if (aiResponse != null && aiResponse.getAnswer() != null) {
-                // 3. AI 응답 메시지를 DB에 저장
                 ChatMessage botMessage = ChatMessage.builder()
                         .id(UUID.randomUUID().toString())
                         .sessionId(userMessage.getSessionId())
-                        .parentId(userMessage.getId())
+                        .parentId(originalQuestionId)
                         .sender(SenderType.chatbot)
                         .content(aiResponse.getAnswer())
                         .messageType(responseMessageType)
@@ -145,21 +149,16 @@ public class ChatService {
                         .build();
                 chatMessageRepository.save(botMessage);
 
-                // 4. 프론트엔드에 보낼 응답 DTO 생성 및 전송
                 WebSocketResponseDto responseDto = WebSocketResponseDto.from(botMessage);
                 messagingTemplate.convertAndSend("/topic/chat/" + userMessage.getSessionId(), responseDto);
-
-                // 새 질문에 대한 답변일 경우에만 추천 질문 요청
-                if (responseMessageType == MessageType.text) {
-                    requestAndSendRecommendations(userMessage);
-                }
+                requestAndSendRecommendations(userMessage);
             }
         } catch (HttpClientErrorException e) {
             log.error("HttpClientErrorException: Status: {}, Body: {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
-            sendError(userMessage.getSessionId(), "AI 서버 통신 중 오류가 발생했습니다.");
+            sendError(userMessage.getSessionId(), originalQuestionId, "AI 서버 통신 중 오류가 발생했습니다.", responseMessageType);
         } catch (Exception e) {
             log.error("Exception while calling AI server.", e);
-            sendError(userMessage.getSessionId(), "AI 서버 응답을 가져오는 데 실패했습니다.");
+            sendError(userMessage.getSessionId(), originalQuestionId, "AI 서버 응답을 가져오는 데 실패했습니다.", responseMessageType);
         }
     }
 
@@ -205,17 +204,19 @@ public class ChatService {
         }
     }
 
-    public void sendError(String sessionId, String errorMessage) {
+    public void sendError(String sessionId, String userMessageId, String errorMessage, MessageType messageType) {
         WebSocketResponseDto errorDto = WebSocketResponseDto.builder()
                 .messageId(UUID.randomUUID().toString())
+                .userMessageId(userMessageId)
                 .sessionId(sessionId)
                 .sender(SenderType.chatbot)
                 .content(errorMessage)
-                .messageType(MessageType.text)
+                .messageType(messageType) // 오류는 일반 텍스트로 처리
                 .createdAt(LocalDateTime.now())
                 .build();
         messagingTemplate.convertAndSend("/topic/chat/" + sessionId, errorDto);
     }
+
     private String getUserIdFromSecurityContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
