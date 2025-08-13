@@ -6,15 +6,6 @@ import { Accordion, AccordionTab } from 'primereact/accordion';
 import { InquiryDto } from '@/lib/types';
 import { Button } from 'primereact/button'; 
 
-// // 1. 문의사항에 대한 구체적인 타입을 정의합니다. (any 대신)
-// interface Inquiry {
-//   id: number;
-//   title: string;
-//   content: string;
-//   userId: string;
-//   answer?: string;
-// }
-
 interface Props {
   inquiries: InquiryDto[];
   isLoading: boolean;
@@ -23,14 +14,6 @@ interface Props {
   onDelete: (inquiryId: number) => void;
   onEdit: (inquiryId: number) => void;
 }
-
-// // 임시 데이터: 실제로는 API를 통해 데이터를 가져와야 합니다.
-// const allInquiries: Inquiry[] = [
-//   { id: 1, userId: 'user123', title: '배송 관련 문의', content: '언제쯤 배송되나요?', answer: '내일 도착 예정입니다.' },
-//   { id: 2, userId: 'user456', title: '상품 재고 문의', content: '이 상품 재입고 되나요?', answer: '죄송하지만 단종된 상품입니다.' },
-//   { id: 3, userId: 'user123', title: '환불 규정 문의', content: '환불은 어떻게 진행되나요?', answer: '구매 후 7일 이내에 가능합니다.' },
-//   { id: 4, userId: 'user789', title: '사이트 오류 문의', content: '로그인이 안돼요.' }, // 답변 없는 문의
-// ];
 
 // export default function InquiryList({ isMyInquiries, currentUserId }: Props) {
 //   // 3. 컴포넌트 내부에서 보여줄 문의 목록 상태를 관리합니다.

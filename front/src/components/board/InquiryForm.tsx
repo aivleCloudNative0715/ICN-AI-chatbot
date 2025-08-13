@@ -4,8 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { useRouter } from 'next/navigation';
-import { InquiryDto } from '@/lib/types';
 import { createInquiry, getInquiryDetail, updateInquiry } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface InquiryFormProps {
   inquiryId?: string;
@@ -13,6 +13,7 @@ interface InquiryFormProps {
 
 export default function InquiryForm({ inquiryId }: InquiryFormProps) {
   const router = useRouter();
+  const { user, token } = useAuth();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   // 카테고리 타입을 백엔드 Enum과 맞춥니다.
@@ -20,9 +21,6 @@ export default function InquiryForm({ inquiryId }: InquiryFormProps) {
   const [errors, setErrors] = useState<{ title?: string; content?: string; category?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false); // 제출 중 상태
   const isEditMode = !!inquiryId;
-
-  // TODO: 사용자 ID는 Context API에서 가져와야 함
-  const userId = 'user123'; 
 
   // 카테고리 목록을 백엔드 Enum에 맞게 수정
   const categories = [
@@ -33,12 +31,10 @@ export default function InquiryForm({ inquiryId }: InquiryFormProps) {
   // 1. 수정 모드일 때, useEffect를 사용해 기존 데이터를 불러옵니다.
   useEffect(() => {
     // inquiryId가 있고, isEditMode가 true일 때만 실행
-    if (isEditMode && inquiryId) {
+     if (isEditMode && inquiryId && user && token) {
       const fetchInquiryData = async () => {
         try {
-          // getInquiryDetail API 호출
-          const inquiryData = await getInquiryDetail(Number(inquiryId), userId);
-          // 폼 상태를 불러온 데이터로 채움
+          const inquiryData = await getInquiryDetail(Number(inquiryId), user.userId, token);
           setTitle(inquiryData.title);
           setContent(inquiryData.content);
           setCategory(inquiryData.category);
@@ -49,8 +45,7 @@ export default function InquiryForm({ inquiryId }: InquiryFormProps) {
       };
       fetchInquiryData();
     }
-  }, [inquiryId, isEditMode, router, userId]); // 의존성 배열에 router, userId 추가
-
+  }, [inquiryId, isEditMode, router, user, token]); // 의존성 배열에 router, userId 추가
 
   const validate = () => {
     const newErrors: { title?: string; content?: string; category?: string } = {};
@@ -63,18 +58,21 @@ export default function InquiryForm({ inquiryId }: InquiryFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user || !token) {
+        alert('로그인이 필요합니다.');
+        return;
+    }
+
     if (!validate() || isSubmitting) return;
 
     setIsSubmitting(true);
     try {
       const dataToSend = { title, content, category: category! };
-
       if (isEditMode && inquiryId) {
-        // 수정 모드일 때 updateInquiry API 호출
-        await updateInquiry(Number(inquiryId), userId, dataToSend);
+        await updateInquiry(Number(inquiryId), user.userId, dataToSend, token);
         alert('문의가 성공적으로 수정되었습니다.');
       } else {
-        await createInquiry(userId, dataToSend);
+        await createInquiry(user.userId, dataToSend, token);
         alert('새 문의가 성공적으로 작성되었습니다.');
       }
       router.push('/board');

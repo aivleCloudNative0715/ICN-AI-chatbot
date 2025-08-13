@@ -1,12 +1,11 @@
 // src/app/board/layout.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import BoardSidebar from '@/components/board/BoardSidebar';
 import FloatingActionButton from '@/components/common/FloatingActionButton';
 import BoardHeader from '@/components/board/BoardHeader';
-import { PostCategory, PostFilter } from '../../lib/types'; // Assuming you have this path correct
+import { useAuth } from '@/contexts/AuthContext'; // AuthContext 가져오기
 
 interface BoardLayoutProps {
   children: React.ReactNode;
@@ -15,34 +14,12 @@ interface BoardLayoutProps {
 export default function BoardLayout({ children }: BoardLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-
-  // TODO: 실제 isLoggedIn 상태는 Context API 또는 전역 상태 관리 훅에서 가져와야 함
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // 게시판 레이아웃에서도 로그인 상태 관리 필요
-
-  // State to manage the currently selected category and filter
-  const [currentCategory, setCurrentCategory] = useState<PostCategory>('inquiry');
-  const [currentFilter, setCurrentFilter] = useState<PostFilter>('all');
-
-  useEffect(() => {
-    const token = localStorage.getItem('jwt_token');
-    if (token) {
-      // TODO: 토큰 유효성 검사 API 호출
-      setIsLoggedIn(true);
-    } else {
-      // setIsLoggedIn(false); // Set to false if no token
-    }
-  }, []);
+  
+  // Context에서 실제 로그인 정보와 로그아웃 함수를 가져온다
+  const { isLoggedIn, logout } = useAuth();
 
   const handleGoToChat = () => {
-    router.push('/'); // 메인 챗봇 화면으로 이동
-  };
-
-  const handleLogout = () => {
-    // TODO: 실제 API 호출 및 토큰 삭제 로직 (API-08-20030)
-    localStorage.removeItem('jwt_token');
-    setIsLoggedIn(false);
-    alert('로그아웃되었습니다.');
-    router.push('/'); // 로그아웃 후 메인 챗봇 화면으로 이동
+    router.push('/');
   };
 
   const handleNewInquiryClick = () => {
@@ -50,39 +27,29 @@ export default function BoardLayout({ children }: BoardLayoutProps) {
       router.push('/board/new');
     } else {
       alert('로그인 후 이용 가능합니다.');
-      // TODO: 로그인 모달 열기 등의 액션
+      // TODO: 로그인 모달 열기
     }
   };
-
-  // Handler for when a category is selected in the sidebar
-  const handleCategorySelect = (category: PostCategory, filter: PostFilter) => {
-    setCurrentCategory(category);
-    setCurrentFilter(filter);
-  };
-
-  console.log(isLoggedIn)
-
-  const isNewPage = pathname === '/board/new';
+  
+  // 새 글 작성 페이지에서는 플로팅 버튼을 숨깁니다.
+  const isNewPage = pathname.startsWith('/board/new');
 
   return (
     <div className="flex flex-col flex-1 h-screen overflow-hidden bg-board-primary">
-      {/* 게시판 전용 헤더 */}
       <BoardHeader
         onGoToChat={handleGoToChat}
-        onLogout={handleLogout}
+        onLogout={logout}
       />
-
-      <div className="flex flex-grow">
+      <div className="flex flex-grow overflow-hidden">
         {/* 페이지 콘텐츠 */}
         <main className="flex-grow flex flex-col overflow-y-auto p-6">
           {children}
         </main>
-
+        
+        {/* 새 글 작성 페이지가 아닐 때만 플로팅 버튼 표시 */}
         {!isNewPage && (
-          <FloatingActionButton onClick={handleNewInquiryClick} label="" />
+          <FloatingActionButton onClick={handleNewInquiryClick} />
         )}
-
-
       </div>
     </div>
   );
