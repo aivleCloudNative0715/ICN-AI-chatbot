@@ -7,6 +7,7 @@ import { InquiryDto, PostCategory, PostFilter } from '../../lib/types';
 import { deleteInquiry, getAllInquiries, getMyInquiries } from '../../lib/api';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function BoardPage() {
   const router = useRouter(); // router 훅 사용
@@ -19,9 +20,8 @@ export default function BoardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // TODO: 실제 로그인한 사용자의 ID (Auth Context에서 가져와야 함)
-  const currentUserId = 'user123';
-  const isLoggedIn = true;
+  // Context에서 실제 로그인 정보와 사용자 데이터를 가져옵니다.
+  const { isLoggedIn, user } = useAuth();
 
   // 2. API를 호출하는 함수
   const fetchInquiries = useCallback(async () => {
@@ -30,10 +30,14 @@ export default function BoardPage() {
     try {
       let response;
       if (currentFilter === 'my') {
-        // '내 문의' 필터일 경우
-        response = await getMyInquiries(currentUserId);
+        if (!user) { // 사용자가 없으면 '내 문의'를 가져올 수 없음
+          setError('로그인이 필요합니다.');
+          setInquiries([]);
+          return;
+        }
+        // ✅ 실제 사용자 ID로 API 호출
+        response = await getMyInquiries(user.userId);
       } else {
-        // '전체 문의' 필터일 경우
         response = await getAllInquiries();
       }
       setInquiries(response.content); // Page 객체의 content를 상태에 저장
@@ -43,7 +47,7 @@ export default function BoardPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentFilter, currentUserId]); // currentFilter가 바뀔 때마다 함수가 재생성됨
+  }, [currentFilter, user]);
 
   // 3. 컴포넌트가 마운트되거나, 필터가 변경될 때 API 호출
   useEffect(() => {
@@ -65,11 +69,12 @@ export default function BoardPage() {
 
     // 삭제 처리 함수 추가
   const handleDelete = async (inquiryId: number) => {
+    if (!user) return alert('로그인이 필요합니다.');
     if (!window.confirm('정말로 이 문의를 삭제하시겠습니까?')) {
       return;
     }
     try {
-      await deleteInquiry(inquiryId, currentUserId);
+      await deleteInquiry(inquiryId, user.userId);
       alert('문의가 삭제되었습니다.');
       fetchInquiries(); // 목록을 다시 불러와 화면을 갱신
     } catch (err) {
@@ -109,9 +114,12 @@ export default function BoardPage() {
           inquiries={inquiries}
           isLoading={isLoading}
           error={error}
-          currentUserId={currentUserId}
+          currentUserId={user?.userId || ''}
           onDelete={handleDelete}
-          onEdit={(inquiryId) => router.push(`/board/new?id=${inquiryId}`)}
+          onEdit={(inquiryId) => {
+            if (!isLoggedIn) return alert('로그인이 필요합니다.');
+            router.push(`/board/new?id=${inquiryId}`);
+          }}
         />
         
       </div>
