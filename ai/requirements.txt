@@ -1,23 +1,23 @@
 # ⚙️ KoBERT 및 Transformers
-torch>=1.13.1
-transformers==4.54.1  # 최신 기능 사용 가능
+torch==2.7.1
+transformers~=4.55.0  # 최신 기능 사용 가능
 datasets==2.19.1
 
 # 🧠 형태소 분석기
 konlpy==0.6.0
 
 # 🧹 전처리 및 분석
-numpy==1.26.4
+numpy~=1.26.4
 pandas==2.3.1
-scikit-learn==1.5.0
+scikit-learn~=1.5.0
 tqdm==4.67.1
 
 # 🔤 KoBERT용 Tokenizer
-# sentencepiece==0.1.96
+sentencepiece==0.2.0
 # pip install sentencepiece --prefer-binary
 
 # 📊 시각화
-matplotlib==3.8.4
+matplotlib~=3.8.4
 
 # 📓 Jupyter Notebook
 notebook==7.2.0
@@ -37,7 +37,7 @@ distro==1.9.0
 dnspython==2.7.0
 et_xmlfile==2.0.0
 filelock==3.18.0
-fsspec==2024.3.1
+fsspec==2025.7.0
 gunicorn==23.0.0
 h11==0.16.0
 httpcore==1.0.9
@@ -78,7 +78,7 @@ regex==2025.7.31
 requests==2.32.4
 requests-toolbelt==1.0.0
 safetensors==0.5.3
-scipy==1.15.3
+scipy==1.16.1
 sentence-transformers==5.0.0
 setuptools==80.9.0
 six==1.17.0

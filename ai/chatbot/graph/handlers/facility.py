@@ -1,17 +1,31 @@
-# C:\Users\User\Desktop\ICN-AI-chatbot\ai\chatbot\graph\handlers\facility.py
+from typing import List, Dict, Any
 from chatbot.graph.state import ChatState
 from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
 from chatbot.rag.llm_tools import extract_location_with_llm, _extract_facility_names_with_llm, _filter_and_rerank_docs
 
+def _combine_individual_responses(responses: List[str]) -> str:
+    """개별 RAG 핸들러의 응답을 하나로 합치는 헬퍼 함수"""
+    if not responses:
+        return "죄송합니다. 요청하신 시설 정보를 찾을 수 없습니다."
+
+    # 응답이 하나일 경우
+    if len(responses) == 1:
+        return responses[0]
+
+    # 복수일 경우 번호를 붙여 결합
+    combined_text = "사용자님의 여러 질문에 대한 답변입니다.\n\n"
+    for idx, response in enumerate(responses, 1):
+        combined_text += f"{idx}. {response}\n"
+    return combined_text
+
 def facility_guide_handler(state: ChatState) -> ChatState:
     """
     'facility_guide' 의도에 대한 RAG 기반 핸들러.
-    사용자 쿼리를 기반으로 MongoDB에서 공항 시설 정보를 검색하고 답변을 생성합니다.
+    각 시설별로 RAG를 개별적으로 수행하고 결과를 합칩니다.
     """
     query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "facility_guide")
-    slots = state.get("slots", [])
 
     if not query_to_process:
         print("디버그: 사용자 쿼리가 비어 있습니다.")
@@ -20,12 +34,10 @@ def facility_guide_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # 1. LLM을 사용하여 위치 정보 추출
+    # 1. LLM을 사용하여 위치 정보와 시설 이름 목록 추출
     location_keyword = extract_location_with_llm(query_to_process)
-    print(f"디버그: LLM으로 추출된 위치 정보 - {location_keyword}")
-
-    # 2. LLM을 사용하여 시설 이름 목록 추출
     facility_names = _extract_facility_names_with_llm(query_to_process)
+    print(f"디버그: LLM으로 추출된 위치 정보 - {location_keyword}")
     print(f"디버그: LLM을 사용해 추출된 시설 목록 - {facility_names}")
 
     if not facility_names:
@@ -42,44 +54,55 @@ def facility_guide_handler(state: ChatState) -> ChatState:
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
 
-    all_retrieved_docs_text = []
+    individual_responses = []
     try:
-        # 📌 1단계: 각 시설 이름별로 벡터 검색을 넓게 수행
+        # 📌 수정된 로직: 각 시설 이름별로 완전한 RAG 파이프라인을 실행
         for facility_name in facility_names:
-            print(f"디버그: '{facility_name}'에 대해 넓은 검색 시작...")
+            print(f"디버그: '{facility_name}'에 대한 RAG 파이프라인 시작...")
             
+            # 1단계: 넓은 벡터 검색
             query_embedding = get_query_embedding(facility_name)
             retrieved_docs_text = perform_vector_search(
                 query_embedding,
                 collection_name=collection_name,
                 vector_index_name=vector_index_name,
                 query_filter=query_filter,
-                top_k=10 # 📌 더 많은 문서를 가져오기 위해 top_k를 높게 설정
+                top_k=10
             )
-            all_retrieved_docs_text.extend(retrieved_docs_text)
+            print(f"디버그: '{facility_name}'에 대해 {len(retrieved_docs_text)}개 문서 검색 완료.")
+
+            # 2단계: 필터링 및 재정렬
+            context_for_llm = "\n\n".join(retrieved_docs_text)
+            final_context = _filter_and_rerank_docs(context_for_llm, location_keyword)
+
+            if not final_context and retrieved_docs_text:
+                print(f"디버그: '{facility_name}' 필터링 실패. 원본 문서로 답변 생성 시도.")
+                final_context = context_for_llm
             
-        print(f"디버그: MongoDB에서 총 {len(all_retrieved_docs_text)}개 문서 검색 완료.")
-
-        # 📌 2단계: LLM을 사용하여 위치 정보로 필터링 및 재정렬
-        context_for_llm = "\n\n".join(all_retrieved_docs_text)
-        final_context = _filter_and_rerank_docs(context_for_llm, location_keyword)
-
-        if not final_context:
-            return {**state, "response": "죄송합니다. 요청하신 시설 정보를 찾을 수 없습니다."}
-            
-        final_docs_list = final_context.split('\n\n')
-        truncated_docs_list = final_docs_list[:5]
-        
-        # 다시 문자열로 합쳐서 LLM에 전달합니다.
-        final_context_truncated = "\n\n".join(truncated_docs_list)
-        
-        print(f"디버그: 최종 답변 생성을 위해 {len(truncated_docs_list)}개 문서만 사용합니다.")
-
-        final_response = common_llm_rag_caller(query_to_process, final_context_truncated, intent_description, intent_name)
+            # 3단계: 최종 LLM 답변 생성
+            if final_context:
+                truncated_docs_list = final_context.split('\n\n')[:10]
+                final_context_truncated = "\n\n".join(truncated_docs_list)
+                
+                sub_query_to_process = f"'{location_keyword}'에 있는 '{facility_name}'의 운영시간은?" if location_keyword else f"'{facility_name}'의 운영시간은?"
+                
+                final_response_text = common_llm_rag_caller(
+                    sub_query_to_process,
+                    final_context_truncated,
+                    intent_description,
+                    intent_name
+                )
+                individual_responses.append(final_response_text)
+            else:
+                individual_responses.append(f"죄송합니다. 요청하신 '{location_keyword}'에 있는 '{facility_name}' 정보를 찾을 수 없습니다.")
 
     except Exception as e:
         error_msg = f"죄송합니다. 정보를 검색하는 중 오류가 발생했습니다: {e}"
         print(f"디버그: {error_msg}")
         return {**state, "response": error_msg}
+    finally:
+        close_mongo_client()
 
+    # 📌 수정된 로직: 모든 개별 응답을 하나로 합칩니다.
+    final_response = _combine_individual_responses(individual_responses)
     return {**state, "response": final_response}
