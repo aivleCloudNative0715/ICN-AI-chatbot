@@ -10,6 +10,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { InputText } from 'primereact/inputtext';
+import { useDebounce } from '@/hooks/useDebounce'; 
 
 export default function BoardPage() {
   const router = useRouter();
@@ -20,6 +21,10 @@ export default function BoardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isLoggedIn, user, token } = useAuth();
+
+  // 디바운싱을 적용할 searchTerm을 useDebounce 훅에 넘겨줍니다. 
+  // 사용자가 500ms(0.5초) 동안 타이핑을 멈추면 debouncedSearchTerm이 업데이트됩니다.
+  const debouncedSearchTerm = useDebounce(searchTerm, 200);
 
   // DataTable 페이지네이션을 위한 상태 추가
   const [first, setFirst] = useState(0); // 첫 레코드의 인덱스
@@ -40,9 +45,9 @@ export default function BoardPage() {
       let response;
       if (currentFilter === 'my') {
         if (!user) throw new Error('인증 정보가 없습니다.');
-        response = await getMyInquiries(currentCategory, token, page, rows, searchTerm);
+        response = await getMyInquiries(currentCategory, token, page, rows, debouncedSearchTerm);
       } else {
-        response = await getAllInquiries(currentCategory, token, page, rows, searchTerm);
+        response = await getAllInquiries(currentCategory, token, page, rows, debouncedSearchTerm);
       }
       setInquiries(response.content);
       setTotalRecords(response.totalElements); // 총 레코드 수 업데이트
@@ -52,18 +57,12 @@ export default function BoardPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, currentCategory, currentFilter, user, first, rows, searchTerm]);
+  }, [token, currentCategory, currentFilter, user, first, rows, debouncedSearchTerm]);
 
 
   useEffect(() => {
     fetchInquiries();
   }, [fetchInquiries]);
-
-  const handleSearch = () => {
-    // 검색 버튼 클릭 시 첫 페이지부터 다시 조회
-    setFirst(0);
-    fetchInquiries();
-  };
 
   const onPageChange = (event: any) => {
     setFirst(event.first);
@@ -87,8 +86,8 @@ export default function BoardPage() {
             <span className="p-input-icon-left">
               <InputText 
                     value={searchTerm} 
+                    // 사용자가 입력할 때마다 searchTerm state만 즉시 업데이트됩니다.
                     onChange={(e) => setSearchTerm(e.target.value)} 
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="제목 또는 내용 검색" 
                     className="w-full border rounded-md py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline placeholder-gray-400"
               />
