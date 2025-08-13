@@ -1,11 +1,14 @@
 import os
 from datetime import datetime, timedelta, date
+import locale
 import re
 from chatbot.graph.state import ChatState
 from dotenv import load_dotenv
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
 from chatbot.rag.airport_congestion_helpers import _get_congestion_level, VALID_AREAS, _parse_query_with_llm, _get_congestion_data_from_db, _get_daily_congestion_data_from_db, _map_area_to_db_key
 import json
+
+locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')
 
 load_dotenv()
 
