@@ -22,12 +22,12 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "아래 필드들을 추출해줘: "
         "- `flight_id`: 항공편명 (예: 'KE001', 'OZ201'). 정보가 없으면 null로 추출해줘.\n"
         "- `airline_name`: 항공사 이름 (예: '대한항공', '아시아나항공'). 정보가 없으면 null로 추출해줘.\n"
-        "- `airport_name`: 도착 도시명 또는 공항 이름. 정보가 없으면 null로 추출해줘.\n"
-        "- `airport_codes`: '일본'처럼 국가명이 포함되면 해당 국가의 주요 공항 IATA 코드 리스트(예: ['NRT', 'HND', 'KIX'])를 추출해줘. '도쿄'처럼 도시명이 포함되면 해당 도시의 주요 공항 IATA 코드 리스트(예: ['NRT', 'HND'])를 추출해줘. 정보가 없으면 빈 리스트로 추출해줘.\n"
-        "- `departure_airport_name`: 출발 도시명 또는 공항 이름. 정보가 없으면 null로 추출해줘.\n"
-        "- `direction`: 운항 방향 ('arrival' 또는 'departure'). 정보가 없으면 'departure'로 간주해줘.\n"
-        "- `from_time`: 검색 시작 시간 (HHMM 형식). '오후 7시 이후'는 '1900', '오전 8시 이전'은 '0000', '오전 8시'는 '0800'으로 추출해줘. 시간 정보가 없으면 null로 추출해줘.\n"
-        "- `to_time`: 검색 종료 시간 (HHMM 형식). '오후 7시 이후'는 '2359', '오전 8시 이전'은 '0800', '오전 8시'는 '0800'으로 추출해줘. 시간 정보가 없으면 null로 추출해줘.\n"
+        "- `airport_name`: 도착 도시명 또는 공항 이름. 인천에서 출발하는 경우에만 추출해줘. 정보가 없으면 null로 추출해줘.\n"
+        "- `airport_codes`: '일본'처럼 국가명이 포함되면 해당 국가의 주요 공항 IATA 코드 리스트(예: ['NRT', 'HND', 'KIX'])를 추출해줘. '도쿄'처럼 도시명이 포함되면 해당 도시의 주요 공항 IATA 코드 리스트(예: ['NRT', 'HND'])를 추출해줘. **'미국'처럼 국가명이 언급되면 'JFK', 'LAX' 등 주요 공항 코드를 반드시 추출해줘.** 인천을 묻는 질문에서는 이 필드를 비워줘. 정보가 없으면 빈 리스트로 추출해줘.\n"
+        "- `departure_airport_name`: 출발 도시명 또는 공항 이름. 인천으로 도착하는 경우에만 추출해줘. 정보가 없으면 null로 추출해줘.\n"
+        "- `direction`: 운항 방향 ('arrival' 또는 'departure'). 질문에 명시되어 있지 않으면 'departure'로 간주해줘.\n"
+        "- `from_time`: 검색 시작 시간 (HHMM 형식). 정보가 없으면 null로 추출해줘.\n"
+        "- `to_time`: 검색 종료 시간 (HHMM 형식). 정보가 없으면 null로 추출해줘.\n"
         "- `info_type`: 사용자가 얻고자 하는 정보의 유형 (예: '체크인 카운터', '탑승구', '운항 정보'). 정보가 없으면 '운항 정보'로 추출해줘.\n"
         "- `date_offset`: '오늘'이면 0, '내일'이면 1, '모레'이면 2, '어제'면 -1처럼 오늘을 기준으로 한 날짜 차이를 정수로 추출해줘. 정보가 없으면 0으로 추출해줘.\n"
         "- `terminal`: 사용자가 요청한 터미널 정보. '1터미널' 또는 '제1터미널'은 'T1'으로, '2터미널' 또는 '제2터미널'은 'T2'로 추출해줘. 정보가 없으면 null로 추출해줘.\n"
@@ -36,18 +36,20 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "1. **시간 모호성**: '3시 반'처럼 모호한 시간은, 오전과 오후를 모두 포함하는 2개의 독립된 요청으로 분리해서 반환해줘. 각 요청에는 from_time과 to_time이 동일하게 추출돼야 해.\n"
         "2. **시간 범위**: '오전 8시 이후'는 from_time을 '0800'으로, to_time을 '2359'로 추출해줘. '오후 8시 이전'은 from_time을 '0000'으로, to_time을 '2000'으로 추출해줘.\n"
         "3. **특정 시간**: '오후 3시'처럼 특정 시점의 시간은 from_time과 to_time에 동일한 시간(예: '1500')을 추출해줘. 핸들러에서 이 값을 기준으로 검색 범위를 계산할 거야.\n"
-        "4. **국가명**: '일본'과 같은 국가명은 'airport_name'으로 추출하고, 동시에 'airport_codes'에 주요 공항 코드 리스트를 반드시 추가해줘. '도쿄'와 같은 도시명도 마찬가지야.\n"
-        "5. **출발지/도착지**: **만약 출발지(예: '인천에서')와 도착지(예: '미국으로')가 모두 언급되면, 'departure_airport_name'에 출발지를, 'airport_name'에 도착지를 추출해야 해. 'airport_codes'에는 도착지 공항 코드 리스트를 넣어줘.**\n"
-        "6. **출발지 기본값**: 질문에 도착지만 언급되고 출발지가 명시되지 않으면, 'departure_airport_name'은 '인천국제공항'으로 간주하고, 'direction'은 'departure'로 설정해줘."
+        "4. **국가/도시명**: '일본'과 같은 국가명은 'airport_name'으로 추출하고, 동시에 'airport_codes'에 주요 공항 코드 리스트를 반드시 추가해줘. '도쿄'와 같은 도시명도 마찬가지야.\n"
+        "5. **출발지/도착지**: 질문에 도착지만 언급되고 출발지가 명시되지 않으면, 'departure_airport_name'은 '인천국제공항'으로 간주하고, 'direction'은 'departure'로 설정해줘."
+        "6. **인천 관련**: '인천 도착'과 같은 질문에서 'airport_name'과 'airport_codes'를 null/빈 리스트로 남겨두고 'direction'을 'arrival'로 설정해줘. '인천 출발'과 같은 질문에서도 마찬가지로 'airport_name'과 'airport_codes'를 비우고 'direction'을 'departure'로 설정해줘."
         
         "응답 시 다른 설명 없이 오직 JSON 객체만 반환해야 해."
         "\n\n예시: "
+        "사용자: 인천에 곧 도착하는 비행기 알려줘"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"arrival\", \"from_time\": null, \"to_time\": null, \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
         "사용자: 오늘 뉴욕가는거 오후 2시 이후에 어떤거 있어?"
         "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"뉴욕\", \"airport_codes\": [\"JFK\", \"LGA\", \"EWR\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"1400\", \"to_time\": \"2359\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
-        "사용자: 인천 도착하는 3시 반 비행기"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"arrival\", \"from_time\": \"0330\", \"to_time\": \"0330\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"인천\", \"airport_codes\": [\"ICN\"], \"departure_airport_name\": null, \"direction\": \"도착\", \"from_time\": \"1530\", \"to_time\": \"1530\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
         "사용자: 1터미널 9시 비행기 알려줘"
         "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"0900\", \"to_time\": \"0900\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": \"T1\"}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"2100\", \"to_time\": \"2100\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": \"T1\"}]}```"
+        "사용자: 오늘 인천에서 미국 가는 비행기 알려줘"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"미국\", \"airport_codes\": [\"JFK\", \"LAX\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": null, \"to_time\": null, \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
     )
 
     messages = [
@@ -109,11 +111,14 @@ def _call_flight_api(
             "searchday": date,
             "flight_id": flight_id,
             "f_id": f_id,
-            "airport_code": airport_code,
             "from_time": from_time.replace(':', '') if from_time else None,
             "to_time": to_time.replace(':', '') if to_time else None,
         }
         
+        # 📌 수정: airport_code가 있을 경우에만 params에 추가
+        if airport_code:
+            params["airport_code"] = airport_code
+            
         call_params = {k: v for k, v in params.items() if v}
         print(f"디버그: API 호출 시도 - {direction} 방향, 날짜: {date}, 파라미터: {call_params}")
 
@@ -138,7 +143,6 @@ def _call_flight_api(
     print(f"디버그: {direction} 방향으로 모든 날짜에서 정보를 찾을 수 없습니다.")
     return {"data": [], "total_count": 0}
 
-
 def _extract_flight_info_from_response(
     api_response: Dict[str, Any], 
     info_type: Optional[str] = None, 
@@ -146,7 +150,8 @@ def _extract_flight_info_from_response(
     airport_name: Optional[str] = None,
     airline_name: Optional[str] = None,
     departure_airport_name: Optional[str] = None,
-    departure_airport_code: Optional[str] = None
+    departure_airport_code: Optional[str] = None,
+    requested_direction: Optional[str] = None # 📌 추가: 요청 방향 매개변수
 ) -> List[Dict[str, Any]]:
     flight_data = api_response.get("data", [])
     if not flight_data:
@@ -154,7 +159,17 @@ def _extract_flight_info_from_response(
 
     if isinstance(flight_data, dict):
         flight_data = [flight_data]
-    
+        
+    # 📌 핵심 수정: API 응답의 운항 방향과 요청 방향이 다르면 필터링
+    if requested_direction:
+        # 응답의 'remark' 필드에 '도착', '출발'이 명시되어 있다고 가정
+        flight_data = [
+            item for item in flight_data
+            if requested_direction == "arrival" and item.get("remark") == "도착" or \
+               requested_direction == "departure" and item.get("remark") in ["출발", "탑승중", "탑승준비", "탑승마감", "마감예정"]
+        ]
+        print(f"디버그: 요청 방향('{requested_direction}')으로 필터링 완료. 남은 항목 수: {len(flight_data)}")
+
     if departure_airport_code:
         flight_data = [item for item in flight_data if item.get("airportCode") == departure_airport_code]
         print(f"디버그: '{departure_airport_name}' ({departure_airport_code})으로 출발지 정보 필터링 완료. 남은 항목 수: {len(flight_data)}")
@@ -185,7 +200,6 @@ def _extract_flight_info_from_response(
             "체크인카운터": item.get("chkinrange"),
             "터미널": item.get("terminalid")
         }
-        
         extracted_info.append(info)
     
     return extracted_info
