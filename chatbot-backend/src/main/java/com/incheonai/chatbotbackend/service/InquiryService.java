@@ -99,31 +99,11 @@ public class InquiryService {
         return inquiryRepository.findAll(spec, pageable).map(InquiryDto::fromEntity);
     }
 
-//    /** 내 문의 목록 조회 (GET /users/me/inquiries?page=&size=&status=) */
-//    @Transactional(readOnly = true)
-//    public Page<InquiryDto> getMyInquiries(String userId, String category, String status, Pageable pageable) {
-//        BoardCategory boardCategory = (category != null && !category.isBlank()) ? BoardCategory.valueOf(category.toUpperCase()) : null;
-//        InquiryStatus inquiryStatus = (status != null && !status.isBlank()) ? InquiryStatus.valueOf(status.toUpperCase()) : null;
-//
-//        Page<Inquiry> page;
-//        if (boardCategory != null && inquiryStatus != null) {
-//            page = inquiryRepository.findByUserIdAndCategoryAndStatus(userId, boardCategory, inquiryStatus, pageable);
-//        } else if (boardCategory != null) {
-//            page = inquiryRepository.findByUserIdAndCategory(userId, boardCategory, pageable);
-//        } else if (inquiryStatus != null) {
-//            page = inquiryRepository.findByUserIdAndStatus(userId, inquiryStatus, pageable);
-//        } else {
-//            page = inquiryRepository.findByUserId(userId, pageable);
-//        }
-//        return page.map(InquiryDto::fromEntity);
-//    }
-
-    /** 단일 문의 상세 조회 (GET /users/me/inquiries/{inquiry_id}) */
     @Transactional(readOnly = true)
-    public InquiryDetailDto getMyInquiryDetail(String userId, Integer inquiryId) {
+    public InquiryDetailDto getInquiryDetailById(Integer inquiryId) {
         Inquiry inquiry = inquiryRepository
-                .findByInquiryIdAndUserId(inquiryId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("문의 정보를 찾을 수 없습니다."));
+                .findById(inquiryId) // userId 없이 inquiryId로만 조회
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문의입니다."));
         return InquiryDetailDto.fromEntity(inquiry);
     }
 
