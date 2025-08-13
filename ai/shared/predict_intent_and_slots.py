@@ -1,6 +1,7 @@
 import torch
 from torch.nn.functional import softmax, sigmoid
 
+from shared.config import INTENT_CLASSIFICATION
 from shared.load_model import model, idx2intent, idx2slot, intent2idx
 from shared.normalize_with_morph import normalize_with_morph
 from shared.utils import tokenizer, device
@@ -30,39 +31,6 @@ def merge_tokens_and_slots(tokens, slot_ids, idx2slot):
 
     return merged
 
-# 🔮 예측 함수
-def predict_top_k_intents_and_slots(text, k=3):
-    encoding = tokenizer(
-        text,
-        return_tensors='pt',
-        truncation=True,
-        padding='max_length',
-        max_length=64
-    )
-    input_ids = encoding["input_ids"].to(device)
-    attention_mask = encoding["attention_mask"].to(device)
-
-    with torch.no_grad():
-        intent_logits, slot_logits = model(input_ids, attention_mask)
-        intent_probs = softmax(intent_logits, dim=1)
-
-        # 토큰 디버깅용
-        # for i, logit in enumerate(slot_logits[0]):
-        #   top_id = logit.argmax().item()
-        #   top_slot = idx2slot[top_id]
-        #   print(f"{i}번째 토큰 → {top_slot} ({logit[top_id].item():.4f})")
-
-        # 🎯 인텐트 예측 (Top-k)
-        topk_probs, topk_indices = torch.topk(intent_probs, k, dim=1)
-        intents = [(idx2intent[idx.item()], prob.item()) for idx, prob in zip(topk_indices[0], topk_probs[0])]
-
-        # 🎯 슬롯 예측
-        slot_pred_ids = torch.argmax(slot_logits, dim=2)[0].tolist()
-        tokens = tokenizer.convert_ids_to_tokens(input_ids[0])
-
-        merged = merge_tokens_and_slots(tokens, slot_pred_ids, idx2slot)
-
-    return intents, merged
 
 # 🔮 예측 함수 (의도 top-1만 사용)
 def predict_intent(text):
@@ -78,7 +46,7 @@ def predict_intent(text):
         return predicted_intent, top_prob.item()
 
 # 🔮 BCEWithLogitsLoss 기반 예측 함수
-def predict_with_bce(text, threshold=0.8, top_k_intents=3, max_length=64):
+def predict_with_bce(text, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3, max_length=64):
     """
     BCEWithLogitsLoss로 학습된 모델을 위한 예측 함수
 
