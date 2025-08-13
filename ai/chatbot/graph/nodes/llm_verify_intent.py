@@ -56,17 +56,16 @@ def llm_verify_intent_node(state: ChatState) -> ChatState:
     {supported_intents_list_str}
 
     지침:
-    1. **가장 중요한 지침:** 사용자의 질문이 날짜, 요일, 시간, 터미널 정보만 포함하고 있다면, **이전 대화의 의도를 그대로 유지**하세요. 새로운 의도로 변경하려면 사용자가 명확한 키워드(예: '비행기', '주차')를 언급해야 합니다.
-    2. **포괄적 질문 처리:** '유의사항', '주의할 점'과 같은 포괄적 질문은 'baggage_rule_query' 또는 'immigration_policy'와 같은 관련 정책 의도로 분류하세요.
-    3. '예측된 의도'가 완벽하게 일치하면, 최종 의도와 함께 재구성된 질문을 반환하세요.
-    4. '예측된 의도'가 부적절하다고 판단되면, 사용 가능한 의도 목록에서 가장 적합한 의도를 찾아 새로운 의도와 함께 재구성된 질문을 반환하세요.
-    5. 어떤 의도에도 해당되지 않으면, 그대로 예측된 의도와 재구성된 질문을 반환하세요.
-    6. 절대 다른 설명이나 문장은 추가하지 말고, 오직 JSON 객체만 반환하세요.
-    7. 재구성된 질문에는 이전 대화에서 언급된 중요한 정보(예: '국가', '공항', '혼잡도', '2터미널')를 반드시 포함하세요.
+    1. **복합 의도 처리:** 사용자의 질문에 두 개 이상의 명확한 의도가 포함되어 있다면, **모든 관련 의도들을 리스트 형태로 반환**하세요. (예: "주차 가능한 곳과 터미널까지 걸리는 시간 알려줘." -> `parking_availability_query`와 `parking_walk_time_info`를 모두 반환)
+    2. **가장 중요한 지침:** 사용자의 질문이 날짜, 요일, 시간, 터미널 정보만 포함하고 있다면, **이전 대화의 의도를 그대로 유지**하세요.
+    3. '예측된 의도'가 부적절하다고 판단되면, 사용 가능한 의도 목록에서 가장 적합한 의도를 찾아 반환하세요.
+    4. 어떤 의도에도 해당되지 않으면, 그대로 예측된 의도와 재구성된 질문을 반환하세요.
+    5. 절대 다른 설명이나 문장은 추가하지 말고, 오직 JSON 객체만 반환하세요.
+    6. 재구성된 질문에는 이전 대화에서 언급된 중요한 정보(예: '국가', '공항', '혼잡도', '2터미널')를 반드시 포함하세요.
 
     예측된 의도: {initial_intent}
 
-    JSON 응답: {{"final_intent": "예시_의도명", "rephrased_query": "예시_재구성된 질문"}}
+    JSON 응답: {{"final_intents": ["예시_의도1", "예시_의도2"], "rephrased_query": "예시_재구성된 질문"}}
     """
 
     messages_for_llm = [
@@ -90,13 +89,23 @@ def llm_verify_intent_node(state: ChatState) -> ChatState:
         result = response.choices[0].message.content
         parsed_result = json.loads(result)
         
-        final_intent = parsed_result.get("final_intent")
+        final_intents = parsed_result.get("final_intents", [])
         rephrased_query = parsed_result.get("rephrased_query", "")
 
-        if final_intent:
-            print(f"디버그: LLM 검증 결과, 최종 의도: {final_intent}, 재구성된 질문: '{rephrased_query}'")
-            state["intent"] = final_intent
+        if final_intents:
+            # 상태에 복수 의도를 저장하거나, 'complex_intent'로 설정 후 실제 의도들을 별도 저장
+            # 여기서는 'complex_intent'로 라우팅하고 실제 의도들은 'detected_intents'에 저장하는 것이 좋습니다.
+            print(f"디버그: LLM 검증 결과, 최종 의도: {final_intents}, 재구성된 질문: '{rephrased_query}'")
+            state["intent"] = "complex_intent"  # 라우팅을 위해 복합 의도로 설정
+            state["detected_intents"] = [(intent, 1.0) for intent in final_intents] # 핸들러가 처리할 실제 의도 리스트
             state["rephrased_query"] = rephrased_query
+        else:
+            # 복합 의도가 아닌 경우, 기존처럼 단일 의도를 처리하는 로직 추가
+            single_intent = parsed_result.get("final_intent")
+            if single_intent:
+                print(f"디버그: LLM 검증 결과, 최종 의도: {single_intent}, 재구성된 질문: '{rephrased_query}'")
+                state["intent"] = single_intent
+                state["rephrased_query"] = rephrased_query
         
     except Exception as e:
         print(f"디버그: LLM 의도 검증 또는 파싱 실패 - {e}")

@@ -4,12 +4,6 @@ from chatbot.rag.utils import get_mongo_collection
 from chatbot.rag.config import client
 import json
 
-common_disclaimer = (
-            "\n\n---"
-            "\n주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
-            "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
-        ) 
-
 def airport_weather_current_handler(state: ChatState) -> ChatState:
     """
     인천공항 날씨에 대한 질문이 들어왔을 때 처리해주는 핸들러
@@ -65,11 +59,9 @@ def airport_weather_current_handler(state: ChatState) -> ChatState:
         final_response_text = response.choices[0].message.content
         print(f"\n--- [GPT-4o-mini 응답] ---")
         print(final_response_text)
-
-        final_response = final_response_text + common_disclaimer
         
     except Exception as e:
         print(f"디버그: 응답 처리 중 오류 발생 - {e}")
-        final_response = "기상 정보를 처리하는 도중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+        final_response_text = "기상 정보를 처리하는 도중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
 
-    return {**state, "response": final_response}
+    return {**state, "response": final_response_text}
