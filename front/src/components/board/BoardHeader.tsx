@@ -4,6 +4,7 @@
 import React from 'react';
 import { Button } from 'primereact/button';
 import { ArrowLeftOnRectangleIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline'; // 아이콘 임포트
+import { useRouter } from 'next/navigation';
 
 interface BoardHeaderProps {
   onGoToChat: () => void;
@@ -11,6 +12,13 @@ interface BoardHeaderProps {
 }
 
 export default function BoardHeader({ onGoToChat, onLogout }: BoardHeaderProps) {
+  const router = useRouter();
+
+  const handleLogoutClick = () => {
+    onLogout();
+    router.push('/');
+  };
+
   return (
     <header className="flex justify-end gap-4 p-4 bg-board-primary">
       <Button
@@ -30,7 +38,7 @@ export default function BoardHeader({ onGoToChat, onLogout }: BoardHeaderProps) 
           hover:bg-board-primary hover:text-board-dark hover:border-board-dark hover:border-2
           focus:ring-2 focus:ring-primary focus:ring-offset-2
         "
-        onClick={onLogout}
+        onClick={handleLogoutClick}
         pt={{ root: { className: '!min-w-fit !px-3 !py-1' } }}
       />
     </header>

@@ -1,47 +1,37 @@
 // src/lib/types.ts
-
-// 문의/건의 기본 타입
-export interface Inquiry {
-  inquiry_id: string;
-  user_id: string; // 실제로는 JWT 토큰으로 인증하지만, 데이터 구조상 필요
+export interface InquiryDto {
+  inquiryId: number;
+  userId: string;
   title: string;
+  category: 'INQUIRY' | 'SUGGESTION'; // 백엔드 Enum과 동일하게
+  urgency: 'HIGH' | 'MEDIUM' | 'LOW';
+  status: 'PENDING' | 'RESOLVED';
+  createdAt: string; // LocalDateTime은 string으로 받습니다.
+  updatedAt: string;
+}
+
+// 상세 조회 시 사용될 타입 (답변 포함)
+export interface InquiryDetailDto extends InquiryDto {
   content: string;
-  category: '문의' | '건의';
-  urgency: '높음' | '보통' | '낮음';
-  status: '미처리' | '답변처리 완료';
-  created_at: string; // ISO 8601 string (e.g., "2023-07-20T10:00:00Z")
-  updated_at: string; // ISO 8601 string
-  is_deleted: boolean;
+  answer?: string;
+  adminId?: string;
 }
 
-// 답변 타입
-export interface InquiryAnswer {
-  answer_id: string;
-  inquiry_id: string;
-  user_id: string; // 답변 작성자 (문의 사용자)
-  admin_id: string; // 답변 처리 관리자
-  content: string;
-  created_at: string;
-  updated_at: string;
-}
-
-// 게시판 목록에 사용될 Inquiry (부분적으로)
-export interface InquiryListItem extends Inquiry {
-  // 목록에서 필요한 추가 정보 또는 answer 존재 여부
-  hasAnswer: boolean;
-  answerContentPreview?: string; // 답변 내용 미리보기
-}
-
+// 사이드바에서 사용할 타입
 export type PostCategory = 'inquiry' | 'suggestion';
 export type PostFilter = 'all' | 'my';
 
-export interface BroadPost {
-  post_id: string;
-  author_id: string;
-  title: string;
-  content: string;
-  created_at: string; // ISO string for timestamp
-  updated_at: string; // ISO string for timestamp
-  category: PostCategory;
-  is_deleted: boolean;
+/**
+ * 백엔드 API의 페이지네이션 응답을 위한 제네릭 타입
+ * T는 페이지의 content에 들어갈 데이터의 타입을 의미합니다. (예: InquiryDto)
+ */
+export interface Page<T> {
+  content: T[];          // 현재 페이지의 데이터 목록
+  totalPages: number;      // 총 페이지 수
+  totalElements: number;   // 모든 페이지의 총 요소 수
+  size: number;            // 한 페이지의 크기
+  number: number;          // 현재 페이지 번호 (0부터 시작)
+  first: boolean;          // 첫 페이지 여부
+  last: boolean;           // 마지막 페이지 여부
+  empty: boolean;          // 현재 페이지가 비어있는지 여부
 }

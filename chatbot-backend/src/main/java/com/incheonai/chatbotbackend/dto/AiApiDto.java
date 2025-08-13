@@ -56,7 +56,7 @@ public class AiApiDto {
      */
     @Getter @Setter @NoArgsConstructor
     public static class RecommendResponse {
-        @JsonProperty("recommended_questions")
+        @JsonProperty("recommend_question")
         private List<String> recommendedQuestions;
     }
 }

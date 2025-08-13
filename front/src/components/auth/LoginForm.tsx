@@ -8,26 +8,12 @@ import { Button } from 'primereact/button';
 import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '@/lib/api';
 
-interface LoginResponseData {
-  accessToken: string;
-  id: number;
-  userId?: string;
-  googleId?: string | null;
-  loginProvider?: 'LOCAL' | 'GOOGLE';
-  adminId?: string;
-  adminName?: string;
-  role?: 'ADMIN' | 'SUPER' | 'USER';
-  sessionId: string;
-}
-
-
 interface LoginFormProps {
-  onLoginSuccess: (data: LoginResponseData) => void;
-  // 세션 마이그레이션을 위한 익명 세션 ID
+  onSubmit: (data: { userId: string; password: string }) => void;
   anonymousSessionId: string | null;
 }
 
-export default function LoginForm({ onLoginSuccess, anonymousSessionId }: LoginFormProps) {
+export default function LoginForm({ onSubmit, anonymousSessionId }: LoginFormProps) {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ userId?: string; password?: string; general?: string }>({});
@@ -51,41 +37,12 @@ export default function LoginForm({ onLoginSuccess, anonymousSessionId }: LoginF
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      setErrors({}); // 이전 에러 초기화
-      try {
-        // 요청 Body에 anonymousSessionId를 포함
-        const requestBody: { [key: string]: any } = { userId, password };
-        if (anonymousSessionId) {
-          requestBody.anonymousSessionId = anonymousSessionId;
-          console.log("세션 마이그레이션을 위해 익명 세션 ID를 포함하여 로그인 요청:", anonymousSessionId);
-        }
-
-        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          // 성공 시, 응답 데이터(accessToken, sessionId 등)를 부모로 전달
-          onLoginSuccess(data);
-        } else {
-          const errorMessage = data.message || '로그인에 실패했습니다.';
-          alert(errorMessage);
-          setErrors(prev => ({ ...prev, general: errorMessage }));
-        }
-      } catch (error) {
-        console.error('로그인 중 오류 발생:', error);
-        const networkErrorMessage = '네트워크 오류가 발생했습니다.';
-        alert(networkErrorMessage);
-        setErrors(prev => ({ ...prev, general: networkErrorMessage }));
-      }
+      setErrors({});
+      onSubmit({ userId, password });
     }
   };
 
-  // ✅ Google 로그인 URL을 동적으로 생성
+  // Google 로그인 URL을 동적으로 생성
   const googleLoginUrl = anonymousSessionId
     ? `${API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
     : `${API_BASE_URL}/api/auth/oauth2/start`;

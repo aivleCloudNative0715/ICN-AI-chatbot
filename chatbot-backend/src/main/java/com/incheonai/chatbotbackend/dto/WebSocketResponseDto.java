@@ -13,37 +13,26 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class WebSocketResponseDto {
-
-    // 이 메시지 자체의 고유 ID (챗봇 답변, 추천 질문 등)
     private String messageId;
-
-    // 이 메시지가 응답하는 원본 사용자 메시지의 ID
-    private String userMessageId;
-
+    private String userMessageId; // <-- 이 필드가 핵심입니다!
     private String sessionId;
-
     private SenderType sender;
-
     private String content;
-
     private MessageType messageType;
-
     private LocalDateTime createdAt;
 
     /**
-     * ChatMessage 엔티티를 WebSocketResponseDto로 변환하는 정적 팩토리 메소드
-     * @param entity 변환할 ChatMessage 객체
-     * @return 변환된 WebSocketResponseDto 객체
+     * ChatMessage 엔티티를 WebSocketResponseDto로 변환하는 정적 메소드
      */
-    public static WebSocketResponseDto from(ChatMessage entity) {
+    public static WebSocketResponseDto from(ChatMessage chatMessage) {
         return WebSocketResponseDto.builder()
-                .messageId(entity.getId())
-                .userMessageId(entity.getParentId()) // ChatMessage의 parentId가 userMessageId에 해당
-                .sessionId(entity.getSessionId())
-                .sender(entity.getSender())
-                .content(entity.getContent())
-                .messageType(entity.getMessageType())
-                .createdAt(entity.getCreatedAt())
+                .messageId(chatMessage.getId())
+                .userMessageId(chatMessage.getParentId())
+                .sessionId(chatMessage.getSessionId())
+                .sender(chatMessage.getSender())
+                .content(chatMessage.getContent())
+                .messageType(chatMessage.getMessageType())
+                .createdAt(chatMessage.getCreatedAt())
                 .build();
     }
 }

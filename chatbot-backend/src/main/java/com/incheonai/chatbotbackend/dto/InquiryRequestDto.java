@@ -1,5 +1,6 @@
 package com.incheonai.chatbotbackend.dto;
 
+import com.incheonai.chatbotbackend.domain.jpa.BoardCategory;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -8,7 +9,6 @@ import jakarta.validation.constraints.NotBlank;
  * @param title    제목
  * @param content  본문
  * @param category 카테고리
- * @param urgency  긴급도
  */
 
 public record InquiryRequestDto(
@@ -20,8 +20,5 @@ public record InquiryRequestDto(
         String content,
 
         @NotBlank(message = "카테고리는 필수입니다.")
-        String category,
-
-        @NotBlank(message = "긴급도는 필수입니다.")
-        Integer urgency
+        BoardCategory category
 ) {}

@@ -2,10 +2,7 @@ package com.incheonai.chatbotbackend.domain.jpa;
 
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,6 +11,7 @@ import org.hibernate.annotations.Where;
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "inquiries")
@@ -35,8 +33,9 @@ public class Inquiry {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @Enumerated(EnumType.STRING) // DB에 Enum 이름을 문자열로 저장
     @Column(nullable = false)
-    private String category;
+    private BoardCategory category;
 
     @Column(columnDefinition = "TEXT")
     private String answer;
@@ -44,8 +43,9 @@ public class Inquiry {
     @Column(name = "admin_id")
     private String adminId;
 
+    @Enumerated(EnumType.STRING)
     @Column
-    private Integer urgency;
+    private Urgency urgency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -63,43 +63,12 @@ public class Inquiry {
     private LocalDateTime deletedAt;
 
     @Builder
-    public Inquiry(String userId, String title, String content, String category,
-                   Integer urgency, InquiryStatus status) {
-
+    public Inquiry(String userId, String title, String content, BoardCategory category, InquiryStatus status) {
         this.userId = userId;
         this.title = title;
         this.content = content;
         this.category = category;
-        this.urgency = urgency;
         this.status = (status == null) ? InquiryStatus.PENDING : status;
-    }
-
-    // Setters for mutable fields
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public void setUrgency(Integer urgency) {
-        this.urgency = urgency;
-    }
-
-    public void setStatus(InquiryStatus status) {
-        this.status = status;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public void setAdminId(String adminId) {
-        this.adminId = adminId;
+        this.urgency = Urgency.MEDIUM; // 사용자가 등록 시 '보통'으로 기본값 설정
     }
 }

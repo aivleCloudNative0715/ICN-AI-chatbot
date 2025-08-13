@@ -76,9 +76,6 @@ super:
     password: ${SUPER_ADMIN_PASSWORD}
     name: ${SUPER_ADMIN_NAME}
 
-file:
-  upload-dir: ${FILE_DIR}
-
 ---
 
 # ======================================================
