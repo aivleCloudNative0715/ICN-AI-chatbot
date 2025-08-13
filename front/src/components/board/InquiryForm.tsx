@@ -2,47 +2,52 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { InputText } from 'primereact/inputtext';
-import { InputTextarea } from 'primereact/inputtextarea';
 import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
 import { useRouter } from 'next/navigation';
-import { Inquiry } from '@/lib/types';
+import { InquiryDto } from '@/lib/types';
+import { createInquiry } from '@/lib/api';
 
 interface InquiryFormProps {
   inquiryId?: string; // 수정 모드일 경우 문의 ID
-  initialData?: Inquiry; // 수정 모드일 경우 초기 데이터
+  initialData?: InquiryDto[]; // 수정 모드일 경우 초기 데이터
 }
 
 export default function InquiryForm({ inquiryId, initialData }: InquiryFormProps) {
   const router = useRouter();
-  const [title, setTitle] = useState(initialData?.title || '');
-  const [content, setContent] = useState(initialData?.content || '');
-  const [category, setCategory] = useState<'문의' | '건의' | null>(initialData?.category || null);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  // 카테고리 타입을 백엔드 Enum과 맞춥니다.
+  const [category, setCategory] = useState<'INQUIRY' | 'SUGGESTION' | null>(null);
   const [errors, setErrors] = useState<{ title?: string; content?: string; category?: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false); // 제출 중 상태
   const isEditMode = !!inquiryId;
 
+  // TODO: 사용자 ID는 Context API에서 가져와야 함
+  const userId = 'user123'; 
+
+  // 카테고리 목록을 백엔드 Enum에 맞게 수정
   const categories = [
-    { label: '문의', value: '문의' },
-    { label: '건의', value: '건의' },
+    { label: '문의', value: 'INQUIRY' },
+    { label: '건의', value: 'SUGGESTION' },
   ];
 
-  useEffect(() => {
-    if (isEditMode && !initialData) {
-      // TODO: 수정 모드이고 initialData가 없는 경우, API-13-27039 (단일 문의/건의 내역 가져오기) 호출하여 데이터 로드
-      // 현재는 예시 데이터를 사용
-      const fetchInquiryData = async () => {
-        // 실제 API 호출 시뮬레이션
-        const mockInquiry: Inquiry = {
-          inquiry_id: inquiryId!, user_id: 'user123', title: '로드된 문의 제목', content: '이것은 로드된 문의 내용입니다. 수정할 수 있습니다.', category: '문의', urgency: '보통', status: '미처리', created_at: '2025-07-20T10:00:00Z', updated_at: '2025-07-20T10:00:00Z', is_deleted: false
-        };
-        setTitle(mockInquiry.title);
-        setContent(mockInquiry.content);
-        setCategory(mockInquiry.category);
-      };
-      fetchInquiryData();
-    }
-  }, [inquiryId, isEditMode, initialData]);
+  // ... (useEffect for edit mode - API 호출 로직 추가 필요)
+  // useEffect(() => {
+  //   if (isEditMode && !initialData) {
+  //     // TODO: 수정 모드이고 initialData가 없는 경우, API-13-27039 (단일 문의/건의 내역 가져오기) 호출하여 데이터 로드
+  //     // 현재는 예시 데이터를 사용
+  //     const fetchInquiryData = async () => {
+  //       // 실제 API 호출 시뮬레이션
+  //       const mockInquiry: Inquiry = {
+  //         inquiry_id: inquiryId!, user_id: 'user123', title: '로드된 문의 제목', content: '이것은 로드된 문의 내용입니다. 수정할 수 있습니다.', category: '문의', urgency: '보통', status: '미처리', created_at: '2025-07-20T10:00:00Z', updated_at: '2025-07-20T10:00:00Z', is_deleted: false
+  //       };
+  //       setTitle(mockInquiry.title);
+  //       setContent(mockInquiry.content);
+  //       setCategory(mockInquiry.category);
+  //     };
+  //     fetchInquiryData();
+  //   }
+  // }, [inquiryId, isEditMode, initialData]);
 
   const validate = () => {
     const newErrors: { title?: string; content?: string; category?: string } = {};
@@ -55,45 +60,25 @@ export default function InquiryForm({ inquiryId, initialData }: InquiryFormProps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) {
-      return;
-    }
+    if (!validate() || isSubmitting) return;
 
-    const dataToSend = {
-      title,
-      content,
-      category,
-      // urgency는 기본값('보통')으로 설정 (API-13-27040)
-      // status는 '미처리'로 초기 설정 (API-13-27040)
-      // user_id는 백엔드에서 JWT 토큰으로 추출 (API-13-27040)
-    };
-
+    setIsSubmitting(true);
     try {
+      const dataToSend = { title, content, category: category! };
+
       if (isEditMode) {
-        // TODO: API-13-27041 (문의/건의 수정) 호출 로직
-        console.log('문의/건의 수정 시도:', inquiryId, dataToSend);
-        // const response = await fetch(`${API_BASE_URL}/api/inquiries/${inquiryId}`, {
-        //   method: 'PUT',
-        //   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer YOUR_JWT_TOKEN` },
-        //   body: JSON.stringify(dataToSend),
-        // });
-        // if (!response.ok) throw new Error('수정 실패');
-        alert('문의/건의가 성공적으로 수정되었습니다.');
+        // TODO: updateInquiry API 호출
+        console.log('문의 수정:', inquiryId, dataToSend);
       } else {
-        // TODO: API-13-27040 (문의/건의 작성) 호출 로직
-        console.log('새 문의/건의 작성 시도:', dataToSend);
-        // const response = await fetch('/api/inquiries', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer YOUR_JWT_TOKEN` },
-        //   body: JSON.stringify(dataToSend),
-        // });
-        // if (!response.ok) throw new Error('작성 실패');
-        alert('새 문의/건의가 성공적으로 작성되었습니다.');
+        // createInquiry API 호출
+        await createInquiry(userId, dataToSend);
+        alert('새 문의가 성공적으로 작성되었습니다.');
       }
-      router.push('/board/my-inquiries'); // 작성/수정 후 내 문의/건의 목록으로 이동
+      router.push('/board'); // 성공 후 게시판 목록으로 이동
     } catch (err) {
       alert(`오류 발생: ${err instanceof Error ? err.message : String(err)}`);
-      console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -170,9 +155,10 @@ export default function InquiryForm({ inquiryId, initialData }: InquiryFormProps
           <div className="flex justify-center gap-4">
             <button
               type="submit"
+              disabled={isSubmitting} 
               className="px-8 py-2 bg-board-dark text-white rounded hover:bg-board-light transition-colors"
             >
-              등록
+              {isSubmitting ? '등록 중...' : '등록'}
             </button>
             <button
               type="button"
