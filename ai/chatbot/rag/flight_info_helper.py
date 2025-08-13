@@ -165,7 +165,7 @@ def _extract_flight_info_from_response(
         # 응답의 'remark' 필드에 '도착', '출발'이 명시되어 있다고 가정
         flight_data = [
             item for item in flight_data
-            if requested_direction == "arrival" and item.get("remark") == "도착" or \
+            if requested_direction == "arrival" and item.get("remark") in ["도착", "지연", "결항", "회항", "착륙"] or \
                requested_direction == "departure" and item.get("remark") in ["출발", "탑승중", "탑승준비", "탑승마감", "마감예정"]
         ]
         print(f"디버그: 요청 방향('{requested_direction}')으로 필터링 완료. 남은 항목 수: {len(flight_data)}")
