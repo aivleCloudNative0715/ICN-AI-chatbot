@@ -1,5 +1,6 @@
 from chatbot.graph.state import ChatState
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
@@ -122,11 +123,11 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
             return {**state, "response": text_response}
         
         # 📌 수정된 로직: 날짜와 시간 파라미터 설정
-        search_date = datetime.now() + timedelta(days=date_offset or 0)
+        search_date = datetime.now(ZoneInfo("Asia/Seoul")) + timedelta(days=date_offset or 0)
         search_date_str = search_date.strftime("%Y%m%d")
 
         if not from_time and not to_time:
-            now = datetime.now()
+            now = datetime.now(ZoneInfo("Asia/Seoul"))
             from_dt = now - timedelta(hours=1)
             to_dt = now + timedelta(hours=1)
             from_time_str = str(from_dt.strftime("%H%M"))

@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import re
 import locale
 from typing import List, Dict, Any, Optional
+from zoneinfo import ZoneInfo
 
 # 시스템 로케일 설정 (요일 처리를 위해 필요)
 locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')
@@ -31,9 +32,9 @@ def _get_day_of_week_field(day_name: str) -> str | None:
     
     # 📌 수정된 부분: "오늘"과 "내일"을 처리하는 로직 추가
     if day_name == "오늘":
-        return datetime.now().strftime('%A').lower()
+        return datetime.now(ZoneInfo("Asia/Seoul")).strftime('%A').lower()
     elif day_name == "내일":
-        return (datetime.now() + timedelta(days=1)).strftime('%A').lower()
+        return (datetime.now(ZoneInfo("Asia/Seoul")) + timedelta(days=1)).strftime('%A').lower()
     
     return day_map.get(day_name)
 
@@ -112,7 +113,7 @@ def _parse_schedule_query_with_llm(user_query: str) -> dict | None:
         "응답: ```json\n{{\"requests\": [{{\"airline_name\": \"대한항공\", \"airport_name\": \"하노이\", \"airport_codes\": [\"HAN\"], \"day_of_week\": \"월요일\", \"direction\": \"도착\", \"time_period\": null, \"requested_year\": {0}}}]}}```"
         "사용자: 미국행 정기 운항 스케줄"
         "응답: ```json\n{{\"requests\": [{{\"airline_name\": null, \"airport_name\": \"미국\", \"airport_codes\": [\"JFK\", \"LAX\", \"SFO\", \"ORD\", \"ATL\"], \"day_of_week\": null, \"direction\": \"출발\", \"time_period\": null, \"requested_year\": {0}}}]}}```"
-    ).format(datetime.now().year)
+    ).format(datetime.now(ZoneInfo("Asia/Seoul")).year)
 
     messages = [
         {"role": "system", "content": prompt_content},

@@ -5,6 +5,7 @@ import os
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from ..Key.key_manager import get_valid_api_key
+from zoneinfo import ZoneInfo
 
 load_dotenv()
 
@@ -37,7 +38,7 @@ def fetch_and_save_airport_facility():
         params = params_base.copy()
         params['serviceKey'] = service_key
 
-        current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        current_time_str = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M:%S")
         print(f"[{current_time_str}] API 요청 시작...")
 
         response = requests.get(url, params=params)
@@ -86,7 +87,7 @@ def fetch_and_save_airport_facility():
         print(f"[{current_time_str}] MongoDB 저장 완료. 총 {len(new_documents)}개 문서.")
 
     except Exception as e:
-        current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        current_time_str = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M:%S")
         print(f"[{current_time_str}] 오류 발생: {e}")
 
     finally:

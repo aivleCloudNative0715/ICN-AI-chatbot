@@ -11,26 +11,26 @@ state = {
 }
 
 # --- 수정된 부분: 대화 루프를 추가합니다. ---
-while True:
-    # 사용자로부터 질문을 입력받습니다.
-    user_query = input("챗봇에게 질문하세요 (종료: 'exit'): ")
-    if user_query.lower() == 'exit':
-        print("챗봇을 종료합니다.")
-        break
+# while True:
+#     # 사용자로부터 질문을 입력받습니다.
+#     user_query = input("챗봇에게 질문하세요 (종료: 'exit'): ")
+#     if user_query.lower() == 'exit':
+#         print("챗봇을 종료합니다.")
+#         break
     
-    state["user_input"] = user_query
-    state["messages"].append(HumanMessage(content=user_query))
+#     state["user_input"] = user_query
+#     state["messages"].append(HumanMessage(content=user_query))
     
-    result = chat_graph.invoke(state)
+#     result = chat_graph.invoke(state)
 
-    # 챗봇의 응답을 상태에 추가합니다.
-    ai_response = result.get("response", "죄송합니다. 오류가 발생했습니다.")
-    state["messages"].append(AIMessage(content=ai_response))
+#     # 챗봇의 응답을 상태에 추가합니다.
+#     ai_response = result.get("response", "죄송합니다. 오류가 발생했습니다.")
+#     state["messages"].append(AIMessage(content=ai_response))
     
-    # 최종 응답을 출력합니다.
-    print("\n💬 챗봇 응답:")
-    print(ai_response)
-    print("---------------------------------------")
+#     # 최종 응답을 출력합니다.
+#     print("\n💬 챗봇 응답:")
+#     print(ai_response)
+#     print("---------------------------------------")
 # --- 수정된 부분 끝 ---
 
 

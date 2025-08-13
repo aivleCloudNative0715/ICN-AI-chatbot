@@ -5,6 +5,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 from ..Key.key_manager import get_valid_api_key
+from zoneinfo import ZoneInfo
 
 load_dotenv()
 
@@ -39,7 +40,7 @@ def fetch_and_save_taf_data():
         params = params_base.copy()
         params['authKey'] = authKey
 
-        current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        current_time_str = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M:%S")
         print(f"[{current_time_str}] TAF API 요청 시작...")
 
         response = requests.get(url, params=params)
@@ -58,7 +59,7 @@ def fetch_and_save_taf_data():
         # 임시 컬렉션 초기화
         collection_temp.delete_many({})
 
-        taf_id = datetime.now().strftime("%Y%m%d")
+        taf_id = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d")
 
         documents = []
         for idx, item in enumerate(items):

@@ -2,6 +2,7 @@ import time
 import os
 import logging
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from MongoDB.Airline.airline import upload_airline_data_atomic
 from MongoDB.Airline.airport import upload_airport_data_atomic
@@ -51,14 +52,14 @@ logging.basicConfig(
 
 def run_task_with_logging(func, task_name):
     logging.info(f"작업 시작: {task_name}")
-    print(f"{datetime.now()} - 작업 시작: {task_name}")
+    print(f"{datetime.now(ZoneInfo("Asia/Seoul"))} - 작업 시작: {task_name}")
     try:
         func()
         logging.info(f"작업 완료: {task_name}")
-        print(f"{datetime.now()} - 작업 완료: {task_name}")
+        print(f"{datetime.now(ZoneInfo("Asia/Seoul"))} - 작업 완료: {task_name}")
     except Exception as e:
         logging.error(f"작업 중 오류 발생({task_name}): {e}")
-        print(f"{datetime.now()} - 작업 중 오류 발생({task_name}): {e}")
+        print(f"{datetime.now(ZoneInfo("Asia/Seoul"))} - 작업 중 오류 발생({task_name}): {e}")
 
 def main():
     # 마지막 실행 시점 기록용 변수 (초 단위)
@@ -69,7 +70,7 @@ def main():
     }
 
     while True:
-        now = datetime.now()
+        now = datetime.now(ZoneInfo("Asia/Seoul"))
 
         # 1시간마다 실행 (TAF)
         if now - last_run["TAF"] >= timedelta(hours=1):

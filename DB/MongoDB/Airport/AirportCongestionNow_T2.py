@@ -6,6 +6,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os
 from ..Key.key_manager import get_valid_api_key
+from zoneinfo import ZoneInfo
 
 load_dotenv()  # .env 파일에서 환경변수 불러오기
 mongo_uri = os.getenv("MONGO_URI")
@@ -34,7 +35,7 @@ def fetch_and_save_to_mongodb():
     params = params_base.copy()
     params['serviceKey'] = service_key
 
-    current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_time_str = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{current_time_str}] API 요청 시작...")
 
     try:
