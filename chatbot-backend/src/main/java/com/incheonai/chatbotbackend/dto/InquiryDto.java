@@ -19,7 +19,7 @@ public record InquiryDto(
         String userId,
         String title,
         String category,
-        Integer urgency,
+        String  urgency,
         String status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -29,9 +29,9 @@ public record InquiryDto(
                 e.getInquiryId(),
                 e.getUserId(),
                 e.getTitle(),
-                e.getCategory(),
-                e.getUrgency(),
-                e.getStatus().name(),
+                e.getCategory() != null ? e.getCategory().name() : null,
+                e.getUrgency() != null ? e.getUrgency().name() : null,
+                e.getStatus() != null ? e.getStatus().name() : null,
                 e.getCreatedAt(),
                 e.getUpdatedAt()
         );

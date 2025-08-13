@@ -37,7 +37,7 @@ public class InquiryController {
     }
 
     /** 내 문의 목록 조회 */
-    @GetMapping
+    @GetMapping("/my")
     public ResponseEntity<Page<InquiryDto>> getMyInquiries(
             @RequestParam String userId,
             @RequestParam(required = false) String status,

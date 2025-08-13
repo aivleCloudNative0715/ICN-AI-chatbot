@@ -21,20 +21,26 @@ public record InquiryDetailDto(
         String title,
         String content,
         String category,
-        Integer urgency,
+        String urgency,
         String status,
-        LocalDateTime createdAt
+        String answer,
+        String adminId,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
-    public static InquiryDetailDto fromEntity(Inquiry in) {
+    public static InquiryDetailDto fromEntity(Inquiry e) {
         return new InquiryDetailDto(
-                in.getInquiryId(),
-                in.getUserId(),
-                in.getTitle(),
-                in.getContent(),
-                in.getCategory(),
-                in.getUrgency(),
-                in.getStatus().name(),
-                in.getCreatedAt()
+                e.getInquiryId(),
+                e.getUserId(),
+                e.getTitle(),
+                e.getContent(),
+                e.getCategory() != null ? e.getCategory().name() : null,
+                e.getUrgency() != null ? e.getUrgency().name() : null,
+                e.getStatus() != null ? e.getStatus().name() : null,
+                e.getAnswer(),
+                e.getAdminId(),
+                e.getCreatedAt(),
+                e.getUpdatedAt()
         );
     }
 }

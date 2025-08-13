@@ -5,10 +5,12 @@ import com.incheonai.chatbotbackend.domain.jpa.InquiryStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
 import java.util.Optional;
 import java.time.LocalDateTime;
 
-public interface InquiryRepository extends JpaRepository<Inquiry, Integer> {
+public interface InquiryRepository extends JpaRepository<Inquiry, Integer>, JpaSpecificationExecutor<Inquiry> {
     // @Where 어노테이션 덕분에 삭제된 게시글은 자동으로 제외됩니다.
     Page<Inquiry> findAll(Pageable pageable);
 
