@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
@@ -20,50 +22,58 @@ public class InquiryController {
 
     /** 전체 문의/건의 목록 조회 (게시판 기능) */
     @GetMapping
-    public ResponseEntity<Page<InquiryDto>> getAllInquiries(Pageable pageable) {
-        // InquiryService에 모든 문의를 조회하는 메서드(findAll) 추가 필요
-        Page<InquiryDto> inquiries = inquiryService.getAllInquiries(pageable);
-        return ResponseEntity.ok(inquiries);
-    }
-
-    /** 문의 생성 */
-    @PostMapping
-    public ResponseEntity<InquiryDto> createInquiry(
-            @RequestParam String userId,
-            @RequestBody InquiryRequestDto requestDto
+    public ResponseEntity<Page<InquiryDto>> getAllInquiries(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String search,
+            Pageable pageable
     ) {
-        InquiryDto response = inquiryService.createInquiry(userId, requestDto);
-        return ResponseEntity.ok(response);
+        Page<InquiryDto> inquiries = inquiryService.getAllInquiries(category, search, pageable);
+        return ResponseEntity.ok(inquiries);
     }
 
     /** 내 문의 목록 조회 */
     @GetMapping("/my")
     public ResponseEntity<Page<InquiryDto>> getMyInquiries(
-            @RequestParam String userId,
-            @RequestParam(required = false) String status,
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String search,
             Pageable pageable
     ) {
-        Page<InquiryDto> inquiries = inquiryService.getMyInquiries(userId, status, pageable);
+        String userId = userDetails.getUsername();
+        Page<InquiryDto> inquiries = inquiryService.getMyInquiries(userId, category, search, pageable);
         return ResponseEntity.ok(inquiries);
     }
 
     /** 내 문의 상세 조회 */
     @GetMapping("/{inquiryId}")
     public ResponseEntity<InquiryDetailDto> getMyInquiryDetail(
-            @RequestParam String userId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Integer inquiryId
     ) {
+        String userId = userDetails.getUsername();
         InquiryDetailDto detail = inquiryService.getMyInquiryDetail(userId, inquiryId);
         return ResponseEntity.ok(detail);
+    }
+
+    /** 문의 생성 */
+    @PostMapping
+    public ResponseEntity<InquiryDto> createInquiry(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody InquiryRequestDto requestDto
+    ) {
+        String userId = userDetails.getUsername();
+        InquiryDto response = inquiryService.createInquiry(userId, requestDto);
+        return ResponseEntity.ok(response);
     }
 
     /** 내 문의 수정 */
     @PutMapping("/{inquiryId}")
     public ResponseEntity<Map<String, String>> updateMyInquiry(
-            @RequestParam String userId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Integer inquiryId,
             @RequestBody InquiryRequestDto requestDto
     ) {
+        String userId = userDetails.getUsername();
         inquiryService.updateMyInquiry(userId, inquiryId, requestDto);
         return ResponseEntity.ok(Map.of("message", "문의가 수정되었습니다."));
     }
@@ -71,9 +81,10 @@ public class InquiryController {
     /** 내 문의 삭제 */
     @DeleteMapping("/{inquiryId}")
     public ResponseEntity<Map<String, String>> deleteMyInquiry(
-            @RequestParam String userId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Integer inquiryId
     ) {
+        String userId = userDetails.getUsername();
         inquiryService.deleteMyInquiry(userId, inquiryId);
         return ResponseEntity.ok(Map.of("message", "문의가 삭제되었습니다."));
     }

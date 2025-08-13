@@ -34,7 +34,7 @@ export default function InquiryForm({ inquiryId }: InquiryFormProps) {
      if (isEditMode && inquiryId && user && token) {
       const fetchInquiryData = async () => {
         try {
-          const inquiryData = await getInquiryDetail(Number(inquiryId), user.userId, token);
+          const inquiryData = await getInquiryDetail(Number(inquiryId), token);
           setTitle(inquiryData.title);
           setContent(inquiryData.content);
           setCategory(inquiryData.category);
@@ -69,10 +69,10 @@ export default function InquiryForm({ inquiryId }: InquiryFormProps) {
     try {
       const dataToSend = { title, content, category: category! };
       if (isEditMode && inquiryId) {
-        await updateInquiry(Number(inquiryId), user.userId, dataToSend, token);
+        await updateInquiry(Number(inquiryId), dataToSend, token);
         alert('문의가 성공적으로 수정되었습니다.');
       } else {
-        await createInquiry(user.userId, dataToSend, token);
+        await createInquiry(dataToSend, token);
         alert('새 문의가 성공적으로 작성되었습니다.');
       }
       router.push('/board');

@@ -1,7 +1,7 @@
 // src/app/board/layout.tsx
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import FloatingActionButton from '@/components/common/FloatingActionButton';
 import BoardHeader from '@/components/board/BoardHeader';
@@ -30,6 +30,15 @@ export default function BoardLayout({ children }: BoardLayoutProps) {
       // TODO: 로그인 모달 열기
     }
   };
+
+  useEffect(() => {
+    // AuthContext의 초기화 시간을 고려하여 token 유무로 체크
+    const storedToken = localStorage.getItem('jwt_token');
+    if (!storedToken) {
+      alert('로그인이 필요한 서비스입니다.');
+      router.replace('/');
+    }
+  }, [router]);
   
   // 새 글 작성 페이지에서는 플로팅 버튼을 숨깁니다.
   const isNewPage = pathname.startsWith('/board/new');

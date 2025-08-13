@@ -1,5 +1,6 @@
 package com.incheonai.chatbotbackend.repository.jpa;
 
+import com.incheonai.chatbotbackend.domain.jpa.BoardCategory;
 import com.incheonai.chatbotbackend.domain.jpa.Inquiry;
 import com.incheonai.chatbotbackend.domain.jpa.InquiryStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +12,9 @@ import java.util.Optional;
 import java.time.LocalDateTime;
 
 public interface InquiryRepository extends JpaRepository<Inquiry, Integer>, JpaSpecificationExecutor<Inquiry> {
-    // @Where 어노테이션 덕분에 삭제된 게시글은 자동으로 제외됩니다.
+    /** 카테고리별 문의/건의 목록 조회 */
+    Page<Inquiry> findByCategory(BoardCategory category, Pageable pageable);
+
     Page<Inquiry> findAll(Pageable pageable);
 
     /** 주어진 기간 내 전체 문의 건수 */
@@ -25,5 +28,8 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Integer>, JpaS
     Page<Inquiry> findByUserId(String userId, Pageable pageable);
 
     /** 사용자 ID + 문의 ID로 조회 */
+
     Optional<Inquiry> findByInquiryIdAndUserId(Integer inquiryId, String userId);
+    Page<Inquiry> findByUserIdAndCategory(String userId, BoardCategory category, Pageable pageable);
+    Page<Inquiry> findByUserIdAndCategoryAndStatus(String userId, BoardCategory category, InquiryStatus status, Pageable pageable);
 }
