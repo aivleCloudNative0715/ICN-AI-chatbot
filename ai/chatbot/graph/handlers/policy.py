@@ -167,7 +167,7 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
     if isinstance(response_text, list):
         response_text = "\n".join(response_text)
 
-    response_text += disclaimer
+    # response_text += disclaimer
     
     return {**state, "response": response_text}
 

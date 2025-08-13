@@ -6,6 +6,7 @@ from functools import partial
 from chatbot.graph.state import ChatState
 from langchain_core.messages import HumanMessage, AIMessage
 from chatbot.graph.nodes.classifiy_intent import classify_intent
+import re
 
 # 환경 변수를 로드합니다.
 from dotenv import load_dotenv
@@ -15,6 +16,16 @@ load_dotenv()
 from openai import OpenAI
 client = OpenAI()
 
+DISCLAIMER = (
+    "\n\n---\n"
+    "주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
+    "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
+)
+
+# 주의 문구를 제거하는 헬퍼 함수
+def _remove_disclaimer(text: str) -> str:
+    """텍스트에서 미리 정의된 주의 문구를 제거합니다."""
+    return re.sub(re.escape(DISCLAIMER), "", text, flags=re.DOTALL).strip()
 
 def _decompose_and_classify_queries(user_query: str, supported_intents: List[str], messages: List[Any]) -> List[Dict[str, str]]:
     """
@@ -86,7 +97,7 @@ def _combine_responses(original_query: str, responses: List[str]) -> str:
     
     combined_text = "사용자님의 여러 질문에 대한 답변입니다.\n\n"
     for idx, response in enumerate(responses, 1):
-        combined_text += f"{idx}. {response}\n"
+        combined_text += f"{idx}. {response}\n\n"
     
     return combined_text
 
@@ -129,9 +140,13 @@ def handle_complex_intent(state: ChatState, handlers: Dict[str, Any], supported_
         result = subgraph.invoke(sub_state)
         response_content = result.get("response", "")
         if response_content:
-            all_responses.append(response_content)
+            # 📌 핵심 수정: 하위 핸들러 응답에서 주의 문구를 제거
+            cleaned_response = _remove_disclaimer(response_content)
+            all_responses.append(cleaned_response)
+
+    final_response_text = _combine_responses(user_input, all_responses)
     
-    final_response = _combine_responses(user_input, all_responses)
+    final_response = final_response_text + DISCLAIMER
     
     print("--- 복합 의도 처리 완료 ---")
     

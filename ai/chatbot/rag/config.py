@@ -37,6 +37,7 @@ db_client = mongo_client
 client = openai_client
 db_name = mongo_db_name
 
+
 # 각 의도(또는 핸들러)별 RAG 검색 설정을 정의합니다.
 # 이 설정은 각 핸들러에서 어떤 MongoDB 컬렉션을 사용해야 하는지 알려줍니다.
 RAG_SEARCH_CONFIG = {
@@ -316,6 +317,11 @@ LLM_PROMPT_TEMPLATES = {
     답변:"""
 }
 
+DISCLAIMER = (
+    "\n\n---\n"
+    "주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
+    "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
+)
 
 def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_description: str, intent_name: str) -> str:
     """
@@ -326,44 +332,57 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
         # 검색된 정보가 없을 때의 응답
         return f"죄송합니다. 요청하신 {intent_description} 정보를 찾을 수 없습니다. 다시 질문해주시거나 다른 정보를 문의해주세요."
 
-    prompt_template = LLM_PROMPT_TEMPLATES.get(intent_name, LLM_PROMPT_TEMPLATES["default"])
-    # 📌 수정된 부분: 프롬프트에 줄 바꿈 및 목록 형식 지침 추가
-    prompt_with_formatting_instruction = (
-        f"{prompt_template}\n\n"
-        "지침: 답변에서 **중요한 정보나 키워드**는 Markdown의 볼드체(`**키워드**`)를 사용하여 강조해줘."
-        "여러 항공편 정보를 나열할 경우, 각 항공편을 번호가 있는 목록(`1. 2. 3. ...`)으로 구분하고, "
-        "각 항목 안에서도 정보들을 깔끔하게 줄바꿈하여 보여줘. "
-        "**예를 들어, `- 출발 시간: HH:MM (예정시간) / HH:MM (변경시간)` 처럼 구체적인 형식을 지켜서 정리해줘.**"
+    base_prompt_template = LLM_PROMPT_TEMPLATES.get(intent_name, LLM_PROMPT_TEMPLATES["default"])
+
+    # 가독성 관련 공통 지침 추가
+    common_formatting_instruction = (
+        "\n\n다음 지침을 반드시 따르세요:"
+        "\n1. 답변에서 **중요한 정보나 키워드**는 Markdown의 볼드체(`**키워드**`)를 사용하여 강조해줘."
+        "\n2. 항목을 나열할 때는 `- 항목` 또는 `1. 항목`과 같이 목록 형식을 사용하고, 각 항목의 내용은 줄바꿈으로 깔끔하게 정리해줘."
     )
-    
-    # 프롬프트 구성
-    final_prompt = prompt_with_formatting_instruction.format(user_query=user_query, retrieved_context=retrieved_context)
+
+    # 복합 의도일 경우 질문별 구분 지침 추가
+    if intent_name == "complex_intent":
+        complex_intent_instruction = (
+            "\n3. 질문이 여러 개인 경우, 각 질문에 대한 답변을 명확히 구분하여 제공하세요."
+            f"\n\n사용자 질문: {user_query}"
+            f"\n검색된 정보: {retrieved_context}"
+            f"\n\n답변:"
+        )
+        final_prompt = f"{base_prompt_template}{common_formatting_instruction}{complex_intent_instruction}"
+    else:
+        # 단일 의도일 경우 기존 템플릿에 공통 지침만 추가
+        final_prompt = (
+            f"{base_prompt_template}\n\n"
+            f"사용자 질문: {user_query}\n"
+            f"검색된 정보: {retrieved_context}\n\n"
+            f"답변:"
+        )
 
     print("의도명 :", intent_name)
-    # --- 추가: LLM에 전송될 최종 프롬프트 출력 ---
     print("\n--- LLM에 전송될 최종 프롬프트 ---")
     print(final_prompt)
     print("-----------------------------------")
-    # --- 여기까지 추가 ---
 
     try:
         # 실제 LLM API 호출 (OpenAI gpt-4o-mini 사용)
         response = client.chat.completions.create(
-            model="gpt-4o-mini", # 사용할 모델 지정
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다."},
                 {"role": "user", "content": final_prompt}
             ],
-            temperature=0.5, # 창의성 조절 (0.0은 가장 보수적, 1.0은 가장 창의적)
-            max_tokens=600 # 생성할 최대 토큰 수
+            temperature=0.5,
+            max_tokens=600
         )
         final_response_text = response.choices[0].message.content
         print(f"\n--- [GPT-4o-mini 응답] ---")
 
+        if intent_name != "complex_intent":
+            final_response_text += DISCLAIMER
+
         return final_response_text
     
-
     except Exception as e:
         print(f"디버그: LLM 호출 중 오류 발생: {e}")
-        # 오류 발생 시 임시 답변 또는 사용자 친화적인 메시지 반환
         return f"죄송합니다. 답변을 생성하는 중 문제가 발생했습니다. 다시 시도해 주세요. (오류: {e})"

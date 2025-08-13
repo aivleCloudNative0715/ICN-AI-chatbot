@@ -73,7 +73,7 @@ def facility_guide_handler(state: ChatState) -> ChatState:
 
             # 2단계: 필터링 및 재정렬
             context_for_llm = "\n\n".join(retrieved_docs_text)
-            final_context = _filter_and_rerank_docs(context_for_llm, location_keyword)
+            final_context = context_for_llm # 필터링을 건너뛰고 모든 문서를 사용
 
             if not final_context and retrieved_docs_text:
                 print(f"디버그: '{facility_name}' 필터링 실패. 원본 문서로 답변 생성 시도.")
@@ -84,7 +84,7 @@ def facility_guide_handler(state: ChatState) -> ChatState:
                 truncated_docs_list = final_context.split('\n\n')[:10]
                 final_context_truncated = "\n\n".join(truncated_docs_list)
                 
-                sub_query_to_process = f"'{location_keyword}'에 있는 '{facility_name}'의 운영시간은?" if location_keyword else f"'{facility_name}'의 운영시간은?"
+                sub_query_to_process = f"'{facility_name}'에 대한 정보"
                 
                 final_response_text = common_llm_rag_caller(
                     sub_query_to_process,

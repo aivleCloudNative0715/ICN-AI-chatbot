@@ -204,8 +204,11 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
         response = requests.get(API_URL, params=params)
         response.raise_for_status()
         
-        response_data = response.json()
+        print(f"디버그: API 응답 텍스트: {response.text[:200]}")  # 처음 200자만 출력
+        print(f"디버그: API 응답 상태 코드: {response.status_code}")
         
+        response_data = response.json()
+        print(response_data)
         items_container = response_data.get("response", {}).get("body", {}).get("items", {})
         if not items_container:
             response_text = "혼잡도 예측 정보를 찾을 수 없습니다. API 응답이 비어있거나 형식이 다릅니다."
@@ -217,6 +220,12 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
             return {**state, "response": response_text}
         if isinstance(items, dict): items = [items]
         
+        # 주차 가능 대수 계산 및 마이너스 값 처리
+        for item in items:
+            available_spots = int(item['parkingarea']) - int(item['parking'])
+            item['parking'] = str(max(0, available_spots))  # 마이너스면 0으로 설정
+        
+        print(items)
         # 📌 수정된 부분: 프롬프트에 query_to_process를 추가
         prompt_template = (
             "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다. "
@@ -225,12 +234,15 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
             "검색된 정보: {items}\n"
             "T1은 인천국제공항 제1여객터미널, T2는 제2여객터미널입니다. "
             "datetmp은 YYYY-MM-DD HH:MM:SS 형식입니다. 주차장 상태를 마지막으로 확인한 시간입니다. 이 시간을 가장 먼저 언급하세요. "
-            "주차장 이용 가능 여부를 알려주세요. 주차장 이름과 현재 이용 가능 여부를 포함하세요. 사용자가 보기 좋은 형태로 출력하세요.\n"
+            "parking은 주차 가능 대수입니다. parking이 0이면 '만차'라고 표시해주세요.\n"
+            "\n"
+            "**답변 형식:**\n"
+            "1. 먼저 확인 시간을 언급\n"
+            "2. ## T1 (제1여객터미널) 섹션으로 T1 주차장들을 모두 나열\n"
+            "3. ## T2 (제2여객터미널) 섹션으로 T2 주차장들을 모두 나열\n"
+            "4. 각 주차장은 '- **주차장명**: 주차 가능 대수 **N**대 (또는 **만차**)' 형식으로 출력\n"
             "\n"
             "**지침: 답변에서 중요한 정보나 키워드는 Markdown의 볼드체(`**키워드**`)를 사용하여 강조해줘.**"
-            "**주차장별 정보를 나열할 경우, 각 주차장을 번호가 있는 목록(`1. 2. 3. ...`)으로 구분하고,** "
-            "**각 항목 안에서도 정보들을 깔끔하게 줄바꿈하여 보여줘.**"
-            "**예를 들어, `- 주차장 이름: [이름]`처럼 구체적인 형식을 지켜서 정리해줘.**"
         )
         
         # 📌 수정된 부분: formatted_prompt에 query_to_process를 전달
@@ -250,10 +262,10 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
         
     except requests.RequestException as e:
         print(f"디버그: API 호출 중 오류 발생 - {e}")
-        final_response = "주차장 이용 가능 여부를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+        final_response_text = "주차장 이용 가능 여부를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
     except Exception as e:
         print(f"디버그: 응답 처리 중 오류 발생 - {e}")
-        final_response = "주차장 현황 정보를 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+        final_response_text = "주차장 현황 정보를 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
 
     return {**state, "response": final_response_text}
 
