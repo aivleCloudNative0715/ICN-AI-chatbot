@@ -22,15 +22,14 @@ interface AuthContextType {
   isAdmin: boolean;
   token: string | null;
   sessionId: string | null;
-  setSessionId: (id: string | null) => void;
-  login: (data: any) => void; // 로그인 처리 함수
-  logout: () => void; // 로그아웃 처리 함수
+  initializeSession: (sessionId: string | null) => void;
+  login: (loginData: any, anonymousSessionId: string | null) => void;
+  setLoginState: (loginData: any) => void; // 이미 인증된 후 상태만 설정하는 함수
+  logout: () => void;
 }
 
-// 1. Context 생성 (기본값은 null)
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// 2. 다른 컴포넌트에서 Context를 쉽게 사용하기 위한 Custom Hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -68,7 +67,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const login = useCallback((data: any) => {
+// 세션 초기화 함수 구현
+  const initializeSession = useCallback((sid: string | null) => {
+    if (sid) {
+      console.log(`세션을 초기화합니다: ${sid}`);
+      localStorage.setItem('session_id', sid);
+      setSessionId(sid);
+    }
+  }, []);
+
+  // ✅ 2. 로그인 성공 후 공통 로직을 처리하는 내부 헬퍼 함수 생성
+  const _handleLoginSuccess = useCallback((data: any) => {
     // 백엔드 응답 데이터를 기반으로 localStorage와 상태를 설정
     localStorage.setItem('jwt_token', data.accessToken);
     localStorage.setItem('user_id', String(data.id));
@@ -103,6 +112,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [router]);
 
+  // ✅ 3. OAuth 같이 이미 인증된 경우를 위한 setLoginState 함수 구현
+  const setLoginState = useCallback((loginData: any) => {
+    console.log("OAuth 로그인 성공. 상태를 설정합니다:", loginData);
+    _handleLoginSuccess(loginData);
+  }, [_handleLoginSuccess]);
+
+
+// 일반 로그인을 위한 login 함수 (기존 로직 유지)
+  const login = useCallback(async (loginData: any, anonymousSessionId: string | null) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...loginData,
+          anonymous_session_id: anonymousSessionId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || '로그인에 실패했습니다.');
+      }
+      
+      const data = await response.json();
+      // 성공 시 공통 로직 처리
+      _handleLoginSuccess(data);
+
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.');
+    }
+  }, [_handleLoginSuccess]);
+
   const logout = useCallback(async () => {
     const currentToken = localStorage.getItem('jwt_token');
     if (currentToken) {
@@ -123,9 +165,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggedIn(false);
     setSessionId(null);
     alert('로그아웃되었습니다.');
-    // 페이지를 새로고침하여 초기 상태로 돌아감
-    router.push('/');
-    router.refresh();
+    // router.push('/');
+    // router.refresh();
 
   }, [router]);
 
@@ -135,8 +176,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     isAdmin: user?.role === 'ADMIN' || user?.role === 'SUPER',
     token,
     sessionId,
-    setSessionId,
+    initializeSession,
     login,
+    setLoginState,
     logout,
   };
 
