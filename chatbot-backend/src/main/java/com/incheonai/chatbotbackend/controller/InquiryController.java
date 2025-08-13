@@ -44,14 +44,14 @@ public class InquiryController {
         return ResponseEntity.ok(inquiries);
     }
 
-    /** 내 문의 상세 조회 */
+    /** 문의 상세 조회*/
     @GetMapping("/{inquiryId}")
-    public ResponseEntity<InquiryDetailDto> getMyInquiryDetail(
+    public ResponseEntity<InquiryDetailDto> getInquiryDetail(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Integer inquiryId
     ) {
-        String userId = userDetails.getUsername();
-        InquiryDetailDto detail = inquiryService.getMyInquiryDetail(userId, inquiryId);
+        // 2. userId를 넘기지 않고, 새로 만든 서비스 메서드를 호출합니다.
+        InquiryDetailDto detail = inquiryService.getInquiryDetailById(inquiryId);
         return ResponseEntity.ok(detail);
     }
 
