@@ -9,23 +9,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
-// // User와 Admin 타입을 정의합니다.
-// interface LoginResponseData {
-//   accessToken: string;
-//   id: number;
-//   userId?: string; // 일반 유저
-//   googleId?: string | null; // 일반 유저
-//   loginProvider?: 'LOCAL' | 'GOOGLE'; // 일반 유저
-//   adminId?: string; // 관리자
-//   adminName?: string; // 관리자 이름
-//   role?: 'ADMIN' | 'SUPER' | 'USER'; // 관리자 또는 유저
-//   sessionId: string; // 모든 로그인 응답에 세션 ID 포함
-// }
-
-// function isAdminData(data: LoginResponseData): boolean {
-//   return data.role === 'ADMIN' || data.role === 'SUPER';
-// }
-
 export default function HomePageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -202,14 +185,14 @@ export default function HomePageClient() {
   // }, [searchParams, handleLoginSuccess, router, fetchAnonymousSession, fetchChatHistory]);
 
     // ✅ 2. useEffect 로직을 명확하게 분리합니다.
-  useEffect(() => {
+useEffect(() => {
     const oauthToken = searchParams.get('token');
     const oauthSessionId = searchParams.get('sessionId');
     const oauthError = searchParams.get('error');
 
     // --- 최우선 처리: OAuth2 리디렉션 처리 ---
     if (oauthToken && oauthSessionId) {
-      console.log("URL에서 OAuth 토큰과 세션 ID를 발견. 처리 시작.");
+      console.log("URL에서 OAuth 토큰과 세션 ID를 발견. 사용자 정보 조회를 시작합니다.");
       
       const fetchUserInfo = async (token: string, sessionId: string) => {
         try {
@@ -225,9 +208,8 @@ export default function HomePageClient() {
         } catch (error) {
           console.error('사용자 정보 조회 중 네트워크 오류:', error);
         } finally {
-          // URL 정리 및 처리 완료 상태로 변경
           router.replace('/');
-          setIsProcessingOAuth(false);
+          // OAuth 처리가 끝났지만, 실제 상태 반영은 다음 훅에서 하므로 여기서는 상태 변경 안 함
         }
       };
       fetchUserInfo(oauthToken, oauthSessionId);
@@ -237,14 +219,50 @@ export default function HomePageClient() {
     if (oauthError) {
         alert(oauthError);
         router.replace('/');
-        setIsProcessingOAuth(false);
-        return;
     }
 
-    // OAuth 파라미터가 없으면, 처리 완료 상태로 변경
+    // OAuth 파라미터가 없으면, 처리할 필요가 없으므로 즉시 완료 상태로 변경
     setIsProcessingOAuth(false);
 
   }, [searchParams, handleLoginSuccess, router]);
+
+
+  // 2. 일반 세션 관리 및 채팅 내역 로드 useEffect
+  useEffect(() => {
+    // OAuth 처리 중에는 이 로직을 실행하지 않음
+    if (isProcessingOAuth) {
+      console.log("OAuth 처리 중이므로 일반 세션 로직을 건너뜁니다.");
+      return;
+    }
+
+    const localToken = localStorage.getItem('jwt_token');
+    const localSessionId = localStorage.getItem('session_id');
+
+    if (localToken && localSessionId) {
+      // --- 로그인 상태일 경우 ---
+      console.log("로그인 상태를 확인했습니다. 세션을 설정하고 채팅 내역을 조회합니다.");
+      // AuthContext의 상태가 이미 설정되었을 수 있지만, 여기서 한 번 더 명시적으로 확인 및 설정
+      if (!isLoggedIn) {
+        // AuthContext의 초기화 로직이 필요할 경우 대비
+        // 예: login({ accessToken: localToken, sessionId: localSessionId, ... });
+        // 이 부분은 AuthContext의 구현에 따라 달라집니다.
+        // 지금은 AuthContext가 이미 처리했다고 가정하고 넘어갑니다.
+      }
+      setCurrentSessionId(localSessionId);
+      fetchChatHistory(localSessionId);
+    } else {
+      // --- 비로그인 상태일 경우 ---
+      console.log("비로그인 상태입니다. 익명 세션을 발급받습니다.");
+      // 기존에 발급받은 익명 세션 ID가 있는지 확인
+      if (localSessionId) {
+        console.log(`기존 익명 세션(${localSessionId})을 사용합니다.`);
+        setCurrentSessionId(localSessionId);
+        fetchChatHistory(localSessionId);
+      } else {
+        fetchAnonymousSession();
+      }
+    }
+  }, [isProcessingOAuth, isLoggedIn, fetchChatHistory, fetchAnonymousSession]);
 
   const openAuthModal = (mode: 'login' | 'register' = 'login') => {
     setAuthMode(mode);
