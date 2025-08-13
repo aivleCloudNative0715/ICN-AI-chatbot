@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import Footer from '@/components/common/Footer';
 
 export default function HomePageClient() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function HomePageClient() {
     sessionId,
     login,
     logout,
+    register,
     initializeSession,
     setLoginState,
   } = useAuth();
@@ -238,6 +240,24 @@ export default function HomePageClient() {
     }
   };
 
+    // 로그인 제출 핸들러
+  const handleLoginSubmit = async (data: any) => {
+    // Context의 login 함수 호출 후, 성공 시 모달 닫기
+    const success = await login(data, anonymousSessionId);
+    if (success) {
+      closeAuthModal();
+    }
+  };
+
+  // 회원가입 제출 핸들러
+  const handleRegisterSubmit = async (data: any) => {
+    // Context의 register 함수 호출 후, 성공 시 모달 닫기
+    const success = await register(data, anonymousSessionId);
+    if (success) {
+      closeAuthModal();
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 w-full h-full">
       <Header
@@ -266,11 +286,14 @@ export default function HomePageClient() {
       {isAuthModalOpen && (
         <AuthModal
           onClose={closeAuthModal}
-          onLoginSuccess={(data) => login(data, anonymousSessionId)}
+          onLoginSubmit={handleLoginSubmit}
+          onRegisterSubmit={handleRegisterSubmit}
           initialMode={authMode}
           anonymousSessionId={anonymousSessionId}
         />
       )}
+
+      <Footer/>
     </div>
   );
 }

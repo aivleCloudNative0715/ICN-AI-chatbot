@@ -7,36 +7,29 @@ import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { API_BASE_URL } from '@/lib/api';
-
-// 회원가입 성공 시 받는 데이터 타입 (로그인 응답과 동일)
-interface LoginResponseData {
-  accessToken: string;
-  id: number;
-  userId: string;
-  googleId: string | null;
-  loginProvider: 'LOCAL' | 'GOOGLE';
-  sessionId: string;
-}
+import { Checkbox } from 'primereact/checkbox'; // Checkbox 임포트
+import Link from 'next/link'; // Link 임포트
 
 interface RegisterFormProps {
-  // 성공 콜백의 파라미터 타입을 LoginResponseData로 변경
-  onRegisterSuccess: (data: any) => void;
+  onSubmit: (data: any) => void;
   anonymousSessionId: string | null;
 }
 
-export default function RegisterForm({ onRegisterSuccess, anonymousSessionId }: RegisterFormProps) {
+export default function RegisterForm({ onSubmit, anonymousSessionId }: RegisterFormProps) {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false)
   const [errors, setErrors] = useState<{
     userId?: string;
     password?: string;
     confirmPassword?: string;
     general?: string;
+    privacy?: string; 
   }>({});
 
   const validate = () => {
-    const newErrors: { userId?: string; password?: string; confirmPassword?: string } = {};
+    const newErrors: { userId?: string; password?: string; confirmPassword?: string; privacy?: string } = {};
 
     if (!userId) newErrors.userId = '아이디를 입력해주세요.';
     else if (!/^[a-zA-Z0-9]{6,12}$/.test(userId))
@@ -50,6 +43,10 @@ export default function RegisterForm({ onRegisterSuccess, anonymousSessionId }: 
     else if (password !== confirmPassword)
       newErrors.confirmPassword = '비밀번호가 일치하지 않습니다.';
 
+    if (!agreedToPrivacy) {
+      newErrors.privacy = '개인정보 수집 및 이용에 동의해야 합니다.';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -58,29 +55,11 @@ export default function RegisterForm({ onRegisterSuccess, anonymousSessionId }: 
     e.preventDefault();
     if (validate()) {
       setErrors({});
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/users/signup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId,
-            password,
-            passwordConfirm: confirmPassword,
-          }),
-        });
-
-        const data = await response.json();
-
-        if (response.status === 201) {
-          alert('회원가입 성공! 자동 로그인됩니다.');
-          onRegisterSuccess(data); // 성공 시 받은 데이터 전체를 전달
-        } else {
-          setErrors(prev => ({ ...prev, general: data.message || '회원가입에 실패했습니다.' }));
-        }
-      } catch (error) {
-        console.error('회원가입 중 오류 발생:', error);
-        setErrors(prev => ({ ...prev, general: '네트워크 오류가 발생했습니다.' }));
-      }
+      onSubmit({
+        userId,
+        password,
+        passwordConfirm: confirmPassword,
+      });
     }
   };
 
@@ -120,7 +99,7 @@ export default function RegisterForm({ onRegisterSuccess, anonymousSessionId }: 
     }
   };
 
-  // ✅ Google 로그인 URL 동적 생성
+  // Google 로그인 URL 동적 생성
     const googleLoginUrl = anonymousSessionId
       ? `${API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
       : `${API_BASE_URL}/api/auth/oauth2/start`;
@@ -217,6 +196,26 @@ export default function RegisterForm({ onRegisterSuccess, anonymousSessionId }: 
             </svg>
             <small className="p-error block">{errors.confirmPassword}</small>
           </div>
+        )}
+      </div>
+
+      {/* 개인정보 수집 및 이용 동의 체크박스 추가 */}
+      <div className="field-checkbox mt-4">
+        <Checkbox
+          inputId="privacy-agree"
+          className='border border-gray-300'
+          checked={agreedToPrivacy}
+          onChange={(e) => setAgreedToPrivacy(e.checked || false)}
+        />
+        <label htmlFor="privacy-agree" className="ml-2 text-sm">
+          [필수] 
+          <Link href="/privacy" target="_blank" className="text-blue-600 hover:underline">
+            개인정보 수집 및 이용
+          </Link>
+          에 동의합니다.
+        </label>
+        {errors.privacy && (
+          <small className="p-error block mt-1">{errors.privacy}</small>
         )}
       </div>
 

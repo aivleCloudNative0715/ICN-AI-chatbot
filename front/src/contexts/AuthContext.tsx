@@ -22,11 +22,12 @@ interface AuthContextType {
   isAdmin: boolean;
   token: string | null;
   sessionId: string | null;
-  initializeSession: (sessionId: string | null) => void;
-  login: (loginData: any, anonymousSessionId: string | null) => void;
-  setLoginState: (loginData: any) => void; // 이미 인증된 후 상태만 설정하는 함수
+  login: (loginData: any, anonymousSessionId: string | null) => Promise<boolean>;
+  register: (registerData: any, anonymousSessionId: string | null) => Promise<boolean>;
+  setLoginState: (loginData: any) => void;
   logout: () => void;
-}
+  initializeSession: (sessionId: string | null) => void;
+ }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  // ✅ 2. 로그인 성공 후 공통 로직을 처리하는 내부 헬퍼 함수 생성
+  // 로그인 성공 후 공통 로직을 처리하는 내부 헬퍼 함수 생성
   const _handleLoginSuccess = useCallback((data: any) => {
     // 백엔드 응답 데이터를 기반으로 localStorage와 상태를 설정
     localStorage.setItem('jwt_token', data.accessToken);
@@ -112,7 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [router]);
 
-  // ✅ 3. OAuth 같이 이미 인증된 경우를 위한 setLoginState 함수 구현
+  // OAuth 같이 이미 인증된 경우를 위한 setLoginState 함수 구현
   const setLoginState = useCallback((loginData: any) => {
     console.log("OAuth 로그인 성공. 상태를 설정합니다:", loginData);
     _handleLoginSuccess(loginData);
@@ -120,7 +121,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
 // 일반 로그인을 위한 login 함수 (기존 로직 유지)
-  const login = useCallback(async (loginData: any, anonymousSessionId: string | null) => {
+  const login = useCallback(async (loginData: any, anonymousSessionId: string | null): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -139,9 +140,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await response.json();
       // 성공 시 공통 로직 처리
       _handleLoginSuccess(data);
-
+      return true;
     } catch (error) {
       alert(error instanceof Error ? error.message : '로그인 중 오류가 발생했습니다.');
+      return false;
+    }
+  }, [_handleLoginSuccess]);
+
+  // 회원가입 API를 호출하는 register 함수 추가
+  const register = useCallback(async (registerData: any, anonymousSessionId: string | null): Promise<boolean> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...registerData,
+          anonymous_session_id: anonymousSessionId, // 백엔드가 지원한다면 세션 마이그레이션을 위해 전달
+        }),
+      });
+
+      if (!response.ok) { // 201 Created 외의 상태도 에러로 처리
+        const errorData = await response.json();
+        throw new Error(errorData.message || '회원가입에 실패했습니다.');
+      }
+
+      const data = await response.json();
+      alert('회원가입 성공! 자동 로그인됩니다.');
+      _handleLoginSuccess(data); // 회원가입 응답에 토큰이 포함되어 있으므로 바로 로그인 상태로 만듦
+      return true; // 성공 시 true 반환
+    } catch (error) {
+      alert(error instanceof Error ? error.message : '회원가입 중 오류가 발생했습니다.');
+      return false; // 실패 시 false 반환
     }
   }, [_handleLoginSuccess]);
 
@@ -180,6 +209,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     login,
     setLoginState,
     logout,
+    register,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
