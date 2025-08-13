@@ -2,6 +2,7 @@ import torch
 from torch.nn.functional import softmax, sigmoid
 
 from shared.load_model import model, idx2intent, idx2slot, intent2idx
+from shared.normalize_with_morph import normalize_with_morph
 from shared.utils import tokenizer, device
 
 # 🧱 토큰 → 단어 병합 + 슬롯 정렬
@@ -86,6 +87,7 @@ def predict_with_bce(text, threshold=0.8, top_k_intents=3, max_length=64):
         threshold: Intent 분류 임계값 (default: 0.8)
         top_k_intents: 상위 K개 인텐트 반환 (default: 3)
     """
+    text = normalize_with_morph(text)
     encoding = tokenizer(
         text,
         return_tensors='pt',

@@ -8,19 +8,30 @@ def classify_intent(state: ChatState) -> ChatState:
     # get() 메서드를 사용하여 키가 없을 경우 빈 리스트를 반환해 오류를 방지합니다.
     messages = state.get("messages", [])
     
-    # 📌 수정된 부분: 전체 대화 기록을 하나의 문자열로 결합합니다.
-    # 대화가 처음 시작될 때는 최신 질문만 사용합니다.
+    # 📌 수정된 부분: 의도 분류와 슬롯 추출을 분리합니다.
+    # 의도 분류: 전체 맥락 사용, 슬롯 추출: 현재 사용자 질문만 사용
     if len(messages) > 1:
-        # 이전 대화 기록(AI 응답 포함)과 최신 사용자 질문을 모두 결합합니다.
-        # 이렇게 하면 분류 모델이 전체 맥락을 이해할 수 있습니다.
+        # 의도 분류를 위해 전체 대화 기록 사용
         full_text_with_history = " ".join([m.content for m in messages])
         text_to_classify = full_text_with_history
     else:
-        # 대화가 첫 번째 턴일 경우, 사용자 입력만 사용합니다.
+        # 대화가 첫 번째 턴일 경우, 사용자 입력만 사용
         text_to_classify = state["user_input"]
 
-    # 📌 수정된 부분: BCE 기반 예측 함수를 사용하여 복합 의도 감지
-    result = predict_with_bce(text_to_classify, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
+    # 📌 수정된 부분: 의도 분류는 전체 맥락으로, 슬롯 추출은 현재 질문만으로 분리
+    # 1. 의도 분류용 (전체 맥락)
+    intent_result = predict_with_bce(text_to_classify, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
+    
+    # 2. 슬롯 추출용 (현재 사용자 질문만)
+    slot_result = predict_with_bce(state["user_input"], threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
+    
+    # 의도는 맥락 기반, 슬롯은 현재 질문 기반으로 결합
+    result = {
+        'all_top_intents': intent_result['all_top_intents'],
+        'high_confidence_intents': intent_result['high_confidence_intents'],
+        'slots': slot_result['slots'],  # 현재 질문에서만 슬롯 추출
+        'is_multi_intent': intent_result['is_multi_intent']
+    }
     
     # 결과에서 필요한 데이터 추출
     top_k_intents_and_probs = result['all_top_intents']
@@ -41,10 +52,18 @@ def classify_intent(state: ChatState) -> ChatState:
         state["intent"] = top_intent
         state["detected_intents"] = [top_k_intents_and_probs[0]]
     
+    # 이전 슬롯을 백업하고 현재 슬롯을 설정
+    previous_slots = state.get("slots", [])
+    if previous_slots:
+        state["previous_slots"] = previous_slots
+        print(f"디버그: 이전 슬롯을 previous_slots에 저장: {previous_slots}")
+    
     state["confidence"] = confidence
     state["top_k_intents_and_probs"] = top_k_intents_and_probs
-    state["slots"] = slots
+    state["slots"] = slots  # 현재 질문에서 추출된 슬롯
     state["is_multi_intent"] = is_multi_intent
+    
+    print(f"디버그: 현재 질문에서 추출된 슬롯: {slots}")
 
         
     return state

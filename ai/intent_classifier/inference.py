@@ -86,8 +86,6 @@ def interactive_test():
 
     while True:
         user_input = input(f"\n✉️ 입력 (Analyze Thresh={threshold:.2f}, Multi Thresh={multi_threshold:.2f}): ").strip()
-
-        user_input = normalize_with_morph(user_input)
         if user_input.lower() == "exit":
             print("👋 종료합니다.")
             break

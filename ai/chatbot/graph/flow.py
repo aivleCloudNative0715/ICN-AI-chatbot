@@ -57,17 +57,15 @@ def build_chat_graph():
         user_query = state.get("user_input", "")
 
         print(f"DEBUG: 의도별 확신도 점수: {top_k_intents}")
-        # 1. 이전 대화 감지 로직 (맥락을 고려한 의도 재분류)
+        # 1. 이전 대화 감지 로직 - 슬롯 추출 완료 후 llm_verify_intent로 라우팅
+        # (모든 질문에서 classify_intent를 거쳐 슬롯을 먼저 추출하고, 이전 대화가 있으면 검증)
+
+        # 2. 이전 대화가 있으면 LLM 검증 단계로 이동 (슬롯 추출은 이미 완료됨)
         if len(state.get("messages", [])) > 1:
-            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅")
+            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅 (슬롯 추출 완료)")
             return "llm_verify_intent"
 
-        # 2. 복합 의도 감지 (classify_intent에서 판별됨)
-        # if state.get("is_multi_intent", False) or state.get("intent") == "complex_intent":
-        #     detected_intents = [intent for intent, _ in state.get("detected_intents", [])]
-        #     print(f"복합 의도 감지: {detected_intents} -> handle_complex_intent로 라우팅")
-        #     return "handle_complex_intent"
-
+        # 3. 복합 의도 감지 (classify_intent에서 판별됨)
         if len(top_k_intents) >= 2:
             top_intent_score = top_k_intents[0][1]
             second_intent_score = top_k_intents[1][1]
@@ -78,14 +76,14 @@ def build_chat_graph():
                 print(f"DEBUG: 상위 2개 의도의 점수 차이({top_intent_score - second_intent_score:.4f})가 낮아 복합 의도로 판단 -> handle_complex_intent로 라우팅")
                 return "handle_complex_intent"
 
-        # 3. 단일 의도인 경우 직접 핸들러로 라우팅
+        # 4. 단일 의도인 경우 직접 핸들러로 라우팅
         intent = state.get("intent")
         if intent and intent != "complex_intent":
             handler_name = f"{intent}_handler"
             print(f"DEBUG: 단일 의도 감지 -> {handler_name}로 라우팅")
             return handler_name
 
-        # 4. 신뢰도가 낮거나 모호한 경우 LLM 재확인
+        # 5. 신뢰도가 낮거나 모호한 경우 LLM 재확인
         print("DEBUG: 낮은 신뢰도 또는 모호한 의도 감지 -> llm_verify_intent로 라우팅")
         return "llm_verify_intent"
 
