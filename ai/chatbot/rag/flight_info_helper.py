@@ -36,7 +36,7 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "1. **시간 모호성**: '3시 반'처럼 모호한 시간은, 오전과 오후를 모두 포함하는 2개의 독립된 요청으로 분리해서 반환해줘. 각 요청에는 from_time과 to_time이 동일하게 추출돼야 해.\n"
         "2. **시간 범위**: '오전 8시 이후'는 from_time을 '0800'으로, to_time을 '2359'로 추출해줘. '오후 8시 이전'은 from_time을 '0000'으로, to_time을 '2000'으로 추출해줘.\n"
         "3. **특정 시간**: '오후 3시'처럼 특정 시점의 시간은 from_time과 to_time에 동일한 시간(예: '1500')을 추출해줘. 핸들러에서 이 값을 기준으로 검색 범위를 계산할 거야.\n"
-        "4. **국가/도시명**: '일본'과 같은 국가명은 'airport_name'으로 추출하고, 동시에 'airport_codes'에 주요 공항 코드 리스트를 반드시 추가해줘. '도쿄'와 같은 도시명도 마찬가지야.\n"
+        "4. **국가/도시명**: '일본'과 같은 국가명은 'airport_codes'에 주요 공항 코드 리스트를 반드시 추가해줘. '도쿄'와 같은 도시명도 마찬가지야. 국가명만 언급되면 'airport_name'은 null로 비워두고, 'airport_codes'에 그 나라의 주요 공항 코드들을 넣어줘.\n"
         "5. **출발지/도착지**: 질문에 도착지만 언급되고 출발지가 명시되지 않으면, 'departure_airport_name'은 '인천국제공항'으로 간주하고, 'direction'은 'departure'로 설정해줘."
         "6. **인천 관련**: '인천 도착'과 같은 질문에서 'airport_name'과 'airport_codes'를 null/빈 리스트로 남겨두고 'direction'을 'arrival'로 설정해줘. '인천 출발'과 같은 질문에서도 마찬가지로 'airport_name'과 'airport_codes'를 비우고 'direction'을 'departure'로 설정해줘."
         
@@ -49,7 +49,7 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "사용자: 1터미널 9시 비행기 알려줘"
         "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"0900\", \"to_time\": \"0900\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": \"T1\"}, {\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": \"2100\", \"to_time\": \"2100\", \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": \"T1\"}]}```"
         "사용자: 오늘 인천에서 미국 가는 비행기 알려줘"
-        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": \"미국\", \"airport_codes\": [\"JFK\", \"LAX\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": null, \"to_time\": null, \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
+        "응답: ```json\n{\"requests\": [{\"flight_id\": null, \"airline_name\": null, \"airport_name\": null, \"airport_codes\": [\"JFK\", \"LAX\"], \"departure_airport_name\": null, \"direction\": \"departure\", \"from_time\": null, \"to_time\": null, \"info_type\": \"운항 정보\", \"date_offset\": 0, \"terminal\": null}]}```"
     )
 
     messages = [
