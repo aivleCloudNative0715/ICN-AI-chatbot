@@ -110,8 +110,8 @@ def _call_flight_api(
             "flight_id": flight_id,
             "f_id": f_id,
             "airport_code": airport_code,
-            "from_time": from_time.replace(':', '') if from_time else None,
-            "to_time": to_time.replace(':', '') if to_time else None,
+            "from_time": str(from_time).replace(':', '') if from_time is not None else None,
+            "to_time": str(to_time).replace(':', '') if to_time is not None else None,
         }
         
         call_params = {k: v for k, v in params.items() if v}
