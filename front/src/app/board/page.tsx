@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import BoardSidebar from '../../components/board/BoardSidebar';
 import InquiryList from '../../components/board/InquiryList';
-import { PostCategory, PostFilter } from '../../lib/types'; // Import types
+import { InquiryDto, PostCategory, PostFilter } from '../../lib/types';
+import { getAllInquiries, getMyInquiries } from '../../lib/api';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 export default function BoardPage() {
@@ -11,16 +12,49 @@ export default function BoardPage() {
   const [currentFilter, setCurrentFilter] = useState<PostFilter>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  // Assume this is your logged-in user's ID
-  const currentUser = { id: 'user123', isLoggedIn: true }; // Example user
+  // 1. 상태 변수 추가
+  const [inquiries, setInquiries] = useState<InquiryDto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // TODO: 실제 로그인한 사용자의 ID (Auth Context에서 가져와야 함)
+  const currentUserId = 'user123';
+  const isLoggedIn = true;
+
+  // 2. API를 호출하는 함수
+  const fetchInquiries = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      let response;
+      if (currentFilter === 'my') {
+        // '내 문의' 필터일 경우
+        response = await getMyInquiries(currentUserId);
+      } else {
+        // '전체 문의' 필터일 경우
+        response = await getAllInquiries();
+      }
+      setInquiries(response.content); // Page 객체의 content를 상태에 저장
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '데이터 로딩 실패');
+      setInquiries([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentFilter, currentUserId]); // currentFilter가 바뀔 때마다 함수가 재생성됨
+
+  // 3. 컴포넌트가 마운트되거나, 필터가 변경될 때 API 호출
+  useEffect(() => {
+    fetchInquiries();
+  }, [fetchInquiries]);
 
   const handleCategorySelect = (category: PostCategory, filter: PostFilter) => {
     setCurrentCategory(category);
     setCurrentFilter(filter);
+    // 필터가 변경되면 useEffect가 자동으로 API를 다시 호출
   };
 
   const handleSearch = () => {
-    // This function can be used for future API-based search
     console.log('Searching for:', searchTerm);
   };
 
@@ -30,7 +64,7 @@ export default function BoardPage() {
   return (
     <div className="flex">
       <BoardSidebar
-        isLoggedIn={currentUser.isLoggedIn}
+        isLoggedIn={isLoggedIn}
         onCategorySelect={handleCategorySelect}
       />
       <div className="flex-1 p-4">
@@ -55,7 +89,11 @@ export default function BoardPage() {
         
         <h2>{currentCategory === 'inquiry' ? '문의 사항' : '건의 사항'} ({currentFilter === 'all' ? '전체' : '내'})</h2>
         
-        <InquiryList isMyInquiries={isMyList} currentUserId={currentUser.id} />
+         <InquiryList
+          inquiries={inquiries}
+          isLoading={isLoading}
+          error={error}
+        />
         
       </div>
     </div>
