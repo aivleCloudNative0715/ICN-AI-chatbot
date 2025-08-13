@@ -49,7 +49,7 @@ def airport_weather_current_handler(state: ChatState) -> ChatState:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": formatted_prompt},
+                {"role": "system", "content": formatted_prompt + " 답변에 적절한 이모지를 1-2개 정도 포함해서 더 친근하게 만들어주세요."},
                 # 📌 수정된 부분: user_query 대신 query_to_process를 LLM에 전달합니다.
                 {"role": "user", "content": query_to_process}
             ],

@@ -3,10 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
+import json
 
+import hashlib
 import traceback
 import os
-import sys
+import time
 import tempfile # 임시 파일을 안전하게 저장하기 위한 모듈
 import fitz # PyMuPDF
 from docx import Document # Python-Docx
@@ -24,7 +26,28 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from shared.predict_intent_and_slots import predict_top_k_intents_and_slots
 
+import chromadb
+from chromadb.utils import embedding_functions
+
+# 1. Chroma 클라이언트 초기화
+# PersistentClient를 사용하여 데이터가 저장될 경로를 명시합니다.
+chroma_client = chromadb.PersistentClient(path=".chroma_db")
+
+# 2. SentenceTransformer 모델 초기화
+# ChromaDB의 래퍼(wrapper)를 사용하면 더 간편합니다.
 embedding_model = SentenceTransformer('dragonkue/snowflake-arctic-embed-l-v2.0-ko')
+embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name='dragonkue/snowflake-arctic-embed-l-v2.0-ko'
+)
+
+
+# 3. 컬렉션 생성 또는 가져오기
+# get_or_create_collection을 사용할 때 embedding_function을 바로 지정합니다.
+chroma_collection = chroma_client.get_or_create_collection(
+    name="chatbot_cache",
+    embedding_function=embedding_function
+)
+
 
 # .env 파일에서 환경변수 불러오기 (MONGO_URI)
 load_dotenv()
@@ -124,6 +147,9 @@ def perform_rag(extracted_text: str, category: str):
     ]
 
     target_collection.insert_many(documents)
+    
+    
+    
 
 
 
@@ -171,6 +197,24 @@ class GenerateAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
+        # --- 의미 기반 캐시 조회 ---
+        results = chroma_collection.query(
+            query_texts=[user_message],
+            n_results=1,
+            include=['metadatas', 'documents', 'distances']
+        )
+
+        if results and results.get("ids") and results["ids"][0]:
+            distance = results["distances"][0][0]
+            cosine_sim = 1 - distance  # 거리 → 유사도 변환
+
+            print(f"[DEBUG] cosine_sim: {cosine_sim}")
+
+            # 유사도 임계값 조절
+            if cosine_sim > 0.9:  # 0.9 이상이면 캐시된 답변 사용
+                cached_answer = results['metadatas'][0][0]["answer"]
+                return Response({"answer": cached_answer, "re": re}, status=status.HTTP_200_OK)
+            
 
         # 1. 캐시에서 기존 대화 상태를 가져옴
         cache_key = CHATBOT_SESSION_CACHE_KEY.format(session_id)
@@ -202,11 +246,8 @@ class GenerateAPIView(APIView):
                 isinstance(current_state["messages"][-1], AIMessage)):
                 current_state["messages"] = current_state["messages"][:-2]
             
-                # 새로운 사용자 메시지 추가
-            current_state["messages"].append(HumanMessage(content=user_message))
-
-        else:
-            current_state["messages"].append(HumanMessage(content=user_message))
+        # 새로운 사용자 메시지 추가
+        current_state["messages"].append(HumanMessage(content=user_message))
         
         current_state["user_input"] = user_message # 현재 질문도 state에 업데이트
         
@@ -234,8 +275,31 @@ class GenerateAPIView(APIView):
                 "answer": answer,
                 "re": re,
                 #"metadata": metadata
-            }    
-            
+            }
+
+            # 7. 응답 데이터에 세션 ID와 메시지 ID 추가
+            # --- 결과를 Chroma에 저장 ---
+            # doc: JSON 직렬화된 응답, id: 고유 캐시 키 (session 미포함, 질문+session_id 기반)
+            cache_key = hashlib.sha256(json.dumps({
+                'message': user_message,
+                'session_id': session_id
+            }, sort_keys=True).encode()).hexdigest()
+
+            # 현재 Unix 타임스탬프를 변수에 저장
+            current_timestamp = int(time.time())
+
+            # 디버깅을 위해 timestamp 값 출력
+            print(f"[DEBUG] ChromaDB에 저장될 timestamp: {current_timestamp}")
+
+            chroma_collection.add(
+                ids=[cache_key],
+                documents=[user_message],
+                metadatas=[{
+                    'session_id': session_id,
+                    'answer': answer,
+                    'timestamp': current_timestamp  # 위에서 저장한 변수 사용
+                }]
+            )         
         
             return Response(response_data, status=status.HTTP_200_OK)
         
