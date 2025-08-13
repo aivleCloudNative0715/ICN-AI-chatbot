@@ -60,3 +60,29 @@ export interface Page<T> {
   totalElements: number;
   // ... 기타 페이징 정보
 }
+
+/** 문의 수정 (PUT /api/board/{id}) */
+export const updateInquiry = async (
+  inquiryId: number,
+  userId: string,
+  data: { title: string; content: string; category: 'INQUIRY' | 'SUGGESTION' }
+): Promise<InquiryDto> => {
+  const response = await fetch(`${API_BASE_URL}/api/board/${inquiryId}?userId=${userId}`, {
+    method: 'PUT', // PUT 메서드 사용
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('문의 수정에 실패했습니다.');
+  // 백엔드에서 수정된 문의 정보를 반환한다고 가정
+  return response.json();
+};
+
+/** 문의 삭제 (DELETE /api/board/{id}) */
+export const deleteInquiry = async (inquiryId: number, userId: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/api/board/${inquiryId}?userId=${userId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  if (!response.ok) throw new Error('문의 삭제에 실패했습니다.');
+  // 성공 시 내용 없이 2xx 상태 코드를 반환하므로, json() 호출은 필요 없음
+};

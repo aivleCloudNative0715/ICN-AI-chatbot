@@ -5,14 +5,13 @@ import React, { useState, useEffect } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { useRouter } from 'next/navigation';
 import { InquiryDto } from '@/lib/types';
-import { createInquiry } from '@/lib/api';
+import { createInquiry, getInquiryDetail, updateInquiry } from '@/lib/api';
 
 interface InquiryFormProps {
-  inquiryId?: string; // 수정 모드일 경우 문의 ID
-  initialData?: InquiryDto[]; // 수정 모드일 경우 초기 데이터
+  inquiryId?: string;
 }
 
-export default function InquiryForm({ inquiryId, initialData }: InquiryFormProps) {
+export default function InquiryForm({ inquiryId }: InquiryFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -31,23 +30,27 @@ export default function InquiryForm({ inquiryId, initialData }: InquiryFormProps
     { label: '건의', value: 'SUGGESTION' },
   ];
 
-  // ... (useEffect for edit mode - API 호출 로직 추가 필요)
-  // useEffect(() => {
-  //   if (isEditMode && !initialData) {
-  //     // TODO: 수정 모드이고 initialData가 없는 경우, API-13-27039 (단일 문의/건의 내역 가져오기) 호출하여 데이터 로드
-  //     // 현재는 예시 데이터를 사용
-  //     const fetchInquiryData = async () => {
-  //       // 실제 API 호출 시뮬레이션
-  //       const mockInquiry: Inquiry = {
-  //         inquiry_id: inquiryId!, user_id: 'user123', title: '로드된 문의 제목', content: '이것은 로드된 문의 내용입니다. 수정할 수 있습니다.', category: '문의', urgency: '보통', status: '미처리', created_at: '2025-07-20T10:00:00Z', updated_at: '2025-07-20T10:00:00Z', is_deleted: false
-  //       };
-  //       setTitle(mockInquiry.title);
-  //       setContent(mockInquiry.content);
-  //       setCategory(mockInquiry.category);
-  //     };
-  //     fetchInquiryData();
-  //   }
-  // }, [inquiryId, isEditMode, initialData]);
+  // 1. 수정 모드일 때, useEffect를 사용해 기존 데이터를 불러옵니다.
+  useEffect(() => {
+    // inquiryId가 있고, isEditMode가 true일 때만 실행
+    if (isEditMode && inquiryId) {
+      const fetchInquiryData = async () => {
+        try {
+          // getInquiryDetail API 호출
+          const inquiryData = await getInquiryDetail(Number(inquiryId), userId);
+          // 폼 상태를 불러온 데이터로 채움
+          setTitle(inquiryData.title);
+          setContent(inquiryData.content);
+          setCategory(inquiryData.category);
+        } catch (err) {
+          alert(err instanceof Error ? err.message : '데이터를 불러올 수 없습니다.');
+          router.back(); // 오류 발생 시 이전 페이지로 이동
+        }
+      };
+      fetchInquiryData();
+    }
+  }, [inquiryId, isEditMode, router, userId]); // 의존성 배열에 router, userId 추가
+
 
   const validate = () => {
     const newErrors: { title?: string; content?: string; category?: string } = {};
@@ -66,15 +69,15 @@ export default function InquiryForm({ inquiryId, initialData }: InquiryFormProps
     try {
       const dataToSend = { title, content, category: category! };
 
-      if (isEditMode) {
-        // TODO: updateInquiry API 호출
-        console.log('문의 수정:', inquiryId, dataToSend);
+      if (isEditMode && inquiryId) {
+        // 수정 모드일 때 updateInquiry API 호출
+        await updateInquiry(Number(inquiryId), userId, dataToSend);
+        alert('문의가 성공적으로 수정되었습니다.');
       } else {
-        // createInquiry API 호출
         await createInquiry(userId, dataToSend);
         alert('새 문의가 성공적으로 작성되었습니다.');
       }
-      router.push('/board'); // 성공 후 게시판 목록으로 이동
+      router.push('/board');
     } catch (err) {
       alert(`오류 발생: ${err instanceof Error ? err.message : String(err)}`);
     } finally {

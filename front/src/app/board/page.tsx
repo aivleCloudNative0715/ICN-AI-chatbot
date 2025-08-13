@@ -4,10 +4,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import BoardSidebar from '../../components/board/BoardSidebar';
 import InquiryList from '../../components/board/InquiryList';
 import { InquiryDto, PostCategory, PostFilter } from '../../lib/types';
-import { getAllInquiries, getMyInquiries } from '../../lib/api';
+import { deleteInquiry, getAllInquiries, getMyInquiries } from '../../lib/api';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/router';
 
 export default function BoardPage() {
+  const router = useRouter(); // router 훅 사용
   const [currentCategory, setCurrentCategory] = useState<PostCategory>('inquiry');
   const [currentFilter, setCurrentFilter] = useState<PostFilter>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -61,6 +63,20 @@ export default function BoardPage() {
   // '내 문의' 필터가 활성화되었는지 여부를 결정합니다.
   const isMyList = currentFilter === 'my';
 
+    // 삭제 처리 함수 추가
+  const handleDelete = async (inquiryId: number) => {
+    if (!window.confirm('정말로 이 문의를 삭제하시겠습니까?')) {
+      return;
+    }
+    try {
+      await deleteInquiry(inquiryId, currentUserId);
+      alert('문의가 삭제되었습니다.');
+      fetchInquiries(); // 목록을 다시 불러와 화면을 갱신
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '삭제 중 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <div className="flex">
       <BoardSidebar
@@ -93,6 +109,9 @@ export default function BoardPage() {
           inquiries={inquiries}
           isLoading={isLoading}
           error={error}
+          currentUserId={currentUserId}
+          onDelete={handleDelete}
+          onEdit={(inquiryId) => router.push(`/board/new?id=${inquiryId}`)}
         />
         
       </div>

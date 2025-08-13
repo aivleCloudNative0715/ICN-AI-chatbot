@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Accordion, AccordionTab } from 'primereact/accordion';
 import { InquiryDto } from '@/lib/types';
+import { Button } from 'primereact/button'; 
 
 // // 1. 문의사항에 대한 구체적인 타입을 정의합니다. (any 대신)
 // interface Inquiry {
@@ -18,6 +19,9 @@ interface Props {
   inquiries: InquiryDto[];
   isLoading: boolean;
   error: string | null;
+  currentUserId: string;
+  onDelete: (inquiryId: number) => void;
+  onEdit: (inquiryId: number) => void;
 }
 
 // // 임시 데이터: 실제로는 API를 통해 데이터를 가져와야 합니다.
@@ -81,7 +85,7 @@ interface Props {
 //   );
 // }
 
-export default function InquiryList({ inquiries, isLoading, error }: Props) {
+export default function InquiryList({ inquiries, isLoading, error, currentUserId, onDelete, onEdit }: Props) {
   // 로딩 중일 때 UI
   if (isLoading) {
     return <div className="p-4 text-center text-board-dark">목록을 불러오는 중...</div>;
@@ -101,13 +105,27 @@ export default function InquiryList({ inquiries, isLoading, error }: Props) {
     <div className="card">
       <Accordion multiple>
         {inquiries.map((inquiry) => (
-          // inquiryId가 PK이므로 key로 사용
           <AccordionTab key={inquiry.inquiryId} header={inquiry.title}>
-            {/* 상세 내용은 별도 페이지나 모달에서 보여주는 것이 일반적 */}
-            <p className="m-0 text-board-dark">
-              상태: {inquiry.status} | 긴급도: {inquiry.urgency}
-            </p>
-            {/* 여기에 수정/삭제 버튼 추가 가능 */}
+            <div className="text-board-dark">
+              <p>상태: {inquiry.status} | 긴급도: {inquiry.urgency}</p>
+              {/* 현재 로그인한 사용자의 글일 경우에만 수정/삭제 버튼 표시 */}
+              {inquiry.userId === currentUserId && (
+                <div className="mt-4 flex gap-2">
+                  <Button
+                    label="수정"
+                    icon="pi pi-pencil"
+                    className="p-button-sm p-button-secondary"
+                    onClick={() => onEdit(inquiry.inquiryId)}
+                  />
+                  <Button
+                    label="삭제"
+                    icon="pi pi-trash"
+                    className="p-button-sm p-button-danger"
+                    onClick={() => onDelete(inquiry.inquiryId)}
+                  />
+                </div>
+              )}
+            </div>
           </AccordionTab>
         ))}
       </Accordion>
