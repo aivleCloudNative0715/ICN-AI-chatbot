@@ -21,10 +21,15 @@ public class InquiryService {
     private final InquiryRepository inquiryRepository;
     private final UserRepository userRepository;
 
+    /** ✅ 전체 문의/건의 목록 조회 (GET /api/board) */
+    @Transactional(readOnly = true)
+    public Page<InquiryDto> getAllInquiries(Pageable pageable) {
+        return inquiryRepository.findAll(pageable).map(InquiryDto::fromEntity);
+    }
+
     /** 문의 등록 (POST /inquiries) */
     @Transactional
     public InquiryDto createInquiry(String userId, InquiryRequestDto request) {
-        // PK 기반 existsById(userId) 아님! user_id 컬럼 기반으로 체크
         if (!userRepository.existsByUserId(userId)) {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
         }
@@ -34,9 +39,7 @@ public class InquiryService {
                 .title(request.title())
                 .content(request.content())
                 .category(request.category())
-                .urgency(request.urgency())
-                // 상태 기본값 필요하면 주석 해제
-                // .status(InquiryStatus.PENDING)
+                 .status(InquiryStatus.PENDING)
                 .build();
 
         return InquiryDto.fromEntity(inquiryRepository.save(inquiry));
@@ -50,10 +53,10 @@ public class InquiryService {
             page = inquiryRepository.findByUserId(userId, pageable);
         } else {
             try {
-                InquiryStatus st = InquiryStatus.valueOf(status);
-                page = inquiryRepository.findByUserIdAndStatus(userId, status, pageable);
+                InquiryStatus inquiryStatus  = InquiryStatus.valueOf(status);
+                page = inquiryRepository.findByUserIdAndStatus(userId, inquiryStatus , pageable);
             } catch (IllegalArgumentException ex) {
-                // 잘못된 status 문자열이면 빈 페이지 반환(또는 커스텀 예외로 400 처리)
+                // "PENDING", "RESOLVED"가 아닌 잘못된 status 문자열이면 예외 발생
                 throw new InvalidDataAccessApiUsageException("유효하지 않은 상태 값입니다. (예: PENDING, RESOLVED)");
             }
         }
@@ -79,7 +82,6 @@ public class InquiryService {
         inquiry.setTitle(request.title());
         inquiry.setContent(request.content());
         inquiry.setCategory(request.category());
-        inquiry.setUrgency(request.urgency());
 
         return InquiryDto.fromEntity(inquiryRepository.save(inquiry));
     }

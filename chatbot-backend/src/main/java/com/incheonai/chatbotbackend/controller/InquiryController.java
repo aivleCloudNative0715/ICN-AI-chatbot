@@ -13,10 +13,18 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/inquiries")
+@RequestMapping("/api/board")
 public class InquiryController {
 
     private final InquiryService inquiryService;
+
+    /** 전체 문의/건의 목록 조회 (게시판 기능) */
+    @GetMapping
+    public ResponseEntity<Page<InquiryDto>> getAllInquiries(Pageable pageable) {
+        // InquiryService에 모든 문의를 조회하는 메서드(findAll) 추가 필요
+        Page<InquiryDto> inquiries = inquiryService.getAllInquiries(pageable);
+        return ResponseEntity.ok(inquiries);
+    }
 
     /** 문의 생성 */
     @PostMapping
