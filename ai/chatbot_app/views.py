@@ -21,32 +21,23 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 
+from datetime import datetime, timezone
+
 from sentence_transformers import SentenceTransformer
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from shared.predict_intent_and_slots import predict_top_k_intents_and_slots
+from chatbot.rag.utils import get_mongo_collection
 
-import chromadb
-from chromadb.utils import embedding_functions
+from threading import Thread
 
-# 1. Chroma 클라이언트 초기화
-# PersistentClient를 사용하여 데이터가 저장될 경로를 명시합니다.
-chroma_client = chromadb.PersistentClient(path=".chroma_db")
+COLLECTION_NAME_DEFAULT = "Cached"
+VECTOR_INDEX_NAME = "cached_vector_index"
+EMBEDDING_FIELD_NAME = "embedding"
+TEXT_CONTENT_FIELD_NAME = "answer"
 
-# 2. SentenceTransformer 모델 초기화
-# ChromaDB의 래퍼(wrapper)를 사용하면 더 간편합니다.
+
 embedding_model = SentenceTransformer('dragonkue/snowflake-arctic-embed-l-v2.0-ko')
-embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name='dragonkue/snowflake-arctic-embed-l-v2.0-ko'
-)
-
-
-# 3. 컬렉션 생성 또는 가져오기
-# get_or_create_collection을 사용할 때 embedding_function을 바로 지정합니다.
-chroma_collection = chroma_client.get_or_create_collection(
-    name="chatbot_cache",
-    embedding_function=embedding_function
-)
 
 
 # .env 파일에서 환경변수 불러오기 (MONGO_URI)
@@ -57,12 +48,28 @@ client = MongoClient(mongo_uri)
 db = client["AirBot"]
 airport_collection = db["RecommendQuestion"] 
 
+cached_collection = db["Cached"] # 캐시된 질문 콜렉션
+cached_collection.create_index("created_at", expireAfterSeconds=300)
+
 # ChatState의 초기 상태를 반환하는 함수
 def get_initial_state() -> ChatState:
     return {"messages": []}
 
 # 캐시 키를 위한 상수 정의
 CHATBOT_SESSION_CACHE_KEY = 'chatbot_session_{}'
+
+# 캐시된 질문을 비동기로 저장하는 함수
+# 이 함수는 별도의 스레드에서 실행되어 메인 쓰레드의 블로킹을 방지
+def save_embedding_async(question, answer, cached_collection, embedding_model):
+    def task():
+        embedding = embedding_model.encode(question).tolist()
+        cached_collection.insert_one({
+            "question": question,
+            "embedding": embedding,
+            "answer": answer,
+            "created_at": datetime.now(timezone.utc)
+        })
+    Thread(target=task).start()
 
 
 # PDF, DOCX 파일에서 텍스트를 추출하는 함수
@@ -148,8 +155,56 @@ def perform_rag(extracted_text: str, category: str):
 
     target_collection.insert_many(documents)
     
-    
-    
+
+def perform_vector_search(
+    query_embedding: list,
+    collection_name: str = COLLECTION_NAME_DEFAULT,
+    top_k: int = 5,
+    num_candidates: int = 100,
+    vector_index_name: str = VECTOR_INDEX_NAME,
+    embedding_field: str = EMBEDDING_FIELD_NAME,
+    text_content_field: str = TEXT_CONTENT_FIELD_NAME,
+    query_filter: dict = None,
+    min_score: float = 0.0  # 새로 추가: 최소 점수 필터
+) -> list:
+    """
+    MongoDB에서 벡터 검색을 수행하고, 지정된 필드의 텍스트와 점수를 반환합니다.
+    """
+    collection = get_mongo_collection(collection_name)
+
+    pipeline = []
+
+    if query_filter:
+        pipeline.append({"$match": query_filter})
+
+    pipeline.append({
+        "$vectorSearch": {
+            "queryVector": query_embedding,
+            "path": embedding_field,
+            "numCandidates": num_candidates,
+            "limit": top_k,
+            "index": vector_index_name
+        }
+    })
+
+    pipeline.append({
+        "$project": {
+            "_id": 0,
+            text_content_field: f"${text_content_field}",
+            "score": {"$meta": "vectorSearchScore"}
+        }
+    })
+
+    search_results = collection.aggregate(pipeline)
+
+    # 점수 기반 필터링 적용
+    filtered_results = [
+        {"text": doc[text_content_field], "score": doc["score"]}
+        for doc in search_results
+        if text_content_field in doc and doc.get("score", 0.0) >= min_score
+    ]
+
+    return filtered_results
 
 
 
@@ -197,24 +252,28 @@ class GenerateAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
-        # --- 의미 기반 캐시 조회 ---
-        results = chroma_collection.query(
-            query_texts=[user_message],
-            n_results=1,
-            include=['metadatas', 'documents', 'distances']
+        input_embeddings = embedding_model.encode(user_message).tolist()
+
+        retrieved_docs = perform_vector_search(
+            input_embeddings,
+            collection_name="Cached",
+            vector_index_name="cached_vector_index",
+            query_filter={},
+            top_k=1,
+            min_score=0.97  # 유사도가 0.9 이상인 경우만
         )
 
-        if results and results.get("ids") and results["ids"][0]:
-            distance = results["distances"][0][0]
-            cosine_sim = 1 - distance  # 거리 → 유사도 변환
+        if retrieved_docs:
+            cached_answer = retrieved_docs[0]["text"]
+            similarity_score = retrieved_docs[0]["score"]
+            print(f"[DEBUG] 캐시 검색 결과: {cached_answer} (유사도: {similarity_score})")
+            response_data = {
+                "answer": cached_answer,
+                "re": re,
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
 
-            print(f"[DEBUG] cosine_sim: {cosine_sim}")
-
-            # 유사도 임계값 조절
-            if cosine_sim > 0.9:  # 0.9 이상이면 캐시된 답변 사용
-                cached_answer = results['metadatas'][0][0]["answer"]
-                return Response({"answer": cached_answer, "re": re}, status=status.HTTP_200_OK)
-            
+                  
 
         # 1. 캐시에서 기존 대화 상태를 가져옴
         cache_key = CHATBOT_SESSION_CACHE_KEY.format(session_id)
@@ -277,30 +336,21 @@ class GenerateAPIView(APIView):
                 #"metadata": metadata
             }
 
-            # 7. 응답 데이터에 세션 ID와 메시지 ID 추가
-            # --- 결과를 Chroma에 저장 ---
-            # doc: JSON 직렬화된 응답, id: 고유 캐시 키 (session 미포함, 질문+session_id 기반)
-            cache_key = hashlib.sha256(json.dumps({
-                'message': user_message,
-                'session_id': session_id
-            }, sort_keys=True).encode()).hexdigest()
+  
+                    
+            excluded_phrases = [
+                "죄송합니다"
+            ]
 
-            # 현재 Unix 타임스탬프를 변수에 저장
-            current_timestamp = int(time.time())
+            # 저장하기 전에 필터링
+            if not any(phrase in answer for phrase in excluded_phrases):
+                # 7. 캐시된 질문과 답변을 비동기로 저장
+                save_embedding_async(user_message, answer, cached_collection, embedding_model)
+            else:
+                print("[DEBUG] 답변이 제외 목록에 포함되어 있어 캐시하지 않음")
 
-            # 디버깅을 위해 timestamp 값 출력
-            print(f"[DEBUG] ChromaDB에 저장될 timestamp: {current_timestamp}")
 
-            chroma_collection.add(
-                ids=[cache_key],
-                documents=[user_message],
-                metadatas=[{
-                    'session_id': session_id,
-                    'answer': answer,
-                    'timestamp': current_timestamp  # 위에서 저장한 변수 사용
-                }]
-            )         
-        
+            
             return Response(response_data, status=status.HTTP_200_OK)
         
         except Exception as e:
