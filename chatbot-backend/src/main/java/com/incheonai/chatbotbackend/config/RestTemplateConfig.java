@@ -17,7 +17,7 @@ public class RestTemplateConfig {
         // SimpleClientHttpRequestFactory를 생성하여 타임아웃 설정을 적용합니다.
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(5)); // 연결 타임아웃 5초
-        requestFactory.setReadTimeout(Duration.ofSeconds(30));   // 읽기 타임아웃 30초
+        requestFactory.setReadTimeout(Duration.ofSeconds(310));   // 읽기 타임아웃 310초 // AI서버가 300초
 
         return builder
                 // BufferingClientHttpRequestFactory를 사용하여 chunked 전송을 비활성화하고,
