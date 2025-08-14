@@ -132,7 +132,7 @@ try:
                 text_to_embed = f"{item_category} {item_name}는 기내 반입 불가(휴대 수화물). 위탁 수하물 불가"
             elif carry_on_policy == "불가":
                 text_to_embed = f"{item_category} {item_name}는 기내 반입 불가(휴대 수화물). 그러나 위탁 수하물은 조건부. {checked_baggage_policy}"
-            elif carry_on_policy is not "불가":
+            elif carry_on_policy != "불가":
                 text_to_embed = f"{item_category}의 {item_name}는 기내 반입의 경우 {carry_on_policy}. 위탁 수하물의 경우 {checked_baggage_policy}"              
 
             if not text_to_embed.strip(): # 텍스트가 비어있으면 건너뛰기

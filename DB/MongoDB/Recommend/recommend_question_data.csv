@@ -1,91 +1,85 @@
 ﻿intent,recommend_question
-airport_info,LHR은 무슨 공항인가요?
-airport_info,LAX가 뭔가요?
-airport_info,공항 코드 SFO는 어디인가요?
-airport_info,서우두 국제공항의 공항 코드는 무엇인가요?
-airport_info,암스테르담 스키폴 공항은 어디에 있나요?
-airline_info_query,에어 홍콩 고객센터 전화번호는 뭔가요?
-airline_info_query,DL이 어떤 항공사인가요?
-airline_info_query,인천공항에 취항하는 항공사는 뭐가 있나요?
+airport_info,나리타 공항 코드가 뭔가요?
+airport_info,샌프란시스코 공항은 어느 나라에 있나요?
+airport_info,프랑스에는 어떤 공항이 있나요?
+airport_info,히드로 공항 코드 알려주세요
+airport_info,LAX는 어느 도시 공항인가요?
+airline_info_query,대한항공 고객센터 전화번호는 뭔가요?
+airline_info_query,대한항공 코드 알려줘
 airline_info_query,가루다항공에 전화하려면 어디로 걸어야 하나요?
 airline_info_query,대한항공에 연락하고 싶어요.
+airline_info_query,아시아나항공에 전화하려면 어디로 걸어야 하나요?
 airport_weather_current,지금 인천공항 비 오나요?
 airport_weather_current,공항 날씨 어떤가요?
 airport_weather_current,내일 공항 날씨 알려주세요
 airport_weather_current,지금 공항 바람 많이 부나요?
 airport_weather_current,아까 공항에 비 왔었나요?
-airport_congestion_prediction,1시간 뒤에 공항에 얼마나 사람이 있을까?
-airport_congestion_prediction,오늘 공항에 사람 얼마나 있어?
-airport_congestion_prediction,오늘 몇 시쯤 공항이 제일 한산할까?
-airport_congestion_prediction,오늘 공항 출국장 인파가 심할까?
-airport_congestion_prediction,공항 1층 지금 상태는?
-immigration_policy,QCODE가 뭔가요?
+airport_congestion_prediction,1시간 뒤에 공항에 얼마나 사람이 있을까요?
+airport_congestion_prediction,오늘 공항에 사람 얼마나 있나요?
+airport_congestion_prediction,오늘 몇 시쯤 공항이 제일 한산할까요?
+airport_congestion_prediction,오늘 공항 출국장 인파가 심할까요?
+immigration_policy,해외에 장기 거주하다 돌아올 때도 비자가 필요한지 알고 싶어요
+immigration_policy,입국 심사는 내국인과 외국인이 따로 받나요?
 immigration_policy,면세 범위 안에 있어도 세관신고서를 작성해야 하나요?
-immigration_policy,기내 액체류 반입 규정이 어떻게 되나요?
-immigration_policy,병역 미필자는 출국 시 어떤 절차를 따라야 하나요?
-immigration_policy,스마트패스는 무엇인가요?
+immigration_policy,입국 절차 알려주세요
+immigration_policy,휴대품 검사 어떻게 준비하나요?
 baggage_claim_info,수하물 수취대 번호를 확인하고 싶어요
 baggage_claim_info,국제선 도착 짐은 어디서 찾나요?
 baggage_claim_info,인천공항 수하물 찾는 곳이 어디예요?
-baggage_claim_info,제주항공 7C101편 짐 찾는 곳 위치 좀 알려주세요
 baggage_claim_info,수하물 어디로 나오는지 알고 싶어요
+baggage_rule_query,기내 액체류 반입 규정이 어떻게 되나요?
 baggage_rule_query,수하물 규정에 대해 알려주세요
-baggage_rule_query,기내에서 액체류를 반입할 때 따로 포장해야 하나요?
 baggage_rule_query,기내에 동물을 데리고 탈 수 있나요?
 baggage_rule_query,기내 반입 가능한 가방 개수는 몇 개인가요?
-baggage_rule_query,약을 들고 비행기에 탈 수 있나요?
+baggage_rule_query,기내 반입 금지 물품이 있나요?
 default_greeting,안녕
 default_greeting,만나서 반가워
 default_greeting,나를 도와줄래?
 default_greeting,가이드해주세요
 default_greeting,뭘 할 수 있나요?
 facility_guide,AED 자동심장충격기 어디에 있어요?
-facility_guide,운영중인 음식점은 어디인가요?
+facility_guide,공항 내 카페는 어디에 있나요?
 facility_guide,공항에 약국은 어디인가요?
-facility_guide,화장실 위치를 알려주세요
+facility_guide,출국장 화장실 위치를 알려주세요
 facility_guide,면세점이 어디에 있는지 궁금해요
-flight_info,내일 아침 인천 도착 예정인 비행기 스케줄이 궁금해요
-flight_info,제가 탈 비행기가 지연되었는지 알고 싶어요
-flight_info,비행기 도착 예정 시간을 알고 싶어요
 flight_info,인천에서 도쿄 가는 비행기 언제 이륙했나요?
-flight_info,비행기가 어느 게이트인지 알고 싶어요
+flight_info,오늘 나리타 가는 비행기 있나요?
+flight_info,LA가는 비행기 언제 출발하나요?
+flight_info,곧 도착하는 비행기가 있나요?
+flight_info,나트랑에서 도착하는 비행기 알려주세요
 regular_schedule_query,매일 운항하는 뉴욕행 항공편이 있나요?
 regular_schedule_query,다음달에 런던으로 가는 비행기가 있나요?
 regular_schedule_query,정기 항공편 일정이 궁금해요
 regular_schedule_query,이번 여름에 운항 예정된 비행기를 알려주세요
-regular_schedule_query,히드로 공항 가는 대한항공 정기편은 언제 있어요?
 transfer_info,환승 시 인천공항 밖 나갔다 다시 들어올 수 있나요?
-transfer_info,인천공항에서 환승할 때 서울을 다녀올 수 있나요?
-transfer_info,휴대품 검사 어떻게 준비하나요?
-transfer_info,K스탑오버가 뭐예요?
-transfer_info,환승할 때 준비할게 있나요?
+transfer_info,환승 승객도 면세점 이용 가능한가요?
+transfer_info,환승 시 필요한 서류가 있나요?
+transfer_info,환승할 때 K-스탑오버를 할 수 있나요?
 transfer_route_guide,국제선에서 국내선으로 환승할 때 절차가 어떻게 돼나요?
 transfer_route_guide,게이트 간 환승 동선이 궁금해요
-transfer_route_guide,셔틀트레인은 어디서 타요?
+transfer_route_guide,탑승동 셔틀트레인은 어디서 타요?
 transfer_route_guide,환승 루트에 휠체어 지원 서비스 있나요?
 transfer_route_guide,제2터미널에서 제1터미널로 갈아타려면 어떻게 이동하나요?
 parking_availability_query,지금 주차장 상황은 어떤가요?
-parking_availability_query,어느 주차장이 여유로운가요?
+parking_availability_query,1터미널 장기 주차장에 자리 있나요?
 parking_availability_query,주차장 빈자리 있나요?
 parking_availability_query,지금 주차장 이용 가능한가요?
-parking_availability_query,주차장 이용 현황 보여주세요
+parking_availability_query,단기 주차장 자리 있나요?
 parking_congestion_prediction,오후에 주차장 복잡할까요?
 parking_congestion_prediction,몇 시에 주차장이 한가할까요?
 parking_congestion_prediction,밤에 주차장 빈자리가 많을까요?
 parking_congestion_prediction,몇 시가 주차하기 가장 나을까요?
 parking_congestion_prediction,몇 시쯤 주차장이 덜 붐빌까요?
-parking_location_recommendation,주차하기 편한 곳 추천해주세요
+parking_location_recommendation,A 체크인 카운터와 가까운 주차장을 추천해 주세요.
 parking_location_recommendation,가장 빠르게 주차할 수 있는 곳이 궁금해요
 parking_location_recommendation,주차장 추천 좀 부탁해요
 parking_location_recommendation,주차장 추천 해주실래요
-parking_location_recommendation,덜 붐비는 주차장을 알려주세요
 parking_fee_info,주차 비용이 궁금해요
 parking_fee_info,주차 요금 계산 어떻게 하나요?
 parking_fee_info,신용카드로 주차비 결제 가능한가요?
 parking_fee_info,주차 요금 할인 가능한가요?
 parking_fee_info,주차 요금 정산은 어디서 하면 되나요?
-parking_walk_time_info,주차장에서 체크인 카운터까지 얼마나 걸리나요?
-parking_walk_time_info,주차장에서 카운터까지 거리가 얼마나 되나요?
+parking_walk_time_info,1번 터미널의 B 카운터와 가까운 주차장은 어디에요?
 parking_walk_time_info,체크인 카운터에서 제 차까지 얼마나 걸리나요?
-parking_walk_time_info,체크인 카운터에서 가장 가까운 주차장은 어디인가요?
-parking_walk_time_info,어느 주차장이 체크인 카운터와 가장 가까운가요?
+parking_walk_time_info,체크인 카운터 C에서 가장 가까운 주차장은 어디인가요?
+parking_walk_time_info,어느 주차장이 A 체크인 카운터와 가장 가까운가요?
