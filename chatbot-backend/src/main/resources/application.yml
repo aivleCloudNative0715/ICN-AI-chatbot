@@ -6,6 +6,10 @@ spring:
     name: chatbot-backend
 
   datasource:
+    hikari:
+      maximum-pool-size: 5
+      max-lifetime: 1800000  # 30분
+      idle-timeout: 600000   # 10분
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
