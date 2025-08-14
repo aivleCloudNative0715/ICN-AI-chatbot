@@ -1,5 +1,3 @@
-# ai/chatbot/rag/llm_tools.py
-
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -154,3 +152,36 @@ def _filter_and_rerank_docs(context: str, user_query: str) -> Optional[str]:
     except Exception as e:
         print(f"디버그: LLM 재정렬 중 오류 발생: {e}")
         return None
+
+def _format_and_style_with_llm(plain_text: str, intent_name: str) -> str:
+    """
+    LLM을 사용하여 텍스트에 HTML 형식과 스타일을 적용하는 함수
+    """
+    # HTML 지침이 담긴 시스템 프롬프트
+    formatting_system_prompt = (
+        "\n\n다음 지침을 반드시 따르세요:"
+        "\n1. 모든 응답은 HTML 형식으로 작성하며, `<p>`, `<ul>`, `<li>`, `<strong>`, `<span>` 태그를 적절히 사용하세요."
+        "\n2. 답변에서 **중요한 정보나 키워드**는 `<strong>` 태그를 사용하고, `style=\"color: #FF5722;\"`를 적용하여 주황색으로 강조해줘."
+        "\n3. 목록을 나열할 때는 `<ul>`과 `<li>` 태그를 사용하고, `<li>` 태그에는 색상을 적용하지 마세요."
+        "\n4. 답변의 시작 부분에 제목이 있다면, `<h3>` 태그를 사용하고 `style=\"color: #004F8C;\"`를 적용하여 눈에 띄게 만들어줘."
+        "\n5. 답변 내용에 어울리는 이모지를 1-2개 포함해서 더 친근하게 만들어줘."
+        "\n6. 불필요한 서두(예: '사용자님의 질문에 대한 답변입니다.')는 생략하고, 바로 답변 본문을 시작하세요."
+        "\n7. 답변의 각 항목 앞에 번호(1., 2.)나 글머리 기호( - )를 절대 사용하지 마세요. 대신 HTML 목록 태그로 구조화하세요."
+    )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": formatting_system_prompt},
+                {"role": "user", "content": plain_text}
+            ],
+            temperature=0.1,
+            max_tokens=900
+        )
+        styled_text = response.choices[0].message.content        
+        
+        return styled_text
+    
+    except Exception as e:
+        print(f"디버그: 형식화 LLM 호출 중 오류 발생: {e}")
+        return plain_text

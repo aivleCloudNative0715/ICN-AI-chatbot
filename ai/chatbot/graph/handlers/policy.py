@@ -159,16 +159,9 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
     else:
         response_text = final_responses
         
-    disclaimer = (
-        "\n\n"
-        "주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다.\n"
-        "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
-    )
     if isinstance(response_text, list):
         response_text = "\n".join(response_text)
 
-    # response_text += disclaimer
-    
     return {**state, "response": response_text}
 
 def baggage_rule_query_handler(state: ChatState) -> ChatState:

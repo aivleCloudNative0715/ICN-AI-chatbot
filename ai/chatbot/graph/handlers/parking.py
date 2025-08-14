@@ -14,6 +14,7 @@ import json
 # 새로운 LLM 파싱 함수를 임포트합니다.
 from chatbot.rag.parking_fee_helper import _parse_parking_fee_query_with_llm
 from chatbot.rag.parking_walk_time_helper import _parse_parking_walk_time_query_with_llm
+from chatbot.rag.llm_tools import _format_and_style_with_llm
 
 load_dotenv()
 
@@ -241,12 +242,11 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
             "2. ## T1 (제1여객터미널) 섹션으로 T1 주차장들을 모두 나열\n"
             "3. ## T2 (제2여객터미널) 섹션으로 T2 주차장들을 모두 나열\n"
             "4. 각 주차장은 '- **주차장명**: 주차 가능 대수 **N**대 (또는 **만차**)' 형식으로 출력\n"
-            "\n"
-            "**지침: 답변에서 중요한 정보나 키워드는 Markdown의 볼드체(`**키워드**`)를 사용하여 강조해줘. 답변에 적절한 이모지를 1-2개 정도 포함해서 더 친근하게 만들어줘.**"
         )
-        
-        # 📌 수정된 부분: formatted_prompt에 query_to_process를 전달
-        formatted_prompt = prompt_template.format(user_query=query_to_process, items=json.dumps(items, ensure_ascii=False, indent=2))
+
+        final_prompt = f"{prompt_template}"
+
+        formatted_prompt = final_prompt.format(user_query=query_to_process, items=json.dumps(items, ensure_ascii=False, indent=2))
         
         llm_response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -254,20 +254,19 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
                 {"role": "user", "content": formatted_prompt}
             ],
             temperature=0.5,
-            max_tokens=600
+            max_tokens=800
         )
-        final_response_text = llm_response.choices[0].message.content
-        print(f"\n--- [GPT-4o-mini 응답] ---")
-        print(final_response_text)
+        plain_text_response = llm_response.choices[0].message.content
+        styled_response = _format_and_style_with_llm(plain_text_response, intent_name)
         
     except requests.RequestException as e:
         print(f"디버그: API 호출 중 오류 발생 - {e}")
-        final_response_text = "주차장 이용 가능 여부를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+        styled_response = "주차장 이용 가능 여부를 가져오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
     except Exception as e:
         print(f"디버그: 응답 처리 중 오류 발생 - {e}")
-        final_response_text = "주차장 현황 정보를 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+        styled_response = "주차장 현황 정보를 처리하는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
 
-    return {**state, "response": final_response_text}
+    return {**state, "response": styled_response}
 
 def parking_walk_time_info_handler(state: ChatState) -> ChatState:
     """

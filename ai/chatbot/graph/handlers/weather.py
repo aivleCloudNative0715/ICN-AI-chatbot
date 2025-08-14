@@ -3,6 +3,7 @@ from chatbot.graph.state import ChatState
 from chatbot.rag.utils import get_mongo_collection
 from chatbot.rag.config import client
 import json
+from chatbot.rag.llm_tools import _format_and_style_with_llm
 
 def airport_weather_current_handler(state: ChatState) -> ChatState:
     """
@@ -49,19 +50,17 @@ def airport_weather_current_handler(state: ChatState) -> ChatState:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": formatted_prompt + " 답변에 적절한 이모지를 1-2개 정도 포함해서 더 친근하게 만들어주세요."},
-                # 📌 수정된 부분: user_query 대신 query_to_process를 LLM에 전달합니다.
+                {"role": "system", "content": formatted_prompt},
                 {"role": "user", "content": query_to_process}
             ],
             temperature=0.5,
-            max_tokens=500
+            max_tokens=600
         )
-        final_response_text = response.choices[0].message.content
-        print(f"\n--- [GPT-4o-mini 응답] ---")
-        print(final_response_text)
+        plain_text_response = response.choices[0].message.content
+        styled_response = _format_and_style_with_llm(plain_text_response, intent_name)
         
     except Exception as e:
         print(f"디버그: 응답 처리 중 오류 발생 - {e}")
-        final_response_text = "기상 정보를 처리하는 도중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+        styled_response = "기상 정보를 처리하는 도중 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
 
-    return {**state, "response": final_response_text}
+    return {**state, "response": styled_response}

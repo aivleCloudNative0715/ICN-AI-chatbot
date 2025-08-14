@@ -154,7 +154,6 @@ def flight_info_handler(state: ChatState) -> ChatState:
 
     return {**state, "response": final_response}
 
-
 def regular_schedule_query_handler(state: ChatState) -> ChatState:
     query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "regular_schedule_query")
