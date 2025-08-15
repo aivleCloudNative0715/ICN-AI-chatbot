@@ -5,49 +5,47 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import AdminCreateModal from './AdminCreateModal';
-
-interface AdminUser {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-}
+import { useQuery } from '@tanstack/react-query';
+import { getAdmins } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminManagePage() {
-  const [admins, setAdmins] = useState<AdminUser[]>([]);
+  const { token } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleAddAdmin = (newAdmin: { email: string; name: string; role: string }) => {
-    setAdmins((prev) => [
-      ...prev,
-      { id: prev.length + 1, ...newAdmin },
-    ]);
-  };
+  // --- API로 관리자 목록 조회 ---
+  const { data: adminData, isLoading } = useQuery({
+    queryKey: ['admins'],
+    queryFn: () => {
+      if (!token) return null;
+      return getAdmins(token, 0, 10, true); // 활성 관리자만 조회
+    },
+    enabled: !!token,
+  });
 
-  return (
+    return (
     <div className="p-6">
       <div className="bg-white rounded-lg shadow p-4 mb-4 flex justify-between items-center">
         <h2 className="text-lg font-semibold">관리자 계정 목록</h2>
         <Button
           label="관리자 추가"
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 border-none"
+          icon="pi pi-plus"
           onClick={() => setIsModalOpen(true)}
         />
       </div>
 
       <div className="bg-white rounded-lg shadow">
-        <DataTable value={admins} paginator rows={5} stripedRows>
-          <Column field="id" header="번호" />
-          <Column field="name" header="관리자 이름" />
-          <Column field="email" header="관리자 아이디" />
+        <DataTable value={adminData?.content} loading={isLoading} paginator rows={10} stripedRows>
+          <Column field="adminId" header="관리자 아이디" />
+          <Column field="adminName" header="관리자 이름" />
           <Column field="role" header="권한" />
+          <Column field="createdAt" header="생성일" body={(rowData) => new Date(rowData.createdAt).toLocaleDateString()} />
         </DataTable>
       </div>
 
       <AdminCreateModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onCreate={handleAddAdmin}
       />
     </div>
   );

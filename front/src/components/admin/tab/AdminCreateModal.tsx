@@ -6,15 +6,18 @@ import { Password } from 'primereact/password';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { UserIcon, LockClosedIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { addAdmin } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AdminCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (data: { email: string; name: string; role: string }) => void;
 }
 
-export default function AdminCreateModal({ isOpen, onClose, onCreate }: AdminCreateModalProps) {
-  const [email, setEmail] = useState('');
+export default function AdminCreateModal({ isOpen, onClose }: AdminCreateModalProps) {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();const [email, setEmail] = useState('');
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
   const [password, setPassword] = useState('');
@@ -69,15 +72,32 @@ export default function AdminCreateModal({ isOpen, onClose, onCreate }: AdminCre
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
+  // --- 관리자 추가 Mutation ---
+  const addAdminMutation = useMutation({
+    mutationFn: (newAdminData: any) => {
+      if (!token) throw new Error("인증 정보가 없습니다.");
+      return addAdmin(token, newAdminData);
+    },
+    onSuccess: () => {
+      alert("관리자가 성공적으로 추가되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ['admins'] }); // 관리자 목록 새로고침
+      onClose(); // 모달 닫기
+    },
+    onError: (error) => {
+      alert(`관리자 추가 실패: ${error.message}`);
+    }
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      const generatedEmail = email || `admin${Date.now()}@autogen.com`;
-      alert('관리자가 생성되었습니다.');
-      onCreate({ email: generatedEmail, name, role });
-      onClose();
-      resetForm();
+      addAdminMutation.mutate({
+        adminId: email,
+        password: password,
+        adminName: name,
+        role: role === '관리자' ? 'ADMIN' : 'SUPER', // 백엔드 Enum에 맞게 변환
+      });
     }
   };
 
@@ -230,6 +250,7 @@ export default function AdminCreateModal({ isOpen, onClose, onCreate }: AdminCre
           <Button
             type="submit"
             label="관리자 생성"
+            disabled={addAdminMutation.isPending}
             pt={{
               root: {
                 className:

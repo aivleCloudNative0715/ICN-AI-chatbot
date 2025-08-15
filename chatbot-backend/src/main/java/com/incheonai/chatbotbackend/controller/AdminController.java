@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.incheonai.chatbotbackend.domain.jpa.BoardCategory;
 import com.incheonai.chatbotbackend.domain.jpa.Urgency;
+import com.incheonai.chatbotbackend.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,14 +14,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.incheonai.chatbotbackend.dto.AdminAddRequestDto;
-import com.incheonai.chatbotbackend.dto.AdminDto;
-import com.incheonai.chatbotbackend.dto.InquiryAnswerRequestDto;
-import com.incheonai.chatbotbackend.dto.InquiryDetailDto;
-import com.incheonai.chatbotbackend.dto.InquiryDto;
-import com.incheonai.chatbotbackend.dto.StatusUpdateRequestDto;
-import com.incheonai.chatbotbackend.dto.UrgencyUpdateRequestDto;
-import com.incheonai.chatbotbackend.dto.ApiMessage;
 import com.incheonai.chatbotbackend.service.AdminService;
 import com.incheonai.chatbotbackend.service.AdminInquiryService;
 
@@ -82,11 +75,11 @@ public class AdminController {
 
     /** 문의 건수 조회 */
     @GetMapping("/inquiries/counts")
-    public ResponseEntity<Map<String, Long>> getInquiryCounts(
-            @RequestParam("created_at_start")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam("created_at_end")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+    public ResponseEntity<InquiryCountsDto> getInquiryCounts( // 반환 타입을 Map -> InquiryCountsDto로 변경
+              @RequestParam("created_at_start")
+              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+              @RequestParam("created_at_end")
+              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
         return ResponseEntity.ok(adminInquiryService.getInquiryCounts(start, end));
     }
 

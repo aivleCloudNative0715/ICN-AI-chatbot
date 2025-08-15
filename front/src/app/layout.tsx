@@ -6,6 +6,7 @@ import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { AuthProvider } from '@/contexts/AuthContext'; // 1. AuthProvider 임포트
+import Providers from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,9 +23,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={inter.className}>
-        <AuthProvider>
+        <Providers>
           {children}
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   );
