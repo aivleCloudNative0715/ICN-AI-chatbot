@@ -4,9 +4,8 @@ import os # API 키를 환경 변수에서 로드하기 위해 필요
 from dotenv import load_dotenv # dotenv 라이브러리 임포트
 from pathlib import Path # Path 객체 임포트
 from pymongo import MongoClient
-# .env 파일에서 환경 변수를 로드합니다.
-# config.py -> rag -> chatbot -> ai
-# 따라서 .parents[2]을 사용합니다.
+from chatbot.rag.llm_tools import _format_and_style_with_llm
+
 env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(dotenv_path=env_path, override=True) # override=True 추가 권장
 
@@ -318,7 +317,7 @@ LLM_PROMPT_TEMPLATES = {
 }
 
 DISCLAIMER = (
-    "\n\n---\n"
+    "\n\n"
     "주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다."
     "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
 )
@@ -334,14 +333,6 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
 
     base_prompt_template = LLM_PROMPT_TEMPLATES.get(intent_name, LLM_PROMPT_TEMPLATES["default"])
 
-    # 가독성 관련 공통 지침 추가
-    common_formatting_instruction = (
-        "\n\n다음 지침을 반드시 따르세요:"
-        "\n1. 답변에서 **중요한 정보나 키워드**는 Markdown의 볼드체(`**키워드**`)를 사용하여 강조해줘."
-        "\n2. 항목을 나열할 때는 `- 항목` 또는 `1. 항목`과 같이 목록 형식을 사용하고, 각 항목의 내용은 줄바꿈으로 깔끔하게 정리해줘."
-        "\n3. 답변에 적절한 이모지를 1-2개 정도 포함해서 더 친근하게 만들어줘."
-    )
-
     # 복합 의도일 경우 질문별 구분 지침 추가
     if intent_name == "complex_intent":
         complex_intent_instruction = (
@@ -350,7 +341,7 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
             f"\n검색된 정보: {retrieved_context}"
             f"\n\n답변:"
         )
-        final_prompt = f"{base_prompt_template}{common_formatting_instruction}{complex_intent_instruction}"
+        final_prompt = f"{base_prompt_template}{complex_intent_instruction}"
     else:
         # 단일 의도일 경우 기존 템플릿에 공통 지침만 추가
         final_prompt = (
@@ -366,23 +357,28 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
     print("-----------------------------------")
 
     try:
-        # 실제 LLM API 호출 (OpenAI gpt-4o-mini 사용)
+        # 📌 1단계: 순수 텍스트 답변을 위한 LLM 호출
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다. 답변에 적절한 이모지를 1-2개 정도 포함해서 더 친근하게 만들어주세요."},
+                {"role": "system", "content": "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다. 답변은 HTML 태그나 서식 없이 순수한 텍스트로만 제공하세요."},
                 {"role": "user", "content": final_prompt}
             ],
             temperature=0.5,
-            max_tokens=600
+            max_tokens=700
         )
-        final_response_text = response.choices[0].message.content
-        print(f"\n--- [GPT-4o-mini 응답] ---")
+        plain_text_response = response.choices[0].message.content
+        print(f"\n--- [1단계: GPT-4o-mini 응답] ---")
+        print(plain_text_response)
+
+        # 📌 2단계: 순수 텍스트를 HTML로 형식화하는 LLM 호출
+        styled_response = _format_and_style_with_llm(plain_text_response, intent_name)
 
         if intent_name != "complex_intent":
-            final_response_text += DISCLAIMER
+            styled_response += DISCLAIMER
 
-        return final_response_text
+        final_response = styled_response.replace("```html", "")
+        return final_response
     
     except Exception as e:
         print(f"디버그: LLM 호출 중 오류 발생: {e}")

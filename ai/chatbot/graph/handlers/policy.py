@@ -1,6 +1,5 @@
 from chatbot.graph.state import ChatState
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
 
 from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
@@ -123,11 +122,11 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
             return {**state, "response": text_response}
         
         # 📌 수정된 로직: 날짜와 시간 파라미터 설정
-        search_date = datetime.now(ZoneInfo("Asia/Seoul")) + timedelta(days=date_offset or 0)
+        search_date = datetime.now() + timedelta(days=date_offset or 0)
         search_date_str = search_date.strftime("%Y%m%d")
 
         if not from_time and not to_time:
-            now = datetime.now(ZoneInfo("Asia/Seoul"))
+            now = datetime.now()
             from_dt = now - timedelta(hours=1)
             to_dt = now + timedelta(hours=1)
             from_time_str = str(from_dt.strftime("%H%M"))
@@ -160,16 +159,9 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
     else:
         response_text = final_responses
         
-    disclaimer = (
-        "\n\n"
-        "주의: 이 정보는 인천국제공항 웹사이트(공식 출처)를 기반으로 제공되지만, 실제 공항 운영 정보와 다를 수 있습니다.\n"
-        "가장 정확한 최신 정보는 인천국제공항 공식 웹사이트 또는 해당 항공사/기관/시설에 직접 확인하시기 바랍니다."
-    )
     if isinstance(response_text, list):
         response_text = "\n".join(response_text)
 
-    # response_text += disclaimer
-    
     return {**state, "response": response_text}
 
 def baggage_rule_query_handler(state: ChatState) -> ChatState:

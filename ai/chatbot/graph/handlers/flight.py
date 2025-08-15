@@ -1,5 +1,4 @@
 from chatbot.graph.state import ChatState
-from zoneinfo import ZoneInfo
 
 from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client # utils에서 필요한 함수 임포트
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller # config에서 설정 및 공통 LLM 호출 함수 임포트
@@ -58,12 +57,12 @@ def flight_info_handler(state: ChatState) -> ChatState:
             to_time = (time_obj + timedelta(hours=3)).strftime("%H%M")
             
         if not from_time and not to_time:
-            from_time = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%H%M")
+            from_time = datetime.now().strftime("%H%M")
             to_time = "2359"
             print(f"디버그: 특정 시간 언급이 없어 현재 시각({from_time}) 이후로 검색합니다.")
         
         date_offset = query.get("date_offset", 0)
-        search_date = datetime.now(ZoneInfo("Asia/Seoul")) + timedelta(days=date_offset)
+        search_date = datetime.now() + timedelta(days=date_offset)
         search_date_str = search_date.strftime("%Y%m%d")
         
         api_result = {"data": [], "total_count": 0}
@@ -155,7 +154,6 @@ def flight_info_handler(state: ChatState) -> ChatState:
 
     return {**state, "response": final_response}
 
-
 def regular_schedule_query_handler(state: ChatState) -> ChatState:
     query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "regular_schedule_query")
@@ -176,7 +174,7 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
     
     for parsed_query in parsed_queries:
         requested_year = parsed_query.get("requested_year")
-        current_year = datetime.now(ZoneInfo("Asia/Seoul")).year
+        current_year = datetime.now().year
 
         if requested_year and requested_year != current_year:
             response_text = f"죄송합니다. {requested_year}년 운항 스케줄은 아직 확정되지 않았습니다. 현재는 올해({current_year}년) 정보만 제공 가능합니다."
@@ -205,7 +203,7 @@ def regular_schedule_query_handler(state: ChatState) -> ChatState:
         # 📌 수정된 부분: 운항 기간이 유효한 스케줄만 필터링
         active_schedules = [
             doc for doc in retrieved_db_docs
-            if doc.get('last_date') and doc['last_date'] >= datetime.now(ZoneInfo("Asia/Seoul"))
+            if doc.get('last_date') and doc['last_date'] >= datetime.now()
         ]
 
         active_schedules.sort(key=lambda x: x.get("scheduled_time", "99:99"))

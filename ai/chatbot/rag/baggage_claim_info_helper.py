@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 from chatbot.rag.config import client
+from chatbot.rag.llm_tools import _format_and_style_with_llm
 
 load_dotenv()
 
@@ -198,28 +199,30 @@ def _generate_final_answer_with_llm(document: dict, user_query: str) -> str:
     prompt_content = (
         "너는 인천국제공항의 수하물 수취대 정보를 제공하는 친절한 챗봇이야."
         "{document} 정보를 기반으로 수하물 수취대 정보를 알려줘."
-        "도착시간이나, 게이트, 출발지 공항 같은 항공편에 대한 정보도 제공하면 좋지만, 반드시 수하물 수취대 정보에 집중해야 해."
+        "도착시간이나, 게이트 같은 항공편에 대한 정보도 제공하면 좋지만, 반드시 수하물 수취대 정보에 집중해야 해."
         "만약 후보가 여러 개라면, 가장 적합한 수하물 수취대 정보를 선택해서 알려줘. 우열이 명확하지 않다면 후보를 5개 이하로 제공해"
         "만약 수하물 수취대 정보가 없다면, 수하물 수취대 정보가 없다고 답변해줘."
         "답변은 사용자에게 친절하고 유용하게 작성해줘."
         "만약 답변에 필요한 정보가 부족하다면, 사용자에게 추가 정보를 요청하는 메시지를 작성해줘."
     )
+    
+    # 📌 기존 프롬프트와 HTML 지침을 결합
+    final_prompt_with_formatting = prompt_content
 
-    formatted_prompt = prompt_content.format(
-            document=json.dumps(document, ensure_ascii=False, indent=2, default=str)
-        )
+    formatted_prompt = final_prompt_with_formatting.format(
+        document=json.dumps(document, ensure_ascii=False, indent=2, default=str)
+    )
         
     response = client.chat.completions.create(
-        model="gpt-4o-mini", # 사용할 모델 지정
+        model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": formatted_prompt + " 답변에 적절한 이모지를 1-2개 정도 포함해서 더 친근하게 만들어주세요."},
+            {"role": "system", "content": formatted_prompt},
             {"role": "user", "content": user_query}
         ],
-        temperature=0.5, # 창의성 조절 (0.0은 가장 보수적, 1.0은 가장 창의적)
-        max_tokens=500 # 생성할 최대 토큰 수
+        temperature=0.5,
+        max_tokens=600
     )
-    final_response_text = response.choices[0].message.content
-    print(f"\n--- [GPT-4o-mini 응답] ---")
-    print(final_response_text)
+    plain_text_response = response.choices[0].message.content
+    styled_response = _format_and_style_with_llm(plain_text_response, "baggage_claim_info")
     
-    return final_response_text
+    return styled_response
