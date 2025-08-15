@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
 import { PencilIcon, DocumentDuplicateIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
 // ChatBubble이 받을 props 타입
 interface ChatBubbleProps {
@@ -39,7 +37,8 @@ export default function ChatBubble({
 
   useEffect(() => {
     // message.content가 외부에서 변경될 경우(예: 스트리밍 응답)를 대비해 동기화
-    setEditedContent(message.content);
+    // setEditedContent(message.content);
+    navigator.clipboard.writeText(message.content);
   }, [message.content]);
 
   const handleCopy = () => {
@@ -93,12 +92,11 @@ export default function ChatBubble({
             : 'bg-blue-50 text-gray-800 rounded-bl-none'
         }`}
       >
-        <div className="prose max-w-none text-sm sm:text-base">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {message.content}
-          </ReactMarkdown>
-        </div>
-
+         <div 
+          className="prose max-w-none text-sm sm:text-base"
+          dangerouslySetInnerHTML={{ __html: message.content }}
+        />
+        
         {/* 버튼 영역 */}
         <div className="flex gap-3 text-xs text-gray-500 mt-2">
           {/* '수정' 버튼은 isLastUserMessage일 때만 표시 */}

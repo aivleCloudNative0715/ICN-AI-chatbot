@@ -35,3 +35,47 @@ export interface Page<T> {
   last: boolean;           // 마지막 페이지 여부
   empty: boolean;          // 현재 페이지가 비어있는지 여부
 }
+
+// Enum 타입들 (백엔드와 일치시킴)
+export type InquiryStatus = 'PENDING' | 'RESOLVED';
+export type Urgency = 'HIGH' | 'MEDIUM' | 'LOW';
+export type BoardCategory = 'INQUIRY' | 'SUGGESTION';
+export type AdminRole = 'ADMIN' | 'SUPER';
+
+
+// --- 관리자 페이지용 타입 (신규 추가 및 수정) ---
+
+// 관리자 페이지 문의 목록에서 사용할 타입 (AdminInquiryService.getInquiries 참고)
+export interface AdminInquiryDto {
+  inquiryId: number;
+  title: string;
+  userId: string;
+  createdAt: string; // ISO 날짜 문자열
+  status: InquiryStatus;
+  urgency: Urgency;
+  category: BoardCategory;
+}
+
+// 관리자 페이지 문의 상세 조회 시 사용할 타입 (AdminInquiryService.getInquiryDetail 참고)
+export interface AdminInquiryDetailDto extends AdminInquiryDto {
+  content: string;
+  answer?: string; // 답변은 없을 수도 있으므로 optional
+  adminId?: string;
+  updatedAt: string;
+}
+
+// 관리자 계정 정보 타입 (AdminService.getAdmins 참고)
+export interface AdminDto {
+  id: number;
+  adminId: string;
+  adminName: string;
+  role: AdminRole;
+  createdAt: string;
+}
+
+// 대시보드 문의 건수 타입 (AdminInquiryService.getInquiryCounts 참고)
+export interface InquiryCounts {
+    total: number;
+    pending: number;
+    resolved: number;
+}

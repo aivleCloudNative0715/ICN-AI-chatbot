@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.incheonai.chatbotbackend.domain.jpa.BoardCategory;
+import com.incheonai.chatbotbackend.domain.jpa.Urgency;
+import com.incheonai.chatbotbackend.dto.InquiryCountsDto;
+
 @Service
 @RequiredArgsConstructor
 public class AdminInquiryService {
@@ -55,11 +59,30 @@ public class AdminInquiryService {
 
     /** 문의 건수 조회 */
     @Transactional(readOnly = true)
-    public Map<String, Long> getInquiryCounts(LocalDateTime start, LocalDateTime end) {
-        long total    = inquiryRepository.countByCreatedAtBetween(start, end);
-        long pending  = inquiryRepository.countByStatusAndCreatedAtBetween(InquiryStatus.PENDING, start, end);
-        long resolved = inquiryRepository.countByStatusAndCreatedAtBetween(InquiryStatus.RESOLVED, start, end);
-        return Map.of("total", total, "pending", pending, "resolved", resolved);
+    public InquiryCountsDto getInquiryCounts(LocalDateTime start, LocalDateTime end) {
+        long total = inquiryRepository.countByCreatedAtBetween(start, end);
+        long pending = inquiryRepository.countByStatusAndCreatedAtBetween(InquiryStatus.PENDING, start, end);
+        long resolved = total - pending; // 전체 - 미처리 = 완료
+
+        // 카테고리별 건수 조회
+        long inquiryCount = inquiryRepository.countByCategoryAndCreatedAtBetween(BoardCategory.INQUIRY, start, end);
+        long suggestionCount = inquiryRepository.countByCategoryAndCreatedAtBetween(BoardCategory.SUGGESTION, start, end);
+
+        // 중요도별 건수 조회
+        long highCount = inquiryRepository.countByUrgencyAndCreatedAtBetween(Urgency.HIGH, start, end);
+        long mediumCount = inquiryRepository.countByUrgencyAndCreatedAtBetween(Urgency.MEDIUM, start, end);
+        long lowCount = inquiryRepository.countByUrgencyAndCreatedAtBetween(Urgency.LOW, start, end);
+
+        return InquiryCountsDto.builder()
+                .total(total)
+                .pending(pending)
+                .resolved(resolved)
+                .inquiry(inquiryCount)
+                .suggestion(suggestionCount)
+                .high(highCount)
+                .medium(mediumCount)
+                .low(lowCount)
+                .build();
     }
 
     /** 단일 문의 상세 조회 */
