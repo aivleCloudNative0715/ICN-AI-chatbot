@@ -7,7 +7,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { UserIcon, LockClosedIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { addAdmin } from '@/lib/api';
+import { addAdmin, checkAdminId } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface AdminCreateModalProps {
@@ -30,7 +30,7 @@ export default function AdminCreateModal({ isOpen, onClose }: AdminCreateModalPr
   const isValidPassword = (value: string) =>
     /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[a-zA-Z\d!@#$%^&*()_+]{10,20}$/.test(value);
 
-  const handleCheckEmail = () => {
+  const handleCheckEmail = async () => {
     if (!email) {
       setErrors((prev) => ({ ...prev, email: '아이디를 입력해주세요.' }));
       return;
@@ -42,12 +42,20 @@ export default function AdminCreateModal({ isOpen, onClose }: AdminCreateModalPr
     setErrors((prev) => ({ ...prev, email: undefined }));
     setIsEmailChecked(true);
 
-    // TODO: API로 중복 확인
-    const isDuplicate = false; // 임시 로직
-    if (isDuplicate) {
-      setEmailAvailable(false);
-    } else {
-      setEmailAvailable(true);
+    try {
+      if (!token) {
+        throw new Error("인증 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+      }
+      const response = await checkAdminId(token, email);
+      setEmailAvailable(response.isAvailable);
+    } catch (error) {
+      setEmailAvailable(false); // 에러 발생 시 사용 불가로 처리
+      
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("알 수 없는 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -110,6 +118,11 @@ export default function AdminCreateModal({ isOpen, onClose }: AdminCreateModalPr
     setName('');
     setRole('관리자');
     setErrors({});
+  };
+
+  const handleClose = () => {
+    resetForm(); // 폼 초기화
+    onClose();   // 부모 컴포넌트의 닫기 함수 호출
   };
 
   if (!isOpen) return null;

@@ -73,9 +73,14 @@ export interface AdminDto {
   createdAt: string;
 }
 
-// 대시보드 문의 건수 타입 (AdminInquiryService.getInquiryCounts 참고)
+// 대시보드 문의 건수 타입
 export interface InquiryCounts {
     total: number;
     pending: number;
     resolved: number;
+    inquiry: number;
+    suggestion: number;
+    high: number;
+    medium: number;
+    low: number;
 }

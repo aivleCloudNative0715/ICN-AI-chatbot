@@ -106,7 +106,7 @@ export const deleteInquiry = async (inquiryId: number, token: string): Promise<v
 const ADMIN_API_URL = `${API_BASE_URL}/admin`;
 
 /**
- * [관리자] 문의 목록 조회 (GET /admin/inquiries)
+ * [관리자] 문의 목록 조회 (GET /admin/inquiries) - 수정된 필터 적용
  */
 export const getAdminInquiries = async (
   token: string,
@@ -114,19 +114,38 @@ export const getAdminInquiries = async (
   size: number,
   filters: {
     status?: InquiryStatus;
-    urgency?: Urgency;
+    urgencies?: Urgency[]; // urgency -> urgencies 배열로 변경
     category?: BoardCategory;
     search?: string;
+    start?: string; // YYYY-MM-DD 형식의 시작일
+    end?: string;   // YYYY-MM-DD 형식의 종료일
   }
 ): Promise<Page<AdminInquiryDto>> => {
   const params = new URLSearchParams({
     page: String(page),
     size: String(size),
   });
-  if (filters.status) params.append('status', filters.status);
-  if (filters.urgency) params.append('urgency', filters.urgency);
-  if (filters.category) params.append('category', filters.category);
-  if (filters.search) params.append('search', filters.search);
+
+  // 각 필터 값이 존재할 때만 파라미터를 추가합니다.
+  if (filters.status) {
+    params.append('status', filters.status);
+  }
+  // urgency는 여러 값을 가질 수 있으므로, 각 값을 순회하며 추가합니다.
+  if (filters.urgencies && filters.urgencies.length > 0) {
+    filters.urgencies.forEach(urgency => params.append('urgency', urgency));
+  }
+  if (filters.category) {
+    params.append('category', filters.category);
+  }
+  if (filters.search) {
+    params.append('search', filters.search);
+  }
+  if (filters.start) {
+    params.append('start', filters.start);
+  }
+  if (filters.end) {
+    params.append('end', filters.end);
+  }
 
   const response = await fetch(`${ADMIN_API_URL}/inquiries?${params.toString()}`, {
     headers: getAuthHeaders(token),
@@ -213,6 +232,17 @@ export const getAdmins = async (token: string, page: number, size: number, isAct
     headers: getAuthHeaders(token),
   });
   if (!response.ok) throw new Error('관리자 목록 조회에 실패했습니다.');
+  return response.json();
+};
+
+/**
+ * [관리자] 관리자 아이디 중복 확인
+ */
+export const checkAdminId = async (token: string, adminId: string): Promise<{ isAvailable: boolean }> => {
+  const response = await fetch(`${ADMIN_API_URL}/users/check-id?adminId=${encodeURIComponent(adminId)}`, {
+    headers: getAuthHeaders(token), // 토큰이 필요하다면 getAuthHeaders() 사용
+  });
+  if (!response.ok) throw new Error('아이디 중복 확인에 실패했습니다.');
   return response.json();
 };
 

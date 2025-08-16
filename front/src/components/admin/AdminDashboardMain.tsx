@@ -9,12 +9,14 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import DashboardTab from './tab/DashboardTab';
 import AdminManagePage from './tab/AdminManagePage';
 import AdminFileUploadTab from './tab/AdminFileUploadTab';
+import { AdminInquiryDto } from '@/lib/types';
 import AdminAnswerBoard from './tab/AdminAnswerBoard';
 
 export default function AdminDashboardMain() {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedInquiry, setSelectedInquiry] = useState<any>(null); // 새로운 상태: 선택된 문의
+  const [selectedInquiry, setSelectedInquiry] = useState<AdminInquiryDto | null>(null);
+
 
   const handleLogout = () => {
     localStorage.removeItem('jwt_token');
@@ -55,7 +57,7 @@ export default function AdminDashboardMain() {
   ];
 
   // AdminContentBoard에서 문의를 선택했을 때 호출될 콜백 함수
-  const handleSelectInquiry = (inquiry: any) => {
+  const handleSelectInquiry = (inquiry: AdminInquiryDto) => {
     setSelectedInquiry(inquiry);
   };
 
@@ -64,23 +66,16 @@ export default function AdminDashboardMain() {
     setSelectedInquiry(null);
   };
 
-  // AdminAnswerBoard에서 답변 등록 시 호출될 콜백 함수
-  const handleRegisterAnswer = (answerContent: string, newPriority: string) => {
-    console.log('Answer registered:', { inquiry: selectedInquiry, answerContent, newPriority });
-    // 여기서 실제 백엔드 API 호출 로직을 구현합니다.
-    // 예를 들어, API 호출 후 성공하면 selectedInquiry를 null로 설정하여 목록으로 돌아갑니다.
-    setSelectedInquiry(null);
-  };
 
   // 탭 콘텐츠 렌더링 함수
   const renderTabContent = () => {
-    // selectedInquiry가 있으면 AdminAnswerBoard를 렌더링
     if (selectedInquiry) {
       return (
         <AdminAnswerBoard
-          inquiry={selectedInquiry}
+          // 4. inquiry prop은 이제 inquiryId만 넘겨주는 것이 더 효율적입니다.
+          // AdminAnswerBoard는 어차피 id를 이용해 상세 데이터를 다시 불러옵니다.
+          inquiry={{ inquiryId: selectedInquiry.inquiryId }}
           onBack={handleBackFromAnswer}
-          onRegister={handleRegisterAnswer}
         />
       );
     }
