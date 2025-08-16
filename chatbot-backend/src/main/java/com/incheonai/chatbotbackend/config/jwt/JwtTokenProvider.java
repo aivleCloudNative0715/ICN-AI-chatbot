@@ -26,7 +26,7 @@ public class JwtTokenProvider {
     @Value("${jwt.secret.key}")
     private String secretKey;
     private Key key;
-    private final long tokenValidTime = 30 * 60 * 1000L; // 30분
+    private final long tokenValidTime = 300 * 60 * 1000L; // 30분
 
     // UserDetailsService 주입 (Spring Security에서 사용자를 찾기 위함)
     private final UserDetailsService userDetailsService;

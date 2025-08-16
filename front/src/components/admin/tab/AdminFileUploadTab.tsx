@@ -1,39 +1,82 @@
+// src/components/admin/tab/AdminFileUploadTab.tsx
 'use client';
 
-import React, { useState } from 'react';
-import { FileUpload } from 'primereact/fileupload';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
+import { useState } from 'react';
+import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload';
+import { Dropdown } from 'primereact/dropdown';
+import { useAuth } from '@/contexts/AuthContext';
+import { ProgressBar } from 'primereact/progressbar';
+import { Tag } from 'primereact/tag';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
-interface UploadedFile {
-  name: string;
-  size: number;
-  type: string;
-}
-
 export default function AdminFileUploadTab() {
-  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const { token } = useAuth();
+  
+  // 1. 업로드할 파일의 카테고리를 관리할 상태를 추가합니다.
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [totalSize, setTotalSize] = useState(0);
+  
+  // 카테고리 선택 옵션을 정의합니다. (필요에 따라 추가/수정)
+  const categoryOptions = [
+    { label: '공항 정보 (Airport Info)', value: 'airport_info' },
+    { label: '항공사 정보 (Airline Info)', value: 'airline_info' },
+    { label: '시설 정보 (Facility Info)', value: 'facility_info' },
+    { label: '환승 소요시간 (Connection Time)', value: 'connection_time' },
+    { label: '환승 경로 (Transit Path)', value: 'transit_path' },
+    { label: '주차장 정보 (Parking Lot)', value: 'parking_lot' },
+    { label: '주차장 정책 (Parking Lot Policy)', value: 'parking_lot_policy' },
+    { label: '공항 정책 (Airport Policy)', value: 'airport_policy' },
+  ];
 
-  const onUpload = (event: any) => {
-    const uploadedFiles = event.files.map((file: File) => ({
-      name: file.name,
-      size: file.size,
-      type: file.type,
-    }));
-    setFiles((prev) => [...prev, ...uploadedFiles]);
+  // 2. 파일 업로드를 처리하는 핸들러 함수를 새로 작성합니다.
+  const uploadHandler = async (event: FileUploadHandlerEvent) => {
+    if (!selectedCategory) {
+      alert('파일 카테고리를 먼저 선택해주세요.');
+      return; // 카테고리가 없으면 업로드 중지
+    }
+    if (!token) {
+        alert('인증 정보가 없습니다. 다시 로그인해주세요.');
+        return;
+    }
+
+    const aiServerUrl = process.env.NEXT_PUBLIC_AI_SERVER_URL;
+    const files = event.files;
+
+    // FormData 객체를 생성하여 서버로 보낼 데이터를 담습니다.
+    const formData = new FormData();
+    formData.append('category', selectedCategory);
+    
+    files.forEach((file) => {
+      formData.append('file', file, file.name);
+    });
+
+    try {
+      // 3. fetch를 사용하여 AI 서버로 FormData를 전송합니다.
+      const response = await fetch(`${aiServerUrl}/chatbot/upload`, {
+        method: 'POST',
+        headers: {
+          // FormData를 전송할 때는 'Content-Type'을 설정하지 않습니다.
+          // 브라우저가 자동으로 'multipart/form-data'와 경계(boundary)를 설정해줍니다.
+          'Authorization': `Bearer ${token}`, // AI 서버에 인증이 필요하다면 토큰을 추가합니다.
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || '파일 업로드에 실패했습니다.');
+      }
+      
+      // PrimeReact의 FileUpload 컴포넌트에 성공을 알립니다.
+      event.options.clear(); // 성공 시 업로드 목록 초기화
+      alert('파일이 성공적으로 업로드되었습니다.');
+
+    } catch (error) {
+      // PrimeReact의 FileUpload 컴포넌트에 실패를 알립니다.
+      console.error("Upload error: ", error);
+      alert(error instanceof Error ? error.message : '업로드 중 오류가 발생했습니다.');
+    }
   };
-
-  const sizeTemplate = (rowData: UploadedFile) => `${(rowData.size / 1024).toFixed(2)} KB`;
-
-  const deleteTemplate = (rowData: UploadedFile) => (
-    <button
-      className="text-red-500 hover:text-red-700 font-bold"
-      onClick={() => setFiles((prev) => prev.filter((f) => f.name !== rowData.name))}
-    >
-      삭제
-    </button>
-  );
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
@@ -66,32 +109,40 @@ export default function AdminFileUploadTab() {
       </div>
 
       {/* 업로드 박스 */}
-      <div className="mb-6 border border-gray-400 rounded-lg p-2 bg-gray-50 text-center">
-        <FileUpload
-          name="files[]"
-          url="/api/upload"
-          customUpload
-          multiple
-          uploadHandler={onUpload}
-          accept=".pdf,.docx,.hwp,.xlsx"
-          maxFileSize={5 * 1024 * 1024}
-          chooseOptions={{ label: '파일 추가', className: 'bg-black text-white px-4 py-2 rounded hover:bg-gray-800' }}
-          uploadOptions={{ label: '파일 업로드', className: 'border border-gray-400 px-4 py-2 rounded hover:bg-black hover:text-white transition' }}
-          cancelOptions={{ label: '취소', className: 'border border-gray-400 px-4 py-2 rounded hover:bg-gray-200 transition' }}
-          emptyTemplate={<p className="m-0 text-gray-500">파일을 드래그하거나 선택하세요</p>}
+      <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">학습 데이터 업로드</h2>
+      
+      {/* 카테고리 선택 Dropdown */}
+      <div className="mb-6">
+        <label htmlFor="category" className="block text-lg font-semibold text-gray-700 mb-2">
+          파일 카테고리 선택
+        </label>
+        <Dropdown
+          id="category"
+          value={selectedCategory}
+          options={categoryOptions}
+          onChange={(e) => setSelectedCategory(e.value)}
+          placeholder="업로드할 파일의 종류를 선택하세요"
+          className="w-full md:w-1/2"
         />
       </div>
 
-      {/* 업로드된 파일 목록 */}
-      <div className="bg-gray-50 p-4 rounded-lg mb-6">
-        <h3 className="text-lg font-semibold mb-4">업로드된 파일 목록</h3>
-        <DataTable value={files} emptyMessage="업로드된 파일이 없습니다." responsiveLayout="scroll">
-          <Column field="name" header="파일명" />
-          <Column field="type" header="유형" />
-          <Column field="size" header="크기" body={sizeTemplate} />
-          <Column body={deleteTemplate} header="삭제" style={{ width: '100px' }} />
-        </DataTable>
-      </div>
+      {/* 파일 업로드 컴포넌트 */}
+      <FileUpload
+        name="files[]"
+        customUpload // 4. customUpload 모드를 활성화하여 직접 만든 핸들러를 사용합니다.
+        uploadHandler={uploadHandler}
+        multiple
+        accept="application/pdf" // .pdf 파일만 받도록 설정
+        maxFileSize={10000000} // 최대 파일 크기 (예: 10MB)
+        emptyTemplate={<p className="m-0">여기에 파일을 드래그하거나 선택하여 업로드하세요.</p>}
+        chooseLabel="파일 선택"
+        uploadLabel="업로드"
+        cancelLabel="취소"
+        // 5. 선택된 파일이 없을 때 업로드 버튼이 비활성화되도록 설정
+        disabled={!selectedCategory}
+      />
+    </div>
 
       {/* 참고 데이터 링크 */}
       <div className="bg-white p-6 rounded-lg border border-gray-200">

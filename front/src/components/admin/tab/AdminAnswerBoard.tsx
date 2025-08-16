@@ -21,9 +21,9 @@ export default function AdminAnswerBoard({ inquiry, onBack }: AdminAnswerBoardPr
   const queryClient = useQueryClient();
   const [answerContent, setAnswerContent] = useState('');
 
-  // --- 상세 데이터를 불러오는 useQuery ---
+  const [currentUrgency, setCurrentUrgency] = useState<Urgency | null>(null);
+
   const { data: inquiryDetail, isLoading, isError, error } = useQuery({
-    // onSuccess 옵션을 제거합니다.
     queryKey: ['adminInquiryDetail', inquiry.inquiryId],
     queryFn: () => {
       if (!token) throw new Error("인증되지 않았습니다.");
@@ -32,24 +32,25 @@ export default function AdminAnswerBoard({ inquiry, onBack }: AdminAnswerBoardPr
     enabled: !!token && !!inquiry.inquiryId,
   });
 
-  // --- useEffect를 사용하여 onSuccess 로직을 처리 ---
   useEffect(() => {
-    // inquiryDetail 데이터가 성공적으로 로드되면 answerContent 상태를 업데이트합니다.
-    if (inquiryDetail?.answer) {
-      setAnswerContent(inquiryDetail.answer);
+    if (inquiryDetail) {
+      // 2. 데이터 로드 시, 답변 내용과 함께 중요도 상태도 초기화합니다.
+      setAnswerContent(inquiryDetail.answer || '');
+      setCurrentUrgency(inquiryDetail.urgency);
     }
   }, [inquiryDetail]);
 
   // --- 답변 등록을 위한 useMutation ---
   const processAnswerMutation = useMutation({
-    mutationFn: (newAnswer: string) => {
-      // user와 user.adminId의 존재를 명확히 확인합니다.
+    mutationFn: (payload: { answer: string; urgency: Urgency }) => {
       if (!token || !user?.adminId) {
         throw new Error("유효한 관리자 정보가 없습니다.");
       }
+      // 3. API 호출 시 답변 내용과 함께 수정된 중요도를 보냅니다.
       return processAdminAnswer(inquiry.inquiryId, token, {
-        adminId: user.adminId, // 이제 타입 에러가 발생하지 않습니다.
-        content: newAnswer,
+        adminId: user.adminId,
+        content: payload.answer,
+        urgency: payload.urgency, // urgency 정보 추가
       });
     },
     onSuccess: () => {
@@ -63,31 +64,22 @@ export default function AdminAnswerBoard({ inquiry, onBack }: AdminAnswerBoardPr
     }
   });
 
-  // 긴급도 수정 Mutation (AdminContentBoard와 동일)
-  const updateUrgencyMutation = useMutation({
-    mutationFn: ({ inquiryId, newPriority }: { inquiryId: number, newPriority: Urgency }) => {
-              if (!token) throw new Error("인증되지 않았습니다.");
-              return updateInquiryUrgency(inquiryId, token, newPriority);
-          },
-          onSuccess: () => {
-              // 성공 시, 문의 목록 쿼리를 무효화하여 최신 데이터로 갱신
-              queryClient.invalidateQueries({ queryKey: ['adminInquiries'] });
-          },
-          onError: (error) => {
-              alert(`긴급도 수정 실패: ${error.message}`);
-          }
-  });
-
   const handleRegister = () => {
     if (!answerContent.trim()) {
       alert("답변 내용을 입력해주세요.");
       return;
     }
-    processAnswerMutation.mutate(answerContent);
+    if (!currentUrgency) {
+      alert("중요도를 선택해주세요.");
+      return;
+    }
+    // 5. mutate 호출 시 답변과 중요도를 함께 전달합니다.
+    processAnswerMutation.mutate({ answer: answerContent, urgency: currentUrgency });
   };
 
-  const handlePriorityChange = (id: number, newPriority: string) => {
-    updateUrgencyMutation.mutate({ inquiryId: id, newPriority: newPriority as Urgency });
+  // 6. handlePriorityChange는 이제 API 호출 없이 로컬 상태만 변경합니다.
+  const handlePriorityChange = (newPriority: string) => {
+    setCurrentUrgency(newPriority as Urgency);
   };
   
   if (isLoading) return <div>상세 정보 로딩 중...</div>;
@@ -113,8 +105,8 @@ export default function AdminAnswerBoard({ inquiry, onBack }: AdminAnswerBoardPr
         <p className="text-gray-700 leading-relaxed mb-4 p-4 bg-gray-50 rounded min-h-[100px]">{inquiryDetail.content}</p>
         <div className="flex justify-end">
           <CustomPriorityDropdown
-            value={inquiryDetail.urgency}
-            onChange={(newValue) => handlePriorityChange(inquiryDetail.inquiryId, newValue)}
+            value={currentUrgency || inquiryDetail.urgency}
+            onChange={(newValue) => handlePriorityChange(newValue)}
           />
         </div>
       </div>

@@ -4,15 +4,18 @@
 import React, { useState } from 'react';
 import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
-import { Checkbox } from 'primereact/checkbox';
+import { MultiSelect } from 'primereact/multiselect';
 import { InputText } from 'primereact/inputtext';
-import { Paginator, PaginatorPageChangeEvent } from 'primereact/paginator'; // Paginator 임포트
+import { Paginator, PaginatorPageChangeEvent } from 'primereact/paginator';
 import CustomPriorityDropdown from '@/components/CustomPriorityDropdown';
 import { CalendarDaysIcon, TagIcon, UserIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getAdminInquiries, updateInquiryUrgency } from '@/lib/api';
-import { AdminInquiryDto, Urgency } from '@/lib/types';
+import { AdminInquiryDto, Urgency, BoardCategory, InquiryStatus } from '@/lib/types';
+import { Nullable } from 'primereact/ts-helpers';
+import { Button } from 'primereact/button';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface AdminContentBoardProps {
   type: 'dashboard' | 'inquiry' | 'suggestion' | 'pending' | 'completed';
@@ -23,35 +26,55 @@ export default function AdminContentBoard({ type, onSelectInquiry }: AdminConten
   const { token } = useAuth();
   const queryClient = useQueryClient();
 
-  // 페이지네이션 상태 관리
-  const [first, setFirst] = useState(0); // 현재 페이지의 첫 아이템 인덱스
-  const [rows, setRows] = useState(10); // 한 페이지에 보여줄 아이템 수
+  const [first, setFirst] = useState(0);
+  const [rows, setRows] = useState(10);
+  
+  // --- 상태 관리 수정 ---
+  // 1. 달력 UI와 직접 바인딩될 임시 상태입니다.
+  const [calendarValue, setCalendarValue] = useState<Nullable<(Date | null)[]>>(null);
+  // 2. API 필터링에 실제 사용될 상태입니다. 이 값이 변경될 때만 API가 다시 호출됩니다.
+  const [dateRangeFilter, setDateRangeFilter] = useState<Nullable<(Date | null)[]>>(null);
+  
+  const [category, setCategory] = useState<BoardCategory | null>(null);
+  const [urgencies, setUrgencies] = useState<Urgency[]>([]);
+  const [status, setStatus] = useState<InquiryStatus | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // 필터 상태 관리 (기존과 동일)
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
-  const [category, setCategory] = useState('전체');
-  const [priority, setPriority] = useState<string[]>([]);
-  const [status, setStatus] = useState<string[]>([]);
-  const [search, setSearch] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const categoryOptions = [
-    { label: '전체', value: '전체' },
-    { label: '문의사항', value: '문의사항' },
-    { label: '건의사항', value: '건의사항' },
+    { label: '전체', value: null },
+    { label: '문의사항', value: 'INQUIRY' },
+    { label: '건의사항', value: 'SUGGESTION' },
   ];
-  const priorityOptions = ['HIGH', 'MEDIUM', 'LOW']; // 백엔드 Enum 값과 일치
-  const statusOptions = ['PENDING', 'RESOLVED']; // 백엔드 Enum 값과 일치
-  const page = first / rows; // 현재 페이지 번호 계산
+  const priorityOptions = [
+    { label: '높음', value: 'HIGH' },
+    { label: '보통', value: 'MEDIUM' },
+    { label: '낮음', value: 'LOW' },
+  ];
+  const statusOptions = [
+    { label: '전체', value: null },
+    { label: '미처리', value: 'PENDING' },
+    { label: '완료', value: 'RESOLVED' },
+  ];
+  const page = first / rows;
+
+  const formatDate = (date: Date | null) => {
+    if (!date) return undefined;
+    return date.toISOString().split('T')[0]; 
+  };
 
   const { data: inquiriesData, isLoading, isError } = useQuery({
-    queryKey: ['adminInquiries', page, rows, search, category, priority, status], // rows도 key에 추가
+    queryKey: ['adminInquiries', page, rows, debouncedSearchTerm, category, urgencies, status, dateRangeFilter],
     queryFn: () => {
       if (!token) return;
-      return getAdminInquiries(token, page, rows, { // page, rows 전달
-        search: search || undefined,
-        category: category !== '전체' ? category as any : undefined,
-        urgency: priority.length > 0 ? priority[0] as Urgency : undefined,
-        status: status.length > 0 ? status[0] as any : undefined,
+      return getAdminInquiries(token, page, rows, {
+        search: debouncedSearchTerm || undefined,
+        category: category || undefined,
+        urgencies: urgencies.length > 0 ? urgencies : undefined,
+        status: status || undefined,
+        start: formatDate(dateRangeFilter?.[0] ?? null),
+        end: formatDate(dateRangeFilter?.[1] ?? null),
       });
     },
     enabled: !!token,
@@ -78,86 +101,105 @@ export default function AdminContentBoard({ type, onSelectInquiry }: AdminConten
     setRows(event.rows);
   };
 
+  // 4. 달력의 onChange 이벤트를 처리하는 새로운 핸들러입니다.
+  const handleDateChange = (e: any) => {
+    const dates = e.value;
+    setCalendarValue(dates);
+
+    if (Array.isArray(dates) && dates.length === 2 && dates[1] !== null) {
+      setDateRangeFilter(dates);
+    }
+  };
+
+  // 5. 달력의 'x' (초기화) 버튼을 클릭했을 때 호출될 핸들러입니다.
+  const handleDateClear = () => {
+    setCalendarValue(null);
+    setDateRangeFilter(null);
+  };
+
   if (isLoading) return <div>데이터를 불러오는 중입니다...</div>;
   if (isError) return <div>오류가 발생했습니다.</div>;
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md">
-      <div className="flex flex-col lg:flex-row border-2 rounded-t-[20px] border-[#C5C5C5] p-4 gap-4">
-        {/* Search Input */}
-        <div className="flex items-end gap-4 lg:w-2/3">
-          <InputText
-            placeholder="검색은 제목으로만 가능"
-            className="w-full border-0 border-b-2 border-gray-300 rounded-none focus:outline-none focus:ring-0 focus:border-black"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <i className="pi pi-search font-bold" />
+      <div className="flex flex-col md:flex-row border-2 rounded-t-[20px] border-[#C5C5C5] p-6 gap-6">
+        <div className="flex flex-col w-full md:w-1/2 lg:w-2/3">
+          <div className="flex-grow"></div>
+          <div className="flex items-center gap-2">
+            <InputText
+              placeholder="제목과 내용으로 검색 가능합니다"
+              className="w-full border-0 border-b-2 border-gray-300 rounded-none focus:outline-none focus:ring-0 focus:border-black"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Button icon="pi pi-search" className="p-button-outlined" />
+          </div>
         </div>
 
-        {/* Filter Area*/}
-        <div className='grid grid-cols-[1fr_2fr] items-center gap-2 w-full lg:w-1/3'>
-          {/* Created Date */}
-          <label>작성 날짜</label>
-          <Calendar
-            value={dateRange}
-            className='border rounded-md'
-            onChange={(e) => setDateRange(e.value as [Date, Date])}
-            selectionMode="range"
-            dateFormat="yy/mm/dd"
-            readOnlyInput
+        <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-4 w-full md:w-1/2 lg:w-1/3">
+          {/* Row 1: 작성 날짜 */}
+          <label className="font-semibold whitespace-nowrap">작성 날짜</label>
+          <div className="flex items-center">
+            <Calendar
+              value={calendarValue}
+              onChange={handleDateChange}
+              selectionMode="range"
+              dateFormat="yy/mm/dd"
+              readOnlyInput
+              placeholder="날짜 범위 선택"
+              showIcon
+              hideOnRangeSelection
+              pt={{ 
+                root: { className: 'w-full' },
+                input: { className: 'w-full' }
+              }}
             />
+            {calendarValue && (
+              <Button 
+                icon="pi pi-times" 
+                className="p-button-text p-button-sm !ml-1"
+                onClick={handleDateClear} 
+              />
+            )}
+          </div>
 
-          {/* Category */}
-          <label>카테고리</label>
+          {/* Row 2: 카테고리 */}
+          <label className="font-semibold whitespace-nowrap">카테고리</label>
           <Dropdown
             value={category}
-            className='border rounded-md'
             options={categoryOptions}
             onChange={(e) => setCategory(e.value)}
+            placeholder="전체"
+            showClear
+            optionLabel="label"
+            optionValue="value"
+            className="w-full"
           />
 
-          {/* Priority (Filter) */}
-          <span>중요도</span>
-          <div className="flex gap-2">
-              {priorityOptions.map((p) => (
-                <div key={p} className="flex items-center gap-1">
-                  <Checkbox
-                    inputId={p}
-                    value={p}
-                    onChange={(e) => {
-                      const value = e.value;
-                      setPriority((prev) =>
-                        prev.includes(value) ? prev.filter((x) => x !== value) : [...prev, value]
-                      );
-                    }}
-                    checked={priority.includes(p)}
-                  />
-                  <label htmlFor={p}>{p}</label>
-                </div>
-              ))}
-            </div>
+          {/* Row 3: 중요도 */}
+          <label className="font-semibold whitespace-nowrap">중요도</label>
+          <MultiSelect
+            value={urgencies}
+            options={priorityOptions}
+            onChange={(e) => setUrgencies(e.value)}
+            placeholder="전체"
+            maxSelectedLabels={2}
+            className="w-full"
+            showClear 
+          />
 
-            {/* Answer Processing Status */}
-            <span>답변 처리</span>
-            <div className="flex gap-2">
-              {statusOptions.map((s) => (
-                <div key={s} className="flex items-center gap-1">
-                  <Checkbox
-                    inputId={s}
-                    value={s}
-                    onChange={(e) => {
-                      const value = e.value;
-                      setStatus((prev) =>
-                        prev.includes(value) ? prev.filter((x) => x !== value) : [...prev, value]
-                      );
-                    }}
-                    checked={status.includes(s)}
-                  />
-                  <label htmlFor={s}>{s}</label>
-                </div>
-              ))}
-            </div>
+          {/* Row 4: 답변 처리 */}
+          <label className="font-semibold whitespace-nowrap">답변 처리</label>
+          <Dropdown
+            value={status}
+            options={statusOptions}
+            onChange={(e) => setStatus(e.value)}
+            placeholder="전체"
+            showClear
+            optionLabel="label"
+            optionValue="value"
+            className="w-full"
+          />
         </div>
       </div>
 
@@ -178,10 +220,12 @@ export default function AdminContentBoard({ type, onSelectInquiry }: AdminConten
               </div>
             </div>
           <div className="flex items-center gap-2 mt-2 md:mt-0">
-              <CustomPriorityDropdown
-                value={item.urgency}
-                onChange={(newValue) => handlePriorityChange(item.inquiryId, newValue)}
-              />
+              <div onClick={(e) => e.stopPropagation()}> 
+                <CustomPriorityDropdown
+                  value={item.urgency}
+                  onChange={(newValue) => handlePriorityChange(item.inquiryId, newValue)}
+                />
+              </div>
               <span
                 className={`px-2 py-1 text-xs font-semibold rounded-full ${
                   item.status === 'RESOLVED'
@@ -189,7 +233,7 @@ export default function AdminContentBoard({ type, onSelectInquiry }: AdminConten
                     : 'bg-yellow-100 text-yellow-800'
                 }`}
               >
-                {item.status === 'RESOLVED' ? '답변완료' : '처리중'}
+                {item.status === 'RESOLVED' ? '답변완료' : '미처리'}
               </span>
             </div>
           </div>

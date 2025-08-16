@@ -97,6 +97,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem('user_role', userData.role);
         localStorage.setItem('admin_id', userData.adminId!);
         localStorage.setItem('admin_name', userData.adminName!);
+        
+        // 상태 업데이트
+        setToken(data.accessToken);
+        setUser(userData);
+        setIsLoggedIn(true);
+        setSessionId(data.sessionId);
+
+        router.push('/admin');
+        return;
     } else {
         localStorage.setItem('user_role', 'USER');
         localStorage.setItem('user_login_id', userData.userId);
@@ -107,10 +116,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(userData);
     setIsLoggedIn(true);
     setSessionId(data.sessionId);
-
-    if (userData.role === 'ADMIN' || userData.role === 'SUPER') {
-        router.push('/admin');
-    }
   }, [router]);
 
   // OAuth 같이 이미 인증된 경우를 위한 setLoginState 함수 구현

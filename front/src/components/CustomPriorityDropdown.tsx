@@ -12,24 +12,11 @@ interface CustomPriorityDropdownProps {
   onChange: (value: string) => void;
 }
 
-const priorityOptions: PriorityOption[] = [
-  { label: '높음', value: '높음' },
-  { label: '보통', value: '보통' },
-  { label: '낮음', value: '낮음' },
-];
-
-const getColorClass = (value: string) => {
-  switch (value) {
-    case '높음':
-      return 'bg-orange-500 text-white';
-    case '보통':
-      return 'bg-blue-500 text-white';
-    case '낮음':
-      return 'bg-green-400 text-white';
-    default:
-      return '';
-  }
-};
+const priorityOptions = [
+    { label: '높음', value: 'HIGH', color: 'bg-orange-500 text-white' },
+    { label: '보통', value: 'MEDIUM', color: 'bg-blue-500 text-white' },
+    { label: '낮음', value: 'LOW', color: 'bg-green-400 text-white' },
+  ];
 
 export default function CustomPriorityDropdown({
   value,
@@ -44,6 +31,7 @@ export default function CustomPriorityDropdown({
       className="text-sm w-[122px] border-gray-300 border"
       panelClassName="!p-2 shadow-lg"
       highlightOnSelect={false} // 선택 시 파란 배경 제거
+      appendTo="self"
       pt={{
         item: {
           className: 'p-0 border-0 hover:bg-transparent',
@@ -51,9 +39,7 @@ export default function CustomPriorityDropdown({
       }}
       itemTemplate={(option) => (
         <div
-          className={`rounded-full px-3 py-1 text-sm font-medium text-center ${getColorClass(
-            option.value
-          )}`}
+          className={`rounded-full px-3 py-1 text-sm font-medium text-center ${option.color}`}
         >
           {option.label}
         </div>
@@ -61,9 +47,7 @@ export default function CustomPriorityDropdown({
       valueTemplate={(option) =>
         option ? (
           <div
-            className={`rounded-full px-3 py-1 text-sm font-medium text-center ${getColorClass(
-              option.value
-            )}`}
+            className={`rounded-full px-3 py-1 text-sm font-medium text-center ${option.color}`}
           >
             {option.label}
           </div>
