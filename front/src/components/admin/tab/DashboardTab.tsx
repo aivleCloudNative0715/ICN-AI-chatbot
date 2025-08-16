@@ -19,16 +19,8 @@ export default function DashboardTab({ onSelectInquiry }: DashboardTabProps) {
     queryKey: ['inquiryCounts'],
     queryFn: () => {
       if (!token) return null;
-      // 오늘 날짜를 기준으로 조회 (혹은 원하는 기간으로 설정)
-      const end = new Date();
-      const start = new Date();
-      start.setDate(end.getDate() - 30); // 예: 최근 30일
       
-      return getInquiryCounts(
-        token, 
-        start.toISOString().slice(0, 19), 
-        end.toISOString().slice(0, 19)
-      );
+      return getInquiryCounts(token);
     },
     enabled: !!token,
   });

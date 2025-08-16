@@ -204,18 +204,16 @@ export const updateInquiryUrgency = async (
  * [관리자] 대시보드 문의 건수 조회 (GET /admin/inquiries/counts)
  */
 export const getInquiryCounts = async (
-  token: string, 
-  start: string, // YYYY-MM-DDTHH:mm:ss 형식
-  end: string
+  token: string
 ): Promise<InquiryCounts> => {
-  const params = new URLSearchParams({
-    created_at_start: start,
-    created_at_end: end,
-  });
-  const response = await fetch(`${ADMIN_API_URL}/inquiries/counts?${params.toString()}`, {
+  const response = await fetch(`${ADMIN_API_URL}/inquiries/counts`, {
     headers: getAuthHeaders(token),
   });
-  if (!response.ok) throw new Error('문의 건수 조회에 실패했습니다.');
+
+  if (!response.ok) {
+    throw new Error('문의 건수 조회에 실패했습니다.');
+  }
+  
   return response.json();
 };
 
