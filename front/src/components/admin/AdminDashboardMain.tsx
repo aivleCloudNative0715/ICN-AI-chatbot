@@ -11,17 +11,17 @@ import AdminManagePage from './tab/AdminManagePage';
 import AdminFileUploadTab from './tab/AdminFileUploadTab';
 import { AdminInquiryDto } from '@/lib/types';
 import AdminAnswerBoard from './tab/AdminAnswerBoard';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminDashboardMain() {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedInquiry, setSelectedInquiry] = useState<AdminInquiryDto | null>(null);
 
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem('jwt_token');
-    localStorage.removeItem('user_role');
-    alert('관리자 계정에서 로그아웃되었습니다.');
+    logout();
     router.push('/');
   };
 
