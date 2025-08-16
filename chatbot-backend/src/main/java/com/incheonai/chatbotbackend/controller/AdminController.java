@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +72,7 @@ public class AdminController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end,
-            Pageable pageable) {
+            @PageableDefault(sort = "inquiryId", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<InquiryDto> pageData = adminInquiryService.getInquiries(
                 status, urgency, category, search, start, end, pageable);
         return ResponseEntity.ok(pageData);
@@ -105,13 +107,5 @@ public class AdminController {
             @RequestBody InquiryAnswerRequestDto request) {
         InquiryDetailDto updatedInquiry = adminInquiryService.processAnswer(inquiryId, request);
         return ResponseEntity.ok(updatedInquiry);
-    }
-
-    /** 문의 삭제 */
-    @DeleteMapping("/inquiries/{inquiry_id}")
-    public ResponseEntity<ApiMessage> deleteInquiry(
-            @PathVariable("inquiry_id") Integer inquiryId) {
-        adminInquiryService.deleteInquiry(inquiryId);
-        return ResponseEntity.ok(new ApiMessage("문의가 삭제되었습니다."));
     }
 }

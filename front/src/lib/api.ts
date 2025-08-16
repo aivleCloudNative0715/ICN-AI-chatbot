@@ -172,7 +172,7 @@ export const getAdminInquiryDetail = async (inquiryId: number, token: string): P
 export const processAdminAnswer = async (
   inquiryId: number, 
   token: string,
-  payload: { adminId: string; content: string }
+  payload: { adminId: string; content: string, urgency: Urgency }
 ): Promise<AdminInquiryDetailDto> => {
   const response = await fetch(`${ADMIN_API_URL}/inquiries/${inquiryId}/answer`, {
     method: 'POST',

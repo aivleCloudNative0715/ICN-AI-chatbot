@@ -111,12 +111,11 @@ public class AdminInquiryService {
         inquiry.setAdminId(request.adminId());
         inquiry.setStatus(InquiryStatus.RESOLVED);
 
-        return InquiryDetailDto.fromEntity(inquiry);
-    }
+        // 2. 요청에 urgency 값이 있으면 함께 업데이트합니다.
+        if (request.urgency() != null) {
+            inquiry.setUrgency(request.urgency());
+        }
 
-    /** 문의 삭제 */
-    @Transactional
-    public void deleteInquiry(Integer inquiryId) {
-        inquiryRepository.deleteById(inquiryId);
+        return InquiryDetailDto.fromEntity(inquiry);
     }
 }
