@@ -6,14 +6,16 @@ spring:
     name: chatbot-backend
 
   datasource:
-    hikari:
-      maximum-pool-size: 5
-      max-lifetime: 1800000  # 30분
-      idle-timeout: 600000   # 10분
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 3       # 연결 풀 최대 크기 (3개로 제한)
+      minimum-idle: 1            # 최소 유휴 연결 (필요할 때만 생성)
+      idle-timeout: 30000        # 30초 이상 안 쓰면 연결 반납
+      max-lifetime: 1800000      # 30분마다 커넥션 새로고침 (DB idle timeout 회피용)
+      connection-timeout: 20000  # 20초 안에 연결 못 잡으면 에러 반환
 
   data:
     mongodb:
