@@ -5,10 +5,10 @@ import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
-import { UserIcon, LockClosedIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addAdmin, checkAdminId } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { LockClosedIcon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface AdminCreateModalProps {
   isOpen: boolean;
@@ -17,45 +17,65 @@ interface AdminCreateModalProps {
 
 export default function AdminCreateModal({ isOpen, onClose }: AdminCreateModalProps) {
   const { token } = useAuth();
-  const queryClient = useQueryClient();const [email, setEmail] = useState('');
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState('');
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState('관리자');
-  const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string; name?: string }>({});
+  const [role, setRole] = useState('ADMIN'); // 기본값을 'ADMIN'으로 설정
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
+
+  const resetForm = () => {
+    setEmail('');
+    setIsEmailChecked(false);
+    setEmailAvailable(null);
+    setPassword('');
+    setConfirmPassword('');
+    setName('');
+    setRole('ADMIN');
+    setErrors({});
+  };
+
+  const addAdminMutation = useMutation({
+    mutationFn: (newAdminData: any) => {
+      if (!token) throw new Error("인증 정보가 없습니다.");
+      return addAdmin(token, newAdminData);
+    },
+    onSuccess: () => {
+      alert("관리자가 성공적으로 추가되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ['admins'] });
+      handleClose(); // 성공 시 모달 닫기 및 초기화
+    },
+    onError: (error) => {
+      alert(`관리자 추가 실패: ${error.message}`);
+    }
+  });
 
   const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   const isValidPassword = (value: string) =>
     /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[a-zA-Z\d!@#$%^&*()_+]{10,20}$/.test(value);
 
   const handleCheckEmail = async () => {
-    if (!email) {
-      setErrors((prev) => ({ ...prev, email: '아이디를 입력해주세요.' }));
-      return;
-    }
-    if (!isValidEmail(email)) {
+    if (!email || !isValidEmail(email)) {
       setErrors((prev) => ({ ...prev, email: '올바른 이메일 형식이 아닙니다.' }));
       return;
     }
     setErrors((prev) => ({ ...prev, email: undefined }));
     setIsEmailChecked(true);
 
+    if (!token) throw new Error("인증 정보가 없습니다.");
+
     try {
-      if (!token) {
-        throw new Error("인증 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+      const { isAvailable } = await checkAdminId(token, email);
+      setEmailAvailable(isAvailable);
+      if (!isAvailable) {
+        setErrors((prev) => ({ ...prev, email: '이미 사용 중인 아이디입니다.' }));
       }
-      const response = await checkAdminId(token, email);
-      setEmailAvailable(response.isAvailable);
     } catch (error) {
-      setEmailAvailable(false); // 에러 발생 시 사용 불가로 처리
-      
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("알 수 없는 오류가 발생했습니다.");
-      }
+      setEmailAvailable(false);
+      setErrors((prev) => ({ ...prev, email: '중복 확인 중 오류가 발생했습니다.' }));
     }
   };
 
@@ -80,22 +100,6 @@ export default function AdminCreateModal({ isOpen, onClose }: AdminCreateModalPr
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  // --- 관리자 추가 Mutation ---
-  const addAdminMutation = useMutation({
-    mutationFn: (newAdminData: any) => {
-      if (!token) throw new Error("인증 정보가 없습니다.");
-      return addAdmin(token, newAdminData);
-    },
-    onSuccess: () => {
-      alert("관리자가 성공적으로 추가되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ['admins'] }); // 관리자 목록 새로고침
-      onClose(); // 모달 닫기
-    },
-    onError: (error) => {
-      alert(`관리자 추가 실패: ${error.message}`);
-    }
-  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,26 +108,20 @@ export default function AdminCreateModal({ isOpen, onClose }: AdminCreateModalPr
         adminId: email,
         password: password,
         adminName: name,
-        role: role === '관리자' ? 'ADMIN' : 'SUPER', // 백엔드 Enum에 맞게 변환
+        role: role, // 상태 값을 그대로 사용
       });
     }
   };
 
-  const resetForm = () => {
-    setEmail('');
-    setIsEmailChecked(false);
-    setEmailAvailable(null);
-    setPassword('');
-    setConfirmPassword('');
-    setName('');
-    setRole('관리자');
-    setErrors({});
-  };
-
   const handleClose = () => {
-    resetForm(); // 폼 초기화
-    onClose();   // 부모 컴포넌트의 닫기 함수 호출
+    resetForm();
+    onClose();
   };
+  
+  const roleOptions = [
+    { label: '관리자', value: 'ADMIN' },
+    { label: '최고 관리자', value: 'SUPER' },
+  ];
 
   if (!isOpen) return null;
 
@@ -249,10 +247,13 @@ export default function AdminCreateModal({ isOpen, onClose }: AdminCreateModalPr
             <p className='w-1/3'>관리자 권한 선택</p>
             <Dropdown
               value={role}
-              options={[{ label: '관리자', value: '관리자' }]}
+              options={roleOptions} // 2. 수정된 options를 사용합니다.
               onChange={(e) => setRole(e.value)}
               placeholder="관리자 권한 선택"
               className="w-2/3 border"
+              // optionLabel, optionValue를 추가하여 객체 배열을 올바르게 처리합니다.
+              optionLabel="label"
+              optionValue="value"
             />
           </div>
 

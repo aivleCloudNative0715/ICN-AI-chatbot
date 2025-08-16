@@ -239,11 +239,14 @@ export const getAdmins = async (token: string, page: number, size: number, isAct
  * [관리자] 관리자 아이디 중복 확인
  */
 export const checkAdminId = async (token: string, adminId: string): Promise<{ isAvailable: boolean }> => {
-  const response = await fetch(`${ADMIN_API_URL}/users/check-id?adminId=${encodeURIComponent(adminId)}`, {
-    headers: getAuthHeaders(token), // 토큰이 필요하다면 getAuthHeaders() 사용
+  const response = await fetch(`${API_BASE_URL}/api/auth/check-id`, {
+    method: 'POST',
+    headers: getAuthHeaders(token),
+    body: JSON.stringify({ userId: adminId }),
   });
   if (!response.ok) throw new Error('아이디 중복 확인에 실패했습니다.');
-  return response.json();
+  const data = await response.json();
+  return { isAvailable: data.isAvailable  };
 };
 
 /**
