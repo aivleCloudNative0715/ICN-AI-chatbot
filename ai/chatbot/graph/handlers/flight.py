@@ -66,9 +66,12 @@ def flight_info_handler(state: ChatState) -> ChatState:
             to_time = (time_obj + timedelta(hours=3)).strftime("%H%M")
             
         if not from_time and not to_time:
-            from_time = datetime.now().strftime("%H%M")
+            # 🕒 개선: 현재 시간에서 2시간 전부터 검색하여 최근 항공편도 포함
+            current_time = datetime.now()
+            from_time_obj = current_time - timedelta(hours=2)
+            from_time = from_time_obj.strftime("%H%M")
             to_time = "2359"
-            print(f"디버그: 특정 시간 언급이 없어 현재 시각({from_time}) 이후로 검색합니다.")
+            print(f"디버그: 특정 시간 언급이 없어 현재 시각({current_time.strftime('%H%M')}) 기준 2시간 전({from_time})부터 검색합니다.")
         
         date_offset = query.get("date_offset", 0)
         search_date = datetime.now() + timedelta(days=date_offset)
