@@ -18,13 +18,23 @@ def classify_intent(state: ChatState) -> ChatState:
         # 대화가 첫 번째 턴일 경우, 사용자 입력만 사용
         text_to_classify = state["user_input"]
 
-    # 📌 수정된 부분: 의도 분류는 전체 맥락으로, 슬롯 추출은 현재 질문만으로 분리
-    # 1. 의도 분류용 (전체 맥락)
-    intent_result = predict_with_bce(text_to_classify, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
+    # 📌 수정된 부분: 의도 분류와 슬롯 추출 모두 현재 질문만 사용
+    # 현재 사용자의 순수한 질문만 추출
+    current_user_question = messages[-1].content if messages else state["user_input"]
+    
+    # 1. 의도 분류용 (현재 질문만)
+    intent_result = predict_with_bce(current_user_question, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
     
     # 2. 슬롯 추출용 (현재 사용자 질문만)
-    slot_result = predict_with_bce(state["user_input"], threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
+    print(f"디버그: slot 추출용 입력 텍스트: '{current_user_question}'")
+    print(f"디버그: messages 개수: {len(messages) if messages else 0}")
+    if messages and len(messages) > 0:
+        print(f"디버그: 마지막 메시지: '{messages[-1].content}'")
+    print(f"디버그: state['user_input']: '{state.get('user_input', 'None')}'")
     
+    slot_result = predict_with_bce(current_user_question, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"],
+                                   top_k_intents=3)
+
     # 의도는 맥락 기반, 슬롯은 현재 질문 기반으로 결합
     result = {
         'all_top_intents': intent_result['all_top_intents'],
