@@ -55,15 +55,37 @@ def build_chat_graph():
         top_k_intents = state.get('top_k_intents_and_probs', [])
         slots = state.get("slots", [])
         user_query = state.get("user_input", "")
+        confidence = state.get("confidence", 0.0)
 
         print(f"DEBUG: 의도별 확신도 점수: {top_k_intents}")
-        # 1. 이전 대화 감지 로직 - 슬롯 추출 완료 후 llm_verify_intent로 라우팅
-        # (모든 질문에서 classify_intent를 거쳐 슬롯을 먼저 추출하고, 이전 대화가 있으면 검증)
-
-        # 2. 이전 대화가 있으면 LLM 검증 단계로 이동 (슬롯 추출은 이미 완료됨)
+        
+        # 🚀 Smart Routing: 높은 신뢰도 + 충분한 slot이 있으면 검증 스킵
+        def has_sufficient_slots(intent, slots):
+            """의도별로 충분한 slot 정보가 있는지 확인"""
+            if intent == "flight_info":
+                # flight_id, airport_name, airline_name, terminal 중 하나라도 있으면 충분
+                flight_slots = [word for word, slot in slots if slot in ['B-flight_id', 'I-flight_id', 'B-airport_name', 'I-airport_name', 'B-airline_name', 'I-airline_name', 'B-terminal', 'I-terminal']]
+                return len(flight_slots) > 0
+            elif intent == "airline_info_query":
+                airline_slots = [word for word, slot in slots if slot in ['B-airline_name', 'I-airline_name']]
+                return len(airline_slots) > 0
+            elif intent == "airport_info":
+                airport_slots = [word for word, slot in slots if slot in ['B-airport_name', 'I-airport_name']]
+                return len(airport_slots) > 0
+            return False
+        
+        # 1. 이전 대화 감지 로직
         if len(state.get("messages", [])) > 1:
-            print("DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅 (슬롯 추출 완료)")
-            return "llm_verify_intent"
+            intent = state.get("intent", "")
+            
+            # 🚀 스마트 라우팅: 신뢰도 높고 slot 충분하면 바로 핸들러로
+            if confidence > 0.85 and has_sufficient_slots(intent, slots):
+                handler_name = f"{intent}_handler"
+                print(f"DEBUG: ⚡ 스마트 라우팅 - 높은 신뢰도({confidence:.3f}) + 충분한 slot -> {handler_name} 직접 호출")
+                return handler_name
+            else:
+                print(f"DEBUG: 이전 대화 감지 -> llm_verify_intent로 라우팅 (신뢰도: {confidence:.3f})")
+                return "llm_verify_intent"
 
         # 3. 복합 의도 감지 (classify_intent에서 판별됨)
         # if len(top_k_intents) >= 2:

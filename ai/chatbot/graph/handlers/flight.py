@@ -285,16 +285,17 @@ def airline_info_query_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # 📌 수정된 로직: 슬롯에서 항공사 이름을 먼저 찾습니다.
+    # 🚀 최적화: 슬롯에서 항공사 이름을 우선 활용, 없으면 LLM fallback
     airline_names = [word for word, slot in slots if slot in ['B-airline_name', 'I-airline_name']]
     
-    # 📌 수정된 로직: 슬롯에 항공사 이름이 없으면, LLM을 사용해 쿼리에서 추출합니다.
     if not airline_names:
+        print("디버그: slot에 항공사 정보 없음, LLM으로 fallback")
         extracted_airline = _extract_airline_name_with_llm(query_to_process)
         if extracted_airline:
-            # 추출된 항공사 이름만 검색 리스트에 추가
             airline_names = [extracted_airline]
         print(f"디버그: LLM을 사용해 추출된 항공사 이름: {airline_names}")
+    else:
+        print(f"디버그: ⚡ slot에서 항공사 정보 추출 완료 (LLM 호출 생략): {airline_names}")
     
     if not airline_names:
         return {**state, "response": "죄송합니다. 요청하신 항공사 정보를 찾을 수 없습니다."}
