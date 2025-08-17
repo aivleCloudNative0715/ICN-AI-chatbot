@@ -1,19 +1,16 @@
 // com/incheonai/chatbotbackend/service/AirportInfoService.java
 package com.incheonai.chatbotbackend.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.incheonai.chatbotbackend.dto.external.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
-
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
@@ -23,102 +20,86 @@ import java.util.List;
 public class AirportInfoService {
 
     private final WebClient webClient;
-    private final XmlMapper xmlMapper;
 
     @Value("${api.service-key}")
     private String serviceKey;
-
     @Value("${api.url.parking}")
     private String parkingApiUrl;
-
+    @Value("${api.url.forecast}")
+    private String forecastApiUrl;
     @Value("${api.url.weather}")
     private String weatherApiUrl;
-
     @Value("${api.url.flight_arrivals}")
     private String flightArrivalsApiUrl;
-
     @Value("${api.url.flight_departures}")
     private String flightDeparturesApiUrl;
 
-    @Value("${api.url.forecast}")
-    private String forecastApiUrl;
-
     public AirportInfoService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.build();
-        this.xmlMapper = new XmlMapper();
-        this.xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    private <T> Mono<List<T>> fetchApiData(String baseUrl, MultiValueMap<String, String> queryParams, TypeReference<ApiResult<T>> typeReference) {
+    private <T> Mono<List<T>> fetchApiData(String baseUrl, MultiValueMap<String, String> queryParams, ParameterizedTypeReference<ApiResult<T>> typeReference) {
         queryParams.add("serviceKey", serviceKey);
+        queryParams.add("type", "json");
 
-        URI uri = UriComponentsBuilder
-                .fromHttpUrl(baseUrl)
-                .queryParams(queryParams) // 파라미터 추가
-                .build(false)
-                .toUri();
+        URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl).queryParams(queryParams).build(false).toUri();
 
         return webClient.get()
                 .uri(uri)
                 .retrieve()
-                .bodyToMono(String.class)
-                .flatMap(xmlString -> {
-                    // =================================================================
-                    // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 줄을 추가합니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-                    log.info("Raw XML Response from [{}]: {}", baseUrl, xmlString);
-                    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 이 줄을 추가합니다 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-                    // =================================================================
-                    try {
-                        ApiResult<T> result = xmlMapper.readValue(xmlString, typeReference);
+                .bodyToMono(typeReference)
+                .map(result -> {
+                    // 1. 최상위 'response' 객체를 먼저 가져옵니다.
+                    if (result != null && result.getResponse() != null) {
+                        ApiResponseData<T> responseData = result.getResponse();
+                        ApiResponseData.Header header = responseData.getHeader();
+                        ApiResponseData.Body<T> body = responseData.getBody();
 
-                        if (result.getBody() != null && result.getBody().getItems() != null && result.getBody().getItems().getItem() != null) {
-                            return Mono.just(result.getBody().getItems().getItem());
+                        // 2. 'header'와 'body'는 responseData 객체에서 가져옵니다.
+                        if (header != null && "00".equals(header.getResultCode())) {
+                            if (body != null && body.getItems() != null) {
+                                return body.getItems();
+                            }
+                        } else if (header != null) {
+                            log.error("API returned an error from [{}]: Code={}, Msg={}", baseUrl, header.getResultCode(), header.getResultMsg());
                         }
-
-                        if (result.getHeader() != null && result.getHeader().getResultCode() != null) {
-                            log.error("API returned an error: Code={}, Msg={}", result.getHeader().getResultCode(), result.getHeader().getResultMsg());
-                        } else {
-                            log.warn("API response is empty or has an unexpected structure for URL: {}", baseUrl);
-                        }
-
-                        return Mono.just(Collections.<T>emptyList());
-
-                    } catch (Exception e) {
-                        log.error("XML parsing failed for URL: {}. XML content: {}", baseUrl, xmlString, e);
-                        return Mono.just(Collections.<T>emptyList());
                     }
+                    log.warn("API response from [{}] is empty or has an unexpected structure.", baseUrl);
+                    return Collections.<T>emptyList();
                 })
                 .doOnError(error -> log.error("API call to {} failed: {}", baseUrl, error.getMessage()))
-                .onErrorResume(e -> Mono.<List<T>>empty());
+                .onErrorResume(e -> Mono.empty());
     }
 
     public Mono<List<ParkingInfoItem>> getParkingInfo() {
-        return fetchApiData(parkingApiUrl, new LinkedMultiValueMap<>(), new TypeReference<>() {});
+        return fetchApiData(parkingApiUrl, new LinkedMultiValueMap<>(), new ParameterizedTypeReference<>() {});
+    }
+
+    public Mono<List<PassengerForecastItem>> getPassengerForecast(String selectDate) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        if ("0".equals(selectDate) || "1".equals(selectDate)) {
+            params.add("selectdate", selectDate);
+        }
+        return fetchApiData(forecastApiUrl, params, new ParameterizedTypeReference<>() {});
     }
 
     public Mono<List<ArrivalWeatherInfoItem>> getArrivalsWeatherInfo() {
-        return fetchApiData(weatherApiUrl, new LinkedMultiValueMap<>(), new TypeReference<>() {});
+        return fetchApiData(weatherApiUrl, new LinkedMultiValueMap<>(), new ParameterizedTypeReference<>() {});
     }
 
-    // 항공편 도착 정보 조회 메서드 추가
     public Mono<List<FlightArrivalInfoItem>> getFlightArrivalsInfo(String flightId) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         if (flightId != null && !flightId.isEmpty()) {
             params.add("flight_id", flightId);
         }
-        return fetchApiData(flightArrivalsApiUrl, params, new TypeReference<>() {});
+        return fetchApiData(flightArrivalsApiUrl, params, new ParameterizedTypeReference<>() {});
     }
 
-    // 항공편 출발 정보 조회 메서드 추가
     public Mono<List<FlightDepartureInfoItem>> getFlightDeparturesInfo(String flightId) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         if (flightId != null && !flightId.isEmpty()) {
             params.add("flight_id", flightId);
         }
-        return fetchApiData(flightDeparturesApiUrl, params, new TypeReference<>() {});
-    }
-
-    public Mono<List<PassengerForecastItem>> getPassengerForecast() {
-        return fetchApiData(forecastApiUrl, new LinkedMultiValueMap<>(), new TypeReference<>() {});
+        return fetchApiData(flightDeparturesApiUrl, params, new ParameterizedTypeReference<>() {});
     }
 }

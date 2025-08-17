@@ -35,8 +35,10 @@ public class AirportInfoController {
     }
 
     @GetMapping("/forecast")
-    public Mono<ResponseEntity<List<PassengerForecastItem>>> getPassengerForecast() {
-        return airportInfoService.getPassengerForecast()
+    public Mono<ResponseEntity<List<PassengerForecastItem>>> getPassengerForecast(
+            @RequestParam(defaultValue = "0") String selectDate
+    ) {
+        return airportInfoService.getPassengerForecast(selectDate)
                 .map(ResponseEntity::ok);
     }
 
