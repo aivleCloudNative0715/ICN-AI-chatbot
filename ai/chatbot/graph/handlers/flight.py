@@ -85,7 +85,14 @@ def flight_info_handler(state: ChatState) -> ChatState:
 
         # 📌 핵심 수정: 방향과 상대 공항 코드 유무에 따라 API 호출 로직을 분기합니다.
         # airport_code_for_api가 None일 경우, 해당 파라미터는 전달되지 않아 전체 도착/출발 항공편을 검색합니다.
-        if direction == "departure":
+        if flight_id and not airport_name and not departure_airport_name and not other_airport_codes:
+            # 편명만 있고 출발지/도착지 정보가 없으면 양쪽 모두 검색
+            print(f"디버그: 편명 '{flight_id}' 전용 검색 - departure/arrival 모두 호출")
+            api_result_dep = _call_flight_api("departure", search_date=search_date_str, from_time=from_time, to_time=to_time, flight_id=flight_id)
+            api_result_arr = _call_flight_api("arrival", search_date=search_date_str, from_time=from_time, to_time=to_time, flight_id=flight_id)
+            api_result["data"].extend(api_result_dep.get("data", []))
+            api_result["data"].extend(api_result_arr.get("data", []))
+        elif direction == "departure":
             print(f"디버그: 인천 -> '{airport_code_for_api or '모든 도착지'}'에 대한 API 호출 준비 (출발 방향)")
             current_api_result = _call_flight_api(
                 "departure",
@@ -108,13 +115,6 @@ def flight_info_handler(state: ChatState) -> ChatState:
                 flight_id=flight_id
             )
             api_result = current_api_result
-        
-        elif flight_id:
-            # 편명으로 검색할 때는 도착/출발 API를 모두 호출
-            api_result_dep = _call_flight_api("departure", search_date_str, from_time, to_time, flight_id=flight_id)
-            api_result_arr = _call_flight_api("arrival", search_date_str, from_time, to_time, flight_id=flight_id)
-            api_result["data"].extend(api_result_dep.get("data", []))
-            api_result["data"].extend(api_result_arr.get("data", []))
         
         retrieved_info = []
         if api_result.get("data"):
