@@ -37,6 +37,8 @@ dependencies {
 	implementation ('org.springframework.boot:spring-boot-starter-data-redis') {
 		exclude group: 'io.lettuce', module: 'lettuce-core'
 	}
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'redis.clients:jedis'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
