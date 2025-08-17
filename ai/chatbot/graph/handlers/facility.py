@@ -34,10 +34,35 @@ def facility_guide_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    location_keyword = extract_location_with_llm(query_to_process)
-    facility_names = _extract_facility_names_with_llm(query_to_process)
-    print(f"디버그: LLM으로 추출된 위치 정보 - {location_keyword}")
-    print(f"디버그: LLM을 사용해 추출된 시설 목록 - {facility_names}")
+    # 🚀 최적화: slot 정보 우선 활용, 없으면 LLM fallback
+    slots = state.get("slots", [])
+    
+    # Terminal/위치 정보 추출
+    terminal_slots = [word for word, slot in slots if slot in ['B-terminal', 'I-terminal']]
+    area_slots = [word for word, slot in slots if slot in ['B-area', 'I-area']]
+    location_keyword = None
+    
+    if terminal_slots:
+        location_keyword = terminal_slots[0]
+        print(f"디버그: ⚡ slot에서 터미널 정보 추출: {location_keyword}")
+    elif area_slots:
+        location_keyword = area_slots[0]
+        print(f"디버그: ⚡ slot에서 구역 정보 추출: {location_keyword}")
+    else:
+        print("디버그: slot에 위치 정보 없음, LLM으로 fallback")
+        location_keyword = extract_location_with_llm(query_to_process)
+        print(f"디버그: LLM으로 추출된 위치 정보 - {location_keyword}")
+    
+    # 시설명 정보 추출
+    facility_slots = [word for word, slot in slots if slot in ['B-facility_name', 'I-facility_name']]
+    
+    if facility_slots:
+        facility_names = facility_slots
+        print(f"디버그: ⚡ slot에서 시설명 추출 완료 (LLM 호출 생략): {facility_names}")
+    else:
+        print("디버그: slot에 시설명 정보 없음, LLM으로 fallback")
+        facility_names = _extract_facility_names_with_llm(query_to_process)
+        print(f"디버그: LLM을 사용해 추출된 시설 목록 - {facility_names}")
 
     if not facility_names:
         return {**state, "response": "죄송합니다. 요청하신 시설 정보를 찾을 수 없습니다."}

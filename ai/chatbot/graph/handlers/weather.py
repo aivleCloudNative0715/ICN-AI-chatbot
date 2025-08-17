@@ -20,6 +20,19 @@ def airport_weather_current_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
     
+    # 🚀 최적화: slot에서 weather_topic 추출하여 필요한 정보만 선별
+    slots = state.get("slots", [])
+    weather_topics = [word for word, slot in slots if slot in ['B-weather_topic', 'I-weather_topic']]
+    
+    if weather_topics:
+        print(f"디버그: ⚡ slot에서 날씨 주제 추출: {weather_topics}")
+        # 특정 주제에 대한 최적화된 프롬프트 사용
+        focused_topics = ", ".join(weather_topics)
+        topic_filter = f"특히 {focused_topics}에 대한 정보를 중심으로"
+    else:
+        print("디버그: slot에 weather_topic 없음, 전체 날씨 정보 제공")
+        topic_filter = "전반적인 날씨 정보를"
+    
     try:
         collection_ATMOS = get_mongo_collection(collection_name="ATMOS")
         collection_TAF = get_mongo_collection(collection_name="TAF")
@@ -36,6 +49,7 @@ def airport_weather_current_handler(state: ChatState) -> ChatState:
         prompt_template = (
             "당신은 인천국제공항의 정보를 제공하는 친절하고 유용한 챗봇입니다."
             "당신은 인천국제공항의 날씨에 대한 사용자의 질문에 대답해주어야 합니다."
+            f"{topic_filter} 답변해주세요."  # 🚀 slot 정보 활용
             "당신이 추가적으로 참고할 수 있는 정보는 두 가지입니다."
             "'{atmos_documents}'에서 tm은 데이터가 측정된 시각, l_vis는 시정, ta는 0.1도 단위의 섭씨 온도, hm은 % 단위의 습도, rn은 mm단위 강수량, ws_10은 0.1m/s 단위의 10분 평균 풍속입니다."
             "'{taf_documents}'는 공항 예보(TAF)의 전문입니다."

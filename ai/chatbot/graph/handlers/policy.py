@@ -181,18 +181,43 @@ def baggage_rule_query_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # ⭐ LLM으로 복합 질문을 분해합니다.
-    # 📌 수정된 부분: _parse_baggage_rule_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
-    parsed_queries = _parse_baggage_rule_query_with_llm(query_to_process)
-
-    search_queries = []
-    if parsed_queries and parsed_queries.get("requests"):
-        search_queries = [req.get("query") for req in parsed_queries["requests"]]
+    # 🚀 최적화: slot 정보 우선 활용, 없으면 LLM fallback
+    slots = state.get("slots", [])
     
-    if not search_queries:
-        # 📌 수정된 부분: 복합 질문으로 파악되지 않으면, 재구성된 쿼리를 사용합니다.
-        search_queries = [query_to_process]
-        print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
+    # baggage 관련 slot 추출
+    baggage_types = [word for word, slot in slots if slot in ['B-baggage_type', 'I-baggage_type', 'B-luggage_term',
+                                                              'I-luggage_term']]
+    rule_types = [word for word, slot in slots if slot in ['B-rule_type', 'I-rule_type']] 
+    items = [word for word, slot in slots if slot in ['B-item', 'I-item']]
+    
+    # slot 정보로 검색 쿼리 생성
+    search_queries = []
+    if baggage_types or rule_types or items:
+        print(f"디버그: ⚡ slot에서 수하물 정보 추출 - 유형:{baggage_types}, 규정:{rule_types}, 물품:{items}")
+        
+        # slot 조합으로 구체적인 검색 쿼리 생성
+        for item in items or ['수하물']:
+            for baggage_type in baggage_types or ['']:
+                for rule_type in rule_types or ['규정']:
+                    query = f"{item} {baggage_type} {rule_type}".strip()
+                    if query and query != '수하물  규정':
+                        search_queries.append(query)
+        
+        # 중복 제거 및 정리
+        search_queries = list(set([q for q in search_queries if q.strip()]))
+        if not search_queries:
+            search_queries = [query_to_process]
+        print(f"디버그: slot 기반으로 생성된 검색 쿼리: {search_queries}")
+    else:
+        print("디버그: slot에 수하물 정보 없음, LLM으로 fallback")
+        parsed_queries = _parse_baggage_rule_query_with_llm(query_to_process)
+        
+        if parsed_queries and parsed_queries.get("requests"):
+            search_queries = [req.get("query") for req in parsed_queries["requests"]]
+        
+        if not search_queries:
+            search_queries = [query_to_process]
+            print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
 
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
     collection_name = rag_config.get("collection_name")

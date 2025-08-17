@@ -22,13 +22,23 @@ def transfer_info_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # 슬롯에서 'B-transfer_topic' 태그가 붙은 키워드를 모두 추출합니다.
-    search_keywords = [word for word, slot in slots if slot == ['B-transfer_topic', 'I-transfer_topic']]
-
-    if not search_keywords:
-        # 📌 수정된 부분: 슬롯에 키워드가 없으면, 재구성된 쿼리를 사용해 검색을 시도합니다.
+    # 🚀 최적화: slot 정보 우선 활용, 없으면 LLM fallback
+    # 슬롯에서 환승 관련 키워드를 모두 추출합니다.
+    transfer_topics = [word for word, slot in slots if slot in ['B-transfer_topic', 'I-transfer_topic']]
+    transport_types = [word for word, slot in slots if slot in ['B-transport_type', 'I-transport_type']]
+    location_keywords = [word for word, slot in slots if slot in ['B-location', 'I-location', 'B-terminal', 'I-terminal']]
+    
+    search_keywords = []
+    if transfer_topics or transport_types or location_keywords:
+        print(f"디버그: ⚡ slot에서 환승 정보 추출 - 주제:{transfer_topics}, 교통:{transport_types}, 위치:{location_keywords}")
+        
+        # slot 조합으로 구체적인 검색 쿼리 생성
+        all_keywords = transfer_topics + transport_types + location_keywords
+        search_keywords = list(set(all_keywords)) if all_keywords else [query_to_process]
+        print(f"디버그: ⚡ slot 기반 검색 키워드: {search_keywords}")
+    else:
+        print("디버그: slot에 환승 정보 없음, LLM으로 fallback")
         search_keywords = [query_to_process]
-        print("디버그: 슬롯에서 환승 주제를 찾지 못했습니다. 재구성된 쿼리로 검색을 시도합니다.")
 
     # RAG_SEARCH_CONFIG에서 현재 의도에 맞는 설정 가져오기
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})

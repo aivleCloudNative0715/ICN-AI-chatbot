@@ -72,6 +72,34 @@ def build_chat_graph():
             elif intent == "airport_info":
                 airport_slots = [word for word, slot in slots if slot in ['B-airport_name', 'I-airport_name']]
                 return len(airport_slots) > 0
+            elif intent == "facility_guide":
+                # facility_name, terminal, area 중 하나라도 있으면 충분
+                facility_slots = [word for word, slot in slots if slot in ['B-facility_name', 'I-facility_name', 'B-terminal', 'I-terminal', 'B-area', 'I-area']]
+                return len(facility_slots) > 0
+            elif intent == "airport_weather_current":
+                # weather_topic이 있으면 충분
+                weather_slots = [word for word, slot in slots if slot in ['B-weather_topic', 'I-weather_topic']]
+                return len(weather_slots) > 0
+            elif intent == "baggage_rule_query":
+                # baggage_type, rule_type, item 중 하나라도 있으면 충분
+                baggage_slots = [word for word, slot in slots if slot in ['B-baggage_type', 'I-baggage_type', 'B-luggage_term', 'I-luggage_term', 'B-rule_type', 'I-rule_type', 'B-item', 'I-item']]
+                return len(baggage_slots) > 0
+            elif intent == "parking_fee_info":
+                # parking 관련 slot이 있으면 충분
+                parking_slots = [word for word, slot in slots if slot in ['B-fee_topic', 'I-fee_topic', 'B-vehicle_type', 'I-vehicle_type', 'B-parking_area', 'I-parking_area', 'B-time_period', 'I-time_period']]
+                return len(parking_slots) > 0
+            elif intent == "parking_location_recommendation":
+                # parking 위치 관련 slot이 있으면 충분
+                parking_location_slots = [word for word, slot in slots if slot in ['B-parking_lot', 'I-parking_lot', 'B-parking_area', 'I-parking_area', 'B-terminal', 'I-terminal']]
+                return len(parking_location_slots) > 0
+            elif intent == "parking_walk_time_info":
+                # parking 도보시간 관련 slot이 있으면 충분
+                walk_time_slots = [word for word, slot in slots if slot in ['B-parking_lot', 'I-parking_lot', 'B-parking_area', 'I-parking_area', 'B-terminal', 'I-terminal', 'B-location', 'I-location']]
+                return len(walk_time_slots) > 0
+            elif intent == "transfer_info":
+                # transfer 관련 slot이 있으면 충분
+                transfer_slots = [word for word, slot in slots if slot in ['B-transfer_topic', 'I-transfer_topic', 'B-transport_type', 'I-transport_type', 'B-location', 'I-location', 'B-terminal', 'I-terminal']]
+                return len(transfer_slots) > 0
             return False
         
         # 1. 이전 대화 감지 로직

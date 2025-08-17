@@ -43,19 +43,44 @@ def parking_fee_info_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    fee_topic_slots = [word for word, slot in slots if slot in ['B-fee_topic', 'I-fee_topic']]
+    # 🚀 최적화: slot 정보 우선 활용, 없으면 LLM fallback
+    fee_topics = [word for word, slot in slots if slot in ['B-fee_topic', 'I-fee_topic']]
+    vehicle_types = [word for word, slot in slots if slot in ['B-vehicle_type', 'I-vehicle_type']]
+    parking_areas = [word for word, slot in slots if slot in ['B-parking_area', 'I-parking_area']]
+    time_periods = [word for word, slot in slots if slot in ['B-time_period', 'I-time_period']]
     
     search_queries = []
-    if len(fee_topic_slots) > 1:
-        # 📌 수정된 부분: _parse_parking_fee_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
-        parsed_queries = _parse_parking_fee_query_with_llm(query_to_process)
-        if parsed_queries and parsed_queries.get("requests"):
-            search_queries = [req.get("query") for req in parsed_queries["requests"]]
-            
-    if not search_queries:
-        # ⭐ 분해된 질문이 없거나 슬롯이 하나인 경우, 재구성된 쿼리를 검색 키워드로 사용합니다.
-        search_queries = [query_to_process]
-        print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
+    if fee_topics or vehicle_types or parking_areas or time_periods:
+        print(f"디버그: ⚡ slot에서 주차 정보 추출 - 주제:{fee_topics}, 차량:{vehicle_types}, 구역:{parking_areas}, 시간:{time_periods}")
+        
+        # slot 조합으로 구체적인 검색 쿼리 생성
+        if len(fee_topics) > 1:
+            # 여러 fee_topic이 있으면 각각을 개별 쿼리로 처리
+            for topic in fee_topics:
+                base_query = f"{topic} 주차 요금"
+                if vehicle_types:
+                    base_query += f" {' '.join(vehicle_types)}"
+                if parking_areas:
+                    base_query += f" {' '.join(parking_areas)}"
+                search_queries.append(base_query)
+        else:
+            # 단일 쿼리 생성
+            all_keywords = fee_topics + vehicle_types + parking_areas + time_periods
+            base_query = " ".join(all_keywords) if all_keywords else "주차 요금"
+            search_queries = [base_query]
+        
+        print(f"디버그: ⚡ slot 기반으로 생성된 검색 쿼리: {search_queries}")
+    else:
+        print("디버그: slot에 주차 정보 없음, LLM으로 fallback")
+        # 기존 LLM 방식 사용
+        if len(slots) > 0:  # 다른 slot이라도 있으면 LLM 시도
+            parsed_queries = _parse_parking_fee_query_with_llm(query_to_process)
+            if parsed_queries and parsed_queries.get("requests"):
+                search_queries = [req.get("query") for req in parsed_queries["requests"]]
+        
+        if not search_queries:
+            search_queries = [query_to_process]
+            print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
 
     # RAG_SEARCH_CONFIG에서 현재 의도에 맞는 설정 가져오기
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
@@ -125,13 +150,22 @@ def parking_location_recommendation_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # 슬롯에서 'B-parking_lot' 태그가 붙은 주차장 이름을 모두 추출합니다.
-    search_keywords = [word for word, slot in slots if slot == ['B-parking_lot', 'I-parking_lot']]
-
-    if not search_keywords:
-        # 📌 수정된 부분: 슬롯에 키워드가 없으면, 재구성된 쿼리를 사용해 검색을 시도합니다.
+    # 🚀 최적화: slot 정보 우선 활용, 없으면 LLM fallback
+    parking_lots = [word for word, slot in slots if slot in ['B-parking_lot', 'I-parking_lot']]
+    parking_areas = [word for word, slot in slots if slot in ['B-parking_area', 'I-parking_area']]
+    terminals = [word for word, slot in slots if slot in ['B-terminal', 'I-terminal']]
+    
+    search_keywords = []
+    if parking_lots or parking_areas or terminals:
+        print(f"디버그: ⚡ slot에서 주차 위치 정보 추출 - 주차장:{parking_lots}, 구역:{parking_areas}, 터미널:{terminals}")
+        
+        # slot 조합으로 검색 키워드 생성
+        all_keywords = parking_lots + parking_areas + terminals
+        search_keywords = list(set(all_keywords)) if all_keywords else [query_to_process]
+        print(f"디버그: ⚡ slot 기반 검색 키워드: {search_keywords}")
+    else:
+        print("디버그: slot에 주차 위치 정보 없음, 전체 쿼리로 검색")
         search_keywords = [query_to_process]
-        print("디버그: 슬롯에서 주차장 이름을 찾지 못했습니다. 재구성된 쿼리로 검색을 시도합니다.")
 
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
     collection_name = rag_config.get("collection_name")
@@ -285,16 +319,34 @@ def parking_walk_time_info_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # 📌 수정된 부분: _parse_parking_walk_time_query_with_llm 함수에 재구성된 쿼리를 전달합니다.
-    parsed_queries = _parse_parking_walk_time_query_with_llm(query_to_process)
-
+    # 🚀 최적화: slot 정보 우선 활용, 없으면 LLM fallback
+    slots = state.get("slots", [])
+    parking_lots = [word for word, slot in slots if slot in ['B-parking_lot', 'I-parking_lot']]
+    parking_areas = [word for word, slot in slots if slot in ['B-parking_area', 'I-parking_area']]
+    terminals = [word for word, slot in slots if slot in ['B-terminal', 'I-terminal']]
+    locations = [word for word, slot in slots if slot in ['B-location', 'I-location']]
+    
     search_queries = []
-    if parsed_queries and parsed_queries.get("requests"):
-        search_queries = [req.get("query") for req in parsed_queries["requests"]]
-
-    if not search_queries:
-        search_queries = [query_to_process]
-        print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
+    if parking_lots or parking_areas or terminals or locations:
+        print(f"디버그: ⚡ slot에서 도보 시간 정보 추출 - 주차장:{parking_lots}, 구역:{parking_areas}, 터미널:{terminals}, 위치:{locations}")
+        
+        # slot 조합으로 도보 시간 검색 쿼리 생성
+        for parking in (parking_lots or ['주차장']):
+            for destination in (terminals + locations or ['터미널']):
+                search_queries.append(f"{parking}에서 {destination}까지 도보 시간")
+        
+        # 중복 제거
+        search_queries = list(set(search_queries)) if search_queries else [query_to_process]
+        print(f"디버그: ⚡ slot 기반으로 생성된 검색 쿼리: {search_queries}")
+    else:
+        print("디버그: slot에 도보 시간 정보 없음, LLM으로 fallback")
+        parsed_queries = _parse_parking_walk_time_query_with_llm(query_to_process)
+        if parsed_queries and parsed_queries.get("requests"):
+            search_queries = [req.get("query") for req in parsed_queries["requests"]]
+        
+        if not search_queries:
+            search_queries = [query_to_process]
+            print("디버그: 복합 질문으로 파악되지 않아 최종 쿼리로 검색을 시도합니다.")
 
     rag_config = RAG_SEARCH_CONFIG.get(intent_name, {})
     collection_name = rag_config.get("collection_name")
