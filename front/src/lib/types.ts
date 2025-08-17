@@ -84,3 +84,54 @@ export interface InquiryCounts {
     medium: number;
     low: number;
 }
+
+// =======================================================
+//                공항 정보 API 타입
+// =======================================================
+
+export interface ParkingInfo {
+  floor: string;
+  parking: string; // 주차된 차량 수 (문자열로 올 수 있음)
+  datetm: string;
+}
+
+export interface PassengerForecast {
+  adate: string;
+  atime: string;
+  t1sumset1: number; // T1 입국 합계
+  t1sumset2: number; // T1 출국 합계
+  t2sumset1: number; // T2 입국 합계
+  t2sumset2: number; // T2 출국 합계
+}
+
+export interface FlightArrival {
+  airline: string;
+  airport: string;
+  airportCode: string;
+  carousel: string;
+  estimatedDateTime: string;
+  exitnumber: string;
+  flightId: string;
+  gatenumber: string;
+  remark: string;
+  scheduleDateTime: string;
+  terminalid: string;
+}
+
+export interface FlightDeparture {
+  airline: string;
+  airport: string;
+  airportCode: string;
+  chkinrange: string;
+  estimatedDateTime: string;
+  flightId: string;
+  gatenumber: string;
+  remark: string;
+  scheduleDateTime: string;
+  terminalid: string;
+}
+
+export interface ArrivalWeatherInfo {
+  temp: string; // 관측 기온
+  wimage: string; // 날씨 이미지 URL
+}

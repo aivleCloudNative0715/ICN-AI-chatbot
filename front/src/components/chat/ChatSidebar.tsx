@@ -8,6 +8,8 @@ import { Tooltip } from 'primereact/tooltip';
 import { useRouter } from 'next/navigation';
 import ParkingStatusWidget from './widget/ParkingStatusWidget';
 import CongestionWidget from './widget/CongestionWidget';
+import FlightSearchWidget from './widget/FlightSearchWidget';
+import WeatherWidget from './widget/WeatherWidget';
 
 interface ChatSidebarProps {
   isLoggedIn: boolean;
@@ -29,8 +31,8 @@ export default function ChatSidebar({ isLoggedIn, onClose, onDeleteAccount, onCl
   };
 
   return (
-    <div className="fixed top-0 left-0 h-full w-[400px] bg-blue-100 shadow-lg p-4 flex flex-col justify-between z-20 transition-transform duration-300 ease-in-out transform translate-x-0">
-      <div className="flex-grow">
+    <div className="fixed top-0 left-0 h-full w-[400px] bg-blue-100 shadow-lg p-4 flex flex-col justify-between z-20 transition-transform duration-300 ease-in-out transform translate-x-0 overflow-y-scroll">
+      <div className="flex-grow mb-5">
         <div className="flex justify-end items-center mb-6">
           <button onClick={onClose} className="p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
             <XMarkIcon className="h-6 w-6 text-gray-700" />
@@ -39,6 +41,8 @@ export default function ChatSidebar({ isLoggedIn, onClose, onDeleteAccount, onCl
 
         {/* 정보 위젯들을 배치하는 영역 */}
         <div className="space-y-4">
+            <WeatherWidget />
+            <FlightSearchWidget />
             <CongestionWidget />
             <ParkingStatusWidget />
             {/* 혼잡도 API를 찾으시면 여기에 <CongestionWidget /> 추가 */}

@@ -1,21 +1,43 @@
-// src/components/FlightSearchWidget.tsx
-
+// src/components/chat/widget/FlightSearchWidget.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { getFlightArrivals, getFlightDepartures } from '@/lib/api';
 
 export default function FlightSearchWidget() {
   const [flightNumber, setFlightNumber] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!flightNumber.trim()) {
       alert('항공편 번호를 입력해주세요.');
       return;
     }
-    // TODO: 챗봇에게 메시지를 보내거나, API를 호출하여 결과를 모달로 보여주는 로직 구현
-    alert(`항공편 ${flightNumber} 조회를 요청합니다.`);
-    // 예: onSearch(flightNumber); // 부모 컴포넌트로 검색어 전달
+    setIsLoading(true);
+    try {
+      // 도착편과 출발편을 동시에 검색
+      const [arrivals, departures] = await Promise.all([
+        getFlightArrivals(flightNumber),
+        getFlightDepartures(flightNumber)
+      ]);
+
+      if (arrivals.length > 0) {
+        const flight = arrivals[0];
+        alert(`[도착] ${flight.flightId}편 (${flight.airport} 출발)\n현황: ${flight.remark}\n예정: ${flight.scheduleDateTime}, 변경: ${flight.estimatedDateTime}`);
+      } else if (departures.length > 0) {
+        const flight = departures[0];
+        alert(`[출발] ${flight.flightId}편 (${flight.airport} 도착)\n현황: ${flight.remark}\n예정: ${flight.scheduleDateTime}, 변경: ${flight.estimatedDateTime}`);
+      } else {
+        alert(`${flightNumber}편을 찾을 수 없습니다.`);
+      }
+
+    } catch (error) {
+      console.error("Flight search failed:", error);
+      alert('항공편 조회 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -28,12 +50,14 @@ export default function FlightSearchWidget() {
           onChange={(e) => setFlightNumber(e.target.value.toUpperCase())}
           placeholder="항공편 번호 (예: KE123)"
           className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          disabled={isLoading}
         />
         <button
           onClick={handleSearch}
-          className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+          disabled={isLoading}
         >
-          <MagnifyingGlassIcon className="h-4 w-4" />
+          {isLoading ? '...' : <MagnifyingGlassIcon className="h-4 w-4" />}
         </button>
       </div>
     </div>

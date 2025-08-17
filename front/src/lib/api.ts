@@ -9,7 +9,12 @@ import {
   AdminDto,
   InquiryDto,
   InquiryDetailDto,
-  Page
+  Page,
+  ParkingInfo,
+  PassengerForecast,
+  FlightArrival,
+  FlightDeparture,
+  ArrivalWeatherInfo
 } from './types';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -260,5 +265,47 @@ export const addAdmin = async (token: string, data: any): Promise<AdminDto> => {
     const errorData = await response.json();
     throw new Error(errorData.message || '관리자 추가에 실패했습니다.');
   }
+  return response.json();
+};
+
+// =======================================================
+//                공항 정보 API 함수들
+// =======================================================
+const AIRPORT_API_URL = `${API_BASE_URL}/api/airport`;
+
+/** 실시간 주차 현황 조회 */
+export const getParkingStatus = async (): Promise<ParkingInfo[]> => {
+  const response = await fetch(`${AIRPORT_API_URL}/parking`);
+  if (!response.ok) throw new Error('주차 현황 정보를 불러오는데 실패했습니다.');
+  return response.json();
+};
+
+/** 시간대별 승객 예고 조회 */
+export const getPassengerForecast = async (): Promise<PassengerForecast[]> => {
+  const response = await fetch(`${AIRPORT_API_URL}/forecast`);
+  if (!response.ok) throw new Error('승객 예고 정보를 불러오는데 실패했습니다.');
+  return response.json();
+};
+
+/** 항공편 도착 정보 조회 */
+export const getFlightArrivals = async (flightId?: string): Promise<FlightArrival[]> => {
+  const params = flightId ? `?flightId=${flightId}` : '';
+  const response = await fetch(`${AIRPORT_API_URL}/flights/arrivals${params}`);
+  if (!response.ok) throw new Error('항공편 도착 정보를 불러오는데 실패했습니다.');
+  return response.json();
+};
+
+/** 항공편 출발 정보 조회 */
+export const getFlightDepartures = async (flightId?: string): Promise<FlightDeparture[]> => {
+  const params = flightId ? `?flightId=${flightId}` : '';
+  const response = await fetch(`${AIRPORT_API_URL}/flights/departures${params}`);
+  if (!response.ok) throw new Error('항공편 출발 정보를 불러오는데 실패했습니다.');
+  return response.json();
+};
+
+/** 도착편 기준 날씨 정보 조회 */
+export const getArrivalsWeather = async (): Promise<ArrivalWeatherInfo[]> => {
+  const response = await fetch(`${AIRPORT_API_URL}/weather`);
+  if (!response.ok) throw new Error('날씨 정보를 불러오는데 실패했습니다.');
   return response.json();
 };
