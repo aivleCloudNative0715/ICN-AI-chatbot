@@ -8,6 +8,7 @@ from chatbot.rag.regular_schedule_helper import (
     _get_schedule_from_db
 )
 from chatbot.rag.flight_info_helper import (
+    _convert_slots_to_query_format,
     _parse_flight_query_with_llm,
     _call_flight_api,
     _extract_flight_info_from_response
@@ -26,6 +27,7 @@ SERVICE_KEY = os.getenv("SERVICE_KEY")
 def flight_info_handler(state: ChatState) -> ChatState:
     query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "flight_info")
+    slots = state.get("slots", [])
 
     if not query_to_process:
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
@@ -33,7 +35,14 @@ def flight_info_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    parsed_queries = _parse_flight_query_with_llm(query_to_process)
+    # 🚀 최적화: slot 정보 우선 활용, 없으면 LLM fallback
+    parsed_queries = _convert_slots_to_query_format(slots, query_to_process)
+    
+    if not parsed_queries:
+        print("디버그: slot 정보 부족, LLM으로 fallback")
+        parsed_queries = _parse_flight_query_with_llm(query_to_process)
+    else:
+        print("디버그: ⚡ slot 정보로 빠른 처리 완료 (LLM 호출 생략)")
 
     if not parsed_queries:
         return {**state, "response": "죄송합니다. 요청하신 항공편 정보를 찾을 수 없습니다. 출발지 또는 도착지를 명확히 알려주시겠어요?"}

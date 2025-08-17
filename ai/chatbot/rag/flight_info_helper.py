@@ -13,6 +13,58 @@ from chatbot.rag.config import client
 BASE_URL = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp"
 SERVICE_KEY = os.getenv("SERVICE_KEY")
 
+def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[Dict[str, Any]]:
+    """
+    의도분류기에서 추출된 slot 정보를 flight API 파라미터 형식으로 변환
+    
+    Args:
+        slots: [(word, slot_tag), ...] 형식의 slot 정보
+        user_query: 사용자 원본 질문
+    
+    Returns:
+        flight API 호출에 필요한 파라미터 딕셔너리 리스트
+    """
+    if not slots:
+        return []
+    
+    # slot에서 정보 추출
+    flight_ids = [word for word, slot in slots if slot in ['B-flight_id', 'I-flight_id']]
+    airports = [word for word, slot in slots if slot in ['B-airport_name', 'I-airport_name']]
+    airlines = [word for word, slot in slots if slot in ['B-airline_name', 'I-airline_name']]
+    terminals = [word for word, slot in slots if slot in ['B-terminal', 'I-terminal']]
+    departure_airports = [word for word, slot in slots if slot in ['B-departure_airport_name', 'I-departure_airport_name']]
+    
+    # 기본 쿼리 구조 생성
+    query = {
+        "flight_id": flight_ids[0].upper() if flight_ids else None,
+        "airport_name": airports[0] if airports else None,
+        "airline_name": airlines[0] if airlines else None,
+        "departure_airport_name": departure_airports[0] if departure_airports else None,
+        "terminal": "T1" if any("1" in str(t) for t in terminals) else "T2" if any("2" in str(t) for t in terminals) else None,
+        "direction": "arrival" if departure_airports else "departure",  # 출발지가 있으면 도착, 없으면 출발
+        "info_type": "운항 정보",
+        "date_offset": 0,
+        "from_time": None,
+        "to_time": None,
+        "airport_codes": []
+    }
+    
+    # 유의미한 정보가 하나라도 있으면 쿼리 반환
+    has_meaningful_info = any([
+        query["flight_id"], 
+        query["airport_name"], 
+        query["airline_name"], 
+        query["departure_airport_name"],
+        query["terminal"]
+    ])
+    
+    if has_meaningful_info:
+        print(f"디버그: slot에서 변환된 쿼리 - {query}")
+        return [query]
+    else:
+        print("디버그: slot에 유의미한 항공편 정보가 없음")
+        return []
+
 def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
     system_prompt = (
         "사용자의 질문을 분석하여 항공편 정보에 대한 필수 정보를 JSON 리스트 형식으로 추출해줘. "
