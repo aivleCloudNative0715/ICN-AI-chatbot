@@ -82,6 +82,14 @@ super:
     password: ${SUPER_ADMIN_PASSWORD}
     name: ${SUPER_ADMIN_NAME}
 
+api:
+  service-key: ${SERVICE_KEY}
+  url:
+    parking: http://apis.data.go.kr/B551177/StatusOfParking/getTrackingParking
+    weather: http://apis.data.go.kr/B551177/StatusOfPassengerWorldWeatherInfo/getPassengerArrivalsWorldWeather
+    flight_arrivals: http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp/getPassengerArrivalsDeOdp
+    flight_departures: http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp/getPassengerDeparturesDeOdp
+    forecast: http://apis.data.go.kr/B551177/PassengerNoticeKR/getfPassengerNoticeIKR
 ---
 
 # ======================================================
