@@ -1,67 +1,64 @@
 // src/components/chat/widget/ParkingStatusWidget.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { getParkingStatus } from '@/lib/api';
+import React from 'react';
 import { ParkingInfo } from '@/lib/types';
 
-// 각 주차장의 전체 주차 가능 대수를 상수로 관리합니다.
-const PARKING_CAPACITY: { [key: string]: number } = {
-  'T1 단기주차장': 2200, // 예시 값
-  'T1 장기주차장': 15000, // 예시 값
-  'T2 단기주차장': 1200, // 예시 값
-  'T2 장기주차장': 8000, // 예시 값
-};
+interface ParkingStatusWidgetProps {
+  data: ParkingInfo[];
+  isLoading: boolean;
+}
 
-export default function ParkingStatusWidget() {
-  const [parkingData, setParkingData] = useState<ParkingInfo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchParkingData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getParkingStatus();
-        setParkingData(data);
-      } catch (error) {
-        console.error("Failed to fetch parking status:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchParkingData();
-    const interval = setInterval(fetchParkingData, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
+export default function ParkingStatusWidget({ data, isLoading }: ParkingStatusWidgetProps) {
+  
+  // 'YYYYMMDDHHmmss.SSS' 형식을 'HH:mm'으로 변환하는 함수
+  const formatUpdateTime = (datetm: string) => {
+    if (!datetm || datetm.length < 14) return '';
+    const hour = datetm.substring(8, 10);
+    const minute = datetm.substring(10, 12);
+    return `${hour}:${minute}`;
+  };
+  
   const getBarColor = (percentage: number) => {
     if (percentage > 90) return 'bg-red-500';
     if (percentage > 70) return 'bg-yellow-500';
     return 'bg-green-500';
   };
 
+  // 데이터가 있을 경우 첫 번째 항목의 업데이트 시간을 가져옴
+  const updateTime = !isLoading && data.length > 0 ? formatUpdateTime(data[0].datetm) : '';
+
   return (
     <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-      <h3 className="font-bold text-gray-800 mb-3 text-base">🅿️ 실시간 주차 현황</h3>
+      <div className="flex justify-between items-center mb-1">
+        <h3 className="font-bold text-gray-800 text-base">🅿️ 실시간 주차 현황</h3>
+        {updateTime && <span className="text-xs text-gray-500">조회시간: {updateTime}</span>}
+      </div>
+      {!isLoading && (
+        <p className="text-gray-600 text-xs mb-2">
+          실시간 주차 가능 대수이며, 지상 갓길 주차 및 불법 주차 차량도 포함될 수 있습니다.
+        </p>
+      )}
       {isLoading ? (
-        <div className="text-center text-gray-500">데이터를 불러오는 중...</div>
+        <div className="text-center text-gray-500">주차 정보를 불러오는 중...</div>
       ) : (
         <div className="space-y-3">
-          {parkingData.map((lot) => {
-            const total = PARKING_CAPACITY[lot.floor] || parseInt(lot.parking);
+          {data.map((lot) => {
             const occupied = parseInt(lot.parking);
-            const percentage = total > 0 ? (occupied / total) * 100 : 0;
-            
+            const total = parseInt(lot.parkingarea);
+            // 최대치를 전체 주차 면수로 제한합니다.
+            const displayOccupied = Math.min(occupied, total);
+            const percentage = total > 0 ? (displayOccupied / total) * 100 : 0;
+
             return (
               <div key={lot.floor}>
                 <div className="flex justify-between items-center mb-1">
                   <span className="text-sm font-medium text-gray-700">{lot.floor}</span>
-                  <span className={`text-sm font-semibold ${percentage > 90 ? 'text-red-600' : 'text-gray-600'}`}>
-                    {occupied} / {total}
+                  <span className={`text-sm font-semibold ${occupied > total ? 'text-red-700' : (percentage > 90 ? 'text-red-600' : 'text-gray-600')}`}>
+                    {occupied.toLocaleString()} / {total.toLocaleString()}
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                   <div
                     className={`${getBarColor(percentage)} h-2 rounded-full transition-all duration-500`}
                     style={{ width: `${percentage}%` }}

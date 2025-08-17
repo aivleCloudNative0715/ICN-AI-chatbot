@@ -271,6 +271,7 @@ export const addAdmin = async (token: string, data: any): Promise<AdminDto> => {
 // =======================================================
 //                공항 정보 API 함수들
 // =======================================================
+
 const AIRPORT_API_URL = `${API_BASE_URL}/api/airport`;
 
 /** 실시간 주차 현황 조회 */
@@ -280,9 +281,12 @@ export const getParkingStatus = async (): Promise<ParkingInfo[]> => {
   return response.json();
 };
 
-/** 시간대별 승객 예고 조회 */
-export const getPassengerForecast = async (): Promise<PassengerForecast[]> => {
-  const response = await fetch(`${AIRPORT_API_URL}/forecast`);
+/** * 시간대별 승객 예고 조회 
+ * @param selectDate '0'은 오늘, '1'은 내일
+ */
+export const getPassengerForecast = async (selectDate: '0' | '1'): Promise<PassengerForecast[]> => {
+  // selectDate 파라미터를 URL에 추가합니다.
+  const response = await fetch(`${AIRPORT_API_URL}/forecast?selectDate=${selectDate}`);
   if (!response.ok) throw new Error('승객 예고 정보를 불러오는데 실패했습니다.');
   return response.json();
 };

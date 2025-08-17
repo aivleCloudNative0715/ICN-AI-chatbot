@@ -91,17 +91,42 @@ export interface InquiryCounts {
 
 export interface ParkingInfo {
   floor: string;
-  parking: string; // 주차된 차량 수 (문자열로 올 수 있음)
+  parking: string;
+  parkingarea: string;
   datetm: string;
 }
 
 export interface PassengerForecast {
   adate: string;
   atime: string;
-  t1sumset1: number; // T1 입국 합계
-  t1sumset2: number; // T1 출국 합계
-  t2sumset1: number; // T2 입국 합계
-  t2sumset2: number; // T2 출국 합계
+  
+  // T1 입국장 (개별) - 필드 추가
+  t1sum1: number;
+  t1sum2: number;
+  t1sum3: number;
+  t1sum4: number;
+
+  // T1 출국장 (개별) - 필드 추가
+  t1sum5: number;
+  t1sum6: number;
+  t1sum7: number;
+  t1sum8: number;
+
+  // T1 합계
+  t1sumset1: number;
+  t1sumset2: number;
+
+  // T2 입국장 (개별) - 필드 추가
+  t2sum1: number;
+  t2sum2: number;
+
+  // T2 출국장 (개별) - 필드 추가
+  t2sum3: number;
+  t2sum4: number;
+
+  // T2 합계
+  t2sumset1: number;
+  t2sumset2: number;
 }
 
 export interface FlightArrival {

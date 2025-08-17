@@ -12,6 +12,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
@@ -89,17 +92,38 @@ public class AirportInfoService {
 
     public Mono<List<FlightArrivalInfoItem>> getFlightArrivalsInfo(String flightId) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        if (flightId != null && !flightId.isEmpty()) {
+
+        if (flightId == null || flightId.isEmpty()) {
+            // 오늘 날짜를 "YYYYMMDD" 형식으로 만듭니다.
+            String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
+
+            // searchday 파라미터를 추가하여 조회 날짜를 오늘로 고정합니다.
+            params.add("searchday", todayStr);
+            params.add("from_time", currentTime);
+            params.add("to_time", "2359");
+        } else {
             params.add("flight_id", flightId);
         }
+
         return fetchApiData(flightArrivalsApiUrl, params, new ParameterizedTypeReference<>() {});
     }
 
     public Mono<List<FlightDepartureInfoItem>> getFlightDeparturesInfo(String flightId) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        if (flightId != null && !flightId.isEmpty()) {
+
+        if (flightId == null || flightId.isEmpty()) {
+            String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
+
+            // searchday 파라미터를 추가하여 조회 날짜를 오늘로 고정합니다.
+            params.add("searchday", todayStr);
+            params.add("from_time", currentTime);
+            params.add("to_time", "2359");
+        } else {
             params.add("flight_id", flightId);
         }
+
         return fetchApiData(flightDeparturesApiUrl, params, new ParameterizedTypeReference<>() {});
     }
 }
