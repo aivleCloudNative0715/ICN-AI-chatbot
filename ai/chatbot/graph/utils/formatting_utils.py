@@ -94,7 +94,8 @@ def get_formatted_llm_response(original_prompt, user_query, intent_name=None, te
     if intent_name != "complex_intent":
         final_response += DISCLAIMER
     
-    return final_response
+    final = final_response.replace("```html", "").replace("```", "").replace("**", "")
+    return final
 
 def get_formatted_llm_response_single_message(full_prompt, intent_name=None, temperature=0.5, max_tokens=800, role="user"):
     """
@@ -129,5 +130,7 @@ def get_formatted_llm_response_single_message(full_prompt, intent_name=None, tem
     if intent_name != "complex_intent":
         final_response += DISCLAIMER
     
-    return final_response
+    final = final_response.replace("```html", "").replace("```", "").replace("**", "")
+
+    return final
 
