@@ -70,10 +70,10 @@ export default function InquiryForm({ inquiryId }: InquiryFormProps) {
       const dataToSend = { title, content, category: category! };
       if (isEditMode && inquiryId) {
         await updateInquiry(Number(inquiryId), dataToSend, token);
-        alert('문의가 성공적으로 수정되었습니다.');
+        alert('문의/건의가 성공적으로 수정되었습니다.');
       } else {
         await createInquiry(dataToSend, token);
-        alert('새 문의가 성공적으로 작성되었습니다.');
+        alert('새 문의/건의가 성공적으로 작성되었습니다.');
       }
       router.push('/board');
     } catch (err) {

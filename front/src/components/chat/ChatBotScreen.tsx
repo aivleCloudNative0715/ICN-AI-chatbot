@@ -76,12 +76,10 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
       connectHeaders: { Authorization: `Bearer ${localStorage.getItem('jwt_token') || ''}` },
       onConnect: () => {
         setIsConnected(true);
-        console.log('✅ STOMP: 연결 성공');
         
         // ✅ 서버로부터 메시지를 받는 구독 로직을 수정합니다.
         client.subscribe(`/topic/chat/${sessionId}`, (message) => {
           const receivedMessage: WebSocketResponseDto = JSON.parse(message.body);
-          console.log('📥 STOMP: 메시지 수신', receivedMessage);
           
           setIsBotReplying(false); // 로딩 종료
 
@@ -141,7 +139,6 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
 
     // 메시지를 보낸 직후, 로딩 상태를 시작합니다.
     setIsBotReplying(true);
-    console.log('📤 STOMP: 메시지 발신', dto);
   };
   
   // 1. 새 메시지 전송 (parentId: null)

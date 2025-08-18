@@ -52,8 +52,6 @@ export default function LoginForm({ onSubmit, anonymousSessionId }: LoginFormPro
     ? `${API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
     : `${API_BASE_URL}/api/auth/oauth2/start`;
 
-  console.log(googleLoginUrl)
-
   return (
     <form onSubmit={handleSubmit} className="p-fluid">
       <div className="field">

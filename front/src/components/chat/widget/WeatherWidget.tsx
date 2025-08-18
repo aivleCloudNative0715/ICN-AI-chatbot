@@ -22,8 +22,6 @@ export default function WeatherWidget({ weather, isLoading }: WeatherWidgetProps
     return null; // 날씨 정보가 없으면 위젯을 표시하지 않음
   }
 
-  console.log(weather)
-
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
       <h3 className="font-bold text-gray-800 mb-2 text-base">🌡️ 현재 공항 기온</h3>

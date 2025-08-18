@@ -101,7 +101,7 @@ export default function AdminDashboardMain() {
       <div className="flex-grow p-8 bg-gray-100">
         {/* TabMenu 컴포넌트 */}
         {/* selectedInquiry가 있을 때는 TabMenu를 숨기거나 비활성화할 수 있습니다. */}
-        {!selectedInquiry && ( // 선택된 문의가 없을 때만 탭 메뉴를 보여줍니다.
+        {!selectedInquiry && ( // 선택된 문의/건의가 없을 때만 탭 메뉴를 보여줍니다.
           <div className="mb-8 bg-white rounded-lg shadow-md p-2">
             <TabMenu model={items} activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} />
           </div>

@@ -71,7 +71,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 // 세션 초기화 함수 구현
   const initializeSession = useCallback((sid: string | null) => {
     if (sid) {
-      console.log(`세션을 초기화합니다: ${sid}`);
       localStorage.setItem('session_id', sid);
       setSessionId(sid);
     }
@@ -120,7 +119,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // OAuth 같이 이미 인증된 경우를 위한 setLoginState 함수 구현
   const setLoginState = useCallback((loginData: any) => {
-    console.log("OAuth 로그인 성공. 상태를 설정합니다:", loginData);
     _handleLoginSuccess(loginData);
   }, [_handleLoginSuccess]);
 
