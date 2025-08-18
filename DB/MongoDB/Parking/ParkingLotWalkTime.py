@@ -10,7 +10,8 @@ def update_parking_walk_time():
     """
     공항 주차장 소요시간 데이터를 API에서 가져와
     ParkingLot 컬렉션과 매칭 후
-    ParkingLotWalkTime 컬렉션에 저장하는 함수
+    ParkingLotWalkTime 컬렉션을 안전하게 갱신하는 함수
+    (임시 컬렉션을 만들어 완료 시 교체)
     """
 
     service_key = os.getenv("PARKING_WALK_TIME_API_KEY") or \
@@ -36,6 +37,10 @@ def update_parking_walk_time():
         db = client['AirBot']
         parking_lot_col = db['ParkingLot']
         walking_time_col = db['ParkingLotWalkTime']
+        temp_col = db['ParkingLotWalkTime_temp']
+
+        # 혹시 남아있을 임시 컬렉션 제거
+        temp_col.drop()
 
         params = {
             "serviceKey": service_key,
@@ -82,7 +87,6 @@ def update_parking_walk_time():
             rest = parking_type_floor[len(parking_type):].strip()
             level = next((lv for lv in levels if rest.startswith(lv)), "")
 
-            # 잘린 경우 보정
             if not level:
                 if rest.startswith("상"):
                     level = "지상"
@@ -113,10 +117,14 @@ def update_parking_walk_time():
             else:
                 print(f"⚠️ 일치하는 ParkingLot 없음: {query}")
 
-        # MongoDB 삽입
         if inserted_docs:
-            result = walking_time_col.insert_many(inserted_docs)
-            print(f"📥 {len(result.inserted_ids)}개 문서 삽입 완료")
+            result = temp_col.insert_many(inserted_docs)
+            print(f"📥 {len(result.inserted_ids)}개 문서 임시 컬렉션에 삽입 완료")
+
+            # 기존 컬렉션 삭제 & 교체
+            walking_time_col.drop()
+            temp_col.rename("ParkingLotWalkTime")
+            print("✅ ParkingLotWalkTime 컬렉션 교체 완료")
         else:
             print("ℹ️ 삽입할 문서 없음")
 
@@ -127,6 +135,5 @@ def update_parking_walk_time():
         print("🔌 MongoDB 연결 종료")
 
 
-# 외부에서 바로 실행 시에도 동작
 if __name__ == "__main__":
     update_parking_walk_time()
