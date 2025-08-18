@@ -54,7 +54,8 @@ def flight_info_handler(state: ChatState) -> ChatState:
         airport_name = query.get("airport_name")
         airline_name = query.get("airline_name")
         departure_airport_name = query.get("departure_airport_name")
-        direction = query.get("direction", "departure")
+        direction = query.get("direction")  # None 가능
+        print(f"디버그: direction 값 = {direction}")
         terminal = query.get("terminal")
         
         from_time = query.get("from_time")
@@ -66,7 +67,6 @@ def flight_info_handler(state: ChatState) -> ChatState:
             to_time = (time_obj + timedelta(hours=3)).strftime("%H%M")
             
         if not from_time and not to_time:
-            # 🕒 개선: 현재 시간에서 2시간 전부터 검색하여 최근 항공편도 포함
             current_time = datetime.now()
             from_time_obj = current_time
             from_time = from_time_obj.strftime("%H%M")
@@ -115,6 +115,12 @@ def flight_info_handler(state: ChatState) -> ChatState:
                 flight_id=flight_id
             )
             api_result = current_api_result
+        elif direction is None:
+            print(f"디버그: direction이 None이므로 departure/arrival 모두 검색")
+            api_result_dep = _call_flight_api("departure", search_date=search_date_str, from_time=from_time, to_time=to_time, airport_code=airport_code_for_api, flight_id=flight_id)
+            api_result_arr = _call_flight_api("arrival", search_date=search_date_str, from_time=from_time, to_time=to_time, airport_code=airport_code_for_api, flight_id=flight_id)
+            api_result["data"].extend(api_result_dep.get("data", []))
+            api_result["data"].extend(api_result_arr.get("data", []))
         
         retrieved_info = []
         if api_result.get("data"):
@@ -125,7 +131,7 @@ def flight_info_handler(state: ChatState) -> ChatState:
                 airport_name=airport_name,
                 airline_name=airline_name,
                 departure_airport_name=departure_airport_name,
-                requested_direction=direction
+                requested_direction=None if direction is None else direction
             )
             
         if terminal:

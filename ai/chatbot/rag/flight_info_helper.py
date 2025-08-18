@@ -83,7 +83,7 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
         "departure_airport_name": departure_airports[0] if departure_airports else None,
         "terminal": "T1" if any("1" in str(t) for t in terminals) else "T2" if any(
             "2" in str(t) for t in terminals) else None,
-        "direction": "arrival" if departure_airports else "departure",  # 출발지가 있으면 도착, 없으면 출발
+        "direction": "arrival" if departure_airports else None,  # 출발지가 있으면 도착, 없으면 None (두 방향 모두 검색)
         "info_type": "운항 정보",
         "date_offset": 0,
         "from_time": from_time,
@@ -122,7 +122,7 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "- `airport_name`: 도착 도시명 또는 공항 이름. 인천에서 출발하는 경우에만 추출해줘. 정보가 없으면 null로 추출해줘.\n"
         "- `airport_codes`: '일본'처럼 국가명이 포함되면 해당 국가의 주요 공항 IATA 코드 리스트(예: ['NRT', 'HND', 'KIX'])를 추출해줘. '도쿄'처럼 도시명이 포함되면 해당 도시의 주요 공항 IATA 코드 리스트(예: ['NRT', 'HND'])를 추출해줘. **'미국'처럼 국가명이 언급되면 'JFK', 'LAX' 등 주요 공항 코드를 반드시 추출해줘.** 인천을 묻는 질문에서는 이 필드를 비워줘. 정보가 없으면 빈 리스트로 추출해줘.\n"
         "- `departure_airport_name`: 출발 도시명 또는 공항 이름. 인천으로 도착하는 경우에만 추출해줘. 정보가 없으면 null로 추출해줘.\n"
-        "- `direction`: 운항 방향 ('arrival' 또는 'departure'). 질문에 명시되어 있지 않으면 'departure'로 간주해줘.\n"
+        "- `direction`: 운항 방향 ('arrival' 또는 'departure'). 질문에 명시되어 있지 않으면 null로 추출해줘.\n"
         "- `from_time`: 검색 시작 시간 (HHMM 형식). 정보가 없으면 null로 추출해줘.\n"
         "- `to_time`: 검색 종료 시간 (HHMM 형식). 정보가 없으면 null로 추출해줘.\n"
         "- `info_type`: 사용자가 얻고자 하는 정보의 유형 (예: '체크인 카운터', '탑승구', '운항 정보'). 정보가 없으면 '운항 정보'로 추출해줘.\n"
