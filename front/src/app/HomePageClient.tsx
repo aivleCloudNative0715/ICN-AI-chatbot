@@ -47,7 +47,6 @@ export default function HomePageClient() {
     }
 
     try {
-      console.log(`[API] 채팅 내역 요청. 세션 ID: ${sid}`);
       const response = await fetch(`${API_BASE_URL}/api/chat/history?session_id=${sid}`, {
         method: 'GET',
         headers: {
@@ -74,13 +73,11 @@ export default function HomePageClient() {
    */
   const fetchAnonymousSession = useCallback(async () => {
     try {
-      console.log("익명 세션 ID를 요청합니다: ", `${API_BASE_URL}`);
       const response = await fetch(`${API_BASE_URL}/api/chat/session`, {
         method: 'POST',
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("익명 세션 ID 발급 성공:", data.sessionId);
         // Context의 세션 초기화 함수를 호출하여 상태를 중앙에서 관리
         initializeSession(data.sessionId);
         // 로그인 모달에 전달하기 위해 별도 상태에도 저장
@@ -118,7 +115,6 @@ export default function HomePageClient() {
 
    if (!localToken) {
       // 비로그인 상태면 무조건 새 익명 세션을 발급받습니다.
-      console.log("비로그인 상태입니다. 새 익명 세션을 발급합니다.");
       fetchAnonymousSession();
     }
   }, []);
@@ -127,7 +123,6 @@ export default function HomePageClient() {
   // isLoggedIn 상태가 false로 변경될 때를 감지하여 화면을 정리하고 새 익명 세션을 받습니다.
   useEffect(() => {
     if (prevIsLoggedInRef.current && !isLoggedIn) {
-      console.log("로그아웃 감지. 채팅 기록을 비우고 새 익명 세션을 요청합니다.");
       setChatHistory([]); // 화면의 채팅 기록 즉시 비우기
       fetchAnonymousSession(); // 새 익명 세션 발급받기
     }
@@ -202,7 +197,6 @@ export default function HomePageClient() {
     // 로그인 상태에 따라 로직을 분기
     if (token) {
       // --- 회원일 경우: reset API 호출 ---
-      console.log("회원 대화 초기화 로직을 실행합니다.");
       const oldSessionId = sessionId;
       try {
         const response = await fetch(`${API_BASE_URL}/api/chat/history/reset`, {
