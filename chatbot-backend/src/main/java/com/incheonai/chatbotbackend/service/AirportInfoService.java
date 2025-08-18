@@ -1,7 +1,9 @@
 // com/incheonai/chatbotbackend/service/AirportInfoService.java
 package com.incheonai.chatbotbackend.service;
 
+import com.incheonai.chatbotbackend.dto.TemperatureResponseDto;
 import com.incheonai.chatbotbackend.dto.external.*;
+import com.incheonai.chatbotbackend.repository.secondary.AtmosRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -11,18 +13,23 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
 public class AirportInfoService {
 
     private final WebClient webClient;
+    private final AtmosRepository atmosRepository;
 
     @Value("${api.service-key}")
     private String serviceKey;
@@ -30,15 +37,67 @@ public class AirportInfoService {
     private String parkingApiUrl;
     @Value("${api.url.forecast}")
     private String forecastApiUrl;
-    @Value("${api.url.weather}")
-    private String weatherApiUrl;
+//    @Value("${api.url.weather}")
+//    private String weatherApiUrl;
     @Value("${api.url.flight_arrivals}")
     private String flightArrivalsApiUrl;
     @Value("${api.url.flight_departures}")
     private String flightDeparturesApiUrl;
 
-    public AirportInfoService(WebClient.Builder webClientBuilder) {
+    public AirportInfoService(WebClient.Builder webClientBuilder, AtmosRepository atmosRepository) {
         this.webClient = webClientBuilder.build();
+        this.atmosRepository = atmosRepository;
+    }
+
+//    public Mono<TemperatureResponseDto> getLatestTemperature() {
+//        return Mono.fromCallable(atmosRepository::findLatestAtmosData)
+//                .subscribeOn(Schedulers.boundedElastic())
+//                .flatMap(optionalAtmos -> optionalAtmos
+//                        .map(Mono::just)
+//                        .orElseGet(() -> Mono.error(new RuntimeException("최신 날씨 데이터를 찾을 수 없습니다."))))
+//                .map(atmos -> {
+//                    // 온도 값 가공
+//                    String tempStr = atmos.getTemperature();
+//                    if (tempStr == null || tempStr.isEmpty()) {
+//                        throw new RuntimeException("온도 데이터가 유효하지 않습니다.");
+//                    }
+//                    double temperatureValue = Double.parseDouble(tempStr) / 10.0;
+//
+//                    // ✅ DB에 저장된 tm 필드 값을 그대로 가져옵니다.
+//                    String rawTimestamp = atmos.getTime();
+//
+//                    // ✅ 변환 없이 DTO를 생성하여 반환합니다.
+//                    return new TemperatureResponseDto(temperatureValue, rawTimestamp);
+//                });
+//    }
+
+    /**
+     * ✅ 모든 날씨 데이터를 조회하는 메서드로 변경합니다.
+     * @return Mono<List<TemperatureResponseDto>>
+     */
+    public Mono<TemperatureResponseDto> getLatestTemperature() {
+        // 1. 날짜 타입에 맞는 간단한 쿼리 메서드를 호출합니다.
+        return Mono.fromCallable(atmosRepository::findFirstByOrderByTimeDesc)
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(optionalAtmos -> optionalAtmos
+                        .map(Mono::just)
+                        .orElseGet(() -> Mono.error(new RuntimeException("최신 날씨 데이터를 찾을 수 없습니다."))))
+                .map(atmos -> {
+                    // 온도 값 가공
+                    double temperatureValue = Double.parseDouble(atmos.getTemperature()) / 10.0;
+
+                    // 1. DB에서 Instant 객체를 직접 받습니다.
+                    Instant dbTime = atmos.getTime();
+
+                    // 2. ✅ 한국 시간 변환 로직을 삭제하고, UTC 기준으로 포맷터를 설정합니다.
+                    DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+                            .withZone(ZoneId.of("UTC"));
+
+                    // 3. ✅ UTC 시간을 기준으로 문자열을 생성합니다.
+                    String formattedTimestamp = outputFormatter.format(dbTime);
+
+                    return new TemperatureResponseDto(temperatureValue, formattedTimestamp);
+                });
     }
 
     private <T> Mono<List<T>> fetchApiData(String baseUrl, MultiValueMap<String, String> queryParams, ParameterizedTypeReference<ApiResult<T>> typeReference) {
@@ -86,9 +145,9 @@ public class AirportInfoService {
         return fetchApiData(forecastApiUrl, params, new ParameterizedTypeReference<>() {});
     }
 
-    public Mono<List<ArrivalWeatherInfoItem>> getArrivalsWeatherInfo() {
-        return fetchApiData(weatherApiUrl, new LinkedMultiValueMap<>(), new ParameterizedTypeReference<>() {});
-    }
+//    public Mono<List<ArrivalWeatherInfoItem>> getArrivalsWeatherInfo() {
+//        return fetchApiData(weatherApiUrl, new LinkedMultiValueMap<>(), new ParameterizedTypeReference<>() {});
+//    }
 
     public Mono<List<FlightArrivalInfoItem>> getFlightArrivalsInfo(String flightId) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();

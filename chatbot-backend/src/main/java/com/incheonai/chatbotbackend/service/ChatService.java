@@ -9,7 +9,7 @@ import com.incheonai.chatbotbackend.domain.mongodb.SenderType;
 import com.incheonai.chatbotbackend.dto.AiApiDto;
 import com.incheonai.chatbotbackend.dto.WebSocketMessageDto;
 import com.incheonai.chatbotbackend.dto.WebSocketResponseDto;
-import com.incheonai.chatbotbackend.repository.mongodb.ChatMessageRepository;
+import com.incheonai.chatbotbackend.repository.primary.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -10,13 +10,13 @@ import { useRouter } from 'next/navigation';
 // 위젯 컴포넌트들을 import 합니다.
 import ParkingStatusWidget from './widget/ParkingStatusWidget';
 import CongestionWidget from './widget/CongestionWidget';
-import WeatherWidget from './widget/WeatherWidget';
 import FlightStatusWidget from './widget/FlightStatusWidget';
+import WeatherWidget from './widget/WeatherWidget';
 
 
 // API 호출 함수와 타입을 import 합니다.
-import { getParkingStatus, getPassengerForecast, getFlightArrivals, getFlightDepartures, getArrivalsWeather } from '@/lib/api';
-import { ParkingInfo, PassengerForecast, FlightArrival, FlightDeparture, ArrivalWeatherInfo } from '@/lib/types';
+import { getParkingStatus, getPassengerForecast, getFlightArrivals, getFlightDepartures, getLatestTemperature } from '@/lib/api';
+import { ParkingInfo, PassengerForecast, FlightArrival, FlightDeparture, TemperatureInfo   } from '@/lib/types';
 
 
 interface ChatSidebarProps {
@@ -35,7 +35,7 @@ export default function ChatSidebar({ isLoggedIn, onClose, onDeleteAccount, onCl
   const [forecastData, setForecastData] = useState<PassengerForecast[]>([]);
   const [arrivalFlights, setArrivalFlights] = useState<FlightArrival[]>([]);
   const [departureFlights, setDepartureFlights] = useState<FlightDeparture[]>([]);
-  const [weatherData, setWeatherData] = useState<ArrivalWeatherInfo | null>(null);
+  const [weatherData, setWeatherData] = useState<TemperatureInfo | null>(null);
 
   const fetchAllData = useCallback(async () => {
     setIsLoading(true);
@@ -46,14 +46,14 @@ export default function ChatSidebar({ isLoggedIn, onClose, onDeleteAccount, onCl
         getPassengerForecast('0'), // 기본값으로 '오늘' 데이터 호출
         getFlightArrivals(),
         getFlightDepartures(),
-        getArrivalsWeather(),
+        getLatestTemperature(),
       ]);
 
       setParkingData(parking);
       setForecastData(forecast);
       setArrivalFlights(arrivals);
       setDepartureFlights(departures);
-      setWeatherData(weather.length > 0 ? weather[0] : null);
+      setWeatherData(weather);
 
     } catch (error) {
       console.error("Failed to fetch airport data:", error);

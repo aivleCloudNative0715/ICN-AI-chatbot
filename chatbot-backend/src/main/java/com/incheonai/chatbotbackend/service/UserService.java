@@ -9,18 +9,16 @@ import com.incheonai.chatbotbackend.dto.SignUpRequestDto;
 import com.incheonai.chatbotbackend.exception.BusinessException;
 import com.incheonai.chatbotbackend.repository.jpa.AdminRepository;
 import com.incheonai.chatbotbackend.repository.jpa.UserRepository;
-import com.incheonai.chatbotbackend.repository.mongodb.ChatSessionRepository;
+import com.incheonai.chatbotbackend.repository.primary.ChatSessionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
