@@ -1,10 +1,8 @@
-import re
 from openai import OpenAI
 import os # API 키를 환경 변수에서 로드하기 위해 필요
 from dotenv import load_dotenv # dotenv 라이브러리 임포트
 from pathlib import Path # Path 객체 임포트
 from pymongo import MongoClient
-from chatbot.rag.llm_tools import _format_and_style_with_llm
 
 env_path = Path(__file__).resolve().parents[2] / ".env"
 load_dotenv(dotenv_path=env_path, override=True) # override=True 추가 권장

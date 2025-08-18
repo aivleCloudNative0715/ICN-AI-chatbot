@@ -14,7 +14,7 @@ import json
 # 새로운 LLM 파싱 함수를 임포트합니다.
 from chatbot.rag.parking_fee_helper import _parse_parking_fee_query_with_llm
 from chatbot.rag.parking_walk_time_helper import _parse_parking_walk_time_query_with_llm
-from chatbot.rag.llm_tools import _format_and_style_with_llm
+from chatbot.graph.utils.formatting_utils import get_enhanced_prompt
 
 load_dotenv()
 
@@ -244,9 +244,10 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
             "4. 각 주차장은 '- **주차장명**: 주차 가능 대수 **N**대 (또는 **만차**)' 형식으로 출력\n"
         )
 
-        final_prompt = f"{prompt_template}"
-
-        formatted_prompt = final_prompt.format(user_query=query_to_process, items=json.dumps(items, ensure_ascii=False, indent=2))
+        # 포맷팅 지침이 포함된 프롬프트 사용
+        enhanced_prompt = get_enhanced_prompt(prompt_template, intent_name)
+        
+        formatted_prompt = enhanced_prompt.format(user_query=query_to_process, items=json.dumps(items, ensure_ascii=False, indent=2))
         
         llm_response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -256,8 +257,7 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
             temperature=0.5,
             max_tokens=800
         )
-        plain_text_response = llm_response.choices[0].message.content
-        styled_response = _format_and_style_with_llm(plain_text_response, intent_name)
+        styled_response = llm_response.choices[0].message.content
         
     except requests.RequestException as e:
         print(f"디버그: API 호출 중 오류 발생 - {e}")
