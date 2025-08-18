@@ -387,7 +387,7 @@ def common_llm_rag_caller(user_query: str, retrieved_context: str, intent_descri
         if intent_name != "complex_intent":
             styled_response += DISCLAIMER
 
-        final_response = styled_response.replace("```html", "")
+        final_response = styled_response.replace("```html", "").replace("```", "").replace("**", "")
         return final_response
     
     except Exception as e:
