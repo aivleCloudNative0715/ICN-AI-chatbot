@@ -19,5 +19,5 @@ SAVE_PATH = INTENT_SLOT_MODEL_DIR
 # 의도 분류 관련 설정
 INTENT_CLASSIFICATION = {
     # BCE 기반 예측에서 사용할 기본 임계값
-    "DEFAULT_THRESHOLD": 0.7,
+    "DEFAULT_THRESHOLD": 0.5,
 }

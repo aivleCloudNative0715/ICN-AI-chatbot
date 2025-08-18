@@ -22,26 +22,14 @@ def classify_intent(state: ChatState) -> ChatState:
     # 현재 사용자의 순수한 질문만 추출
     current_user_question = messages[-1].content if messages else state["user_input"]
     
-    # 1. 의도 분류용 (현재 질문만)
-    intent_result = predict_with_bce(current_user_question, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
-    
-    # 2. 슬롯 추출용 (현재 사용자 질문만)
-    print(f"디버그: slot 추출용 입력 텍스트: '{current_user_question}'")
+    # 의도 분류와 슬롯 추출을 한 번의 호출로 처리
+    print(f"디버그: 입력 텍스트: '{current_user_question}'")
     print(f"디버그: messages 개수: {len(messages) if messages else 0}")
     if messages and len(messages) > 0:
         print(f"디버그: 마지막 메시지: '{messages[-1].content}'")
     print(f"디버그: state['user_input']: '{state.get('user_input', 'None')}'")
     
-    slot_result = predict_with_bce(current_user_question, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"],
-                                   top_k_intents=3)
-
-    # 의도는 맥락 기반, 슬롯은 현재 질문 기반으로 결합
-    result = {
-        'all_top_intents': intent_result['all_top_intents'],
-        'high_confidence_intents': intent_result['high_confidence_intents'],
-        'slots': slot_result['slots'],  # 현재 질문에서만 슬롯 추출
-        'is_multi_intent': intent_result['is_multi_intent']
-    }
+    result = predict_with_bce(current_user_question, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], top_k_intents=3)
     
     # 결과에서 필요한 데이터 추출
     top_k_intents_and_probs = result['all_top_intents']
@@ -74,6 +62,9 @@ def classify_intent(state: ChatState) -> ChatState:
     state["is_multi_intent"] = is_multi_intent
     
     print(f"디버그: 현재 질문에서 추출된 슬롯: {slots}")
+    print(f"디버그: is_multi_intent = {is_multi_intent}")
+    print(f"디버그: high_confidence_intents = {high_confidence_intents}")
+    print(f"디버그: 임계값 이상 의도 개수: {len(high_confidence_intents)}")
 
         
     return state

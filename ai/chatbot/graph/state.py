@@ -11,4 +11,7 @@ class ChatState(TypedDict, total=False):
     pre_message_id: str
     messages: list[BaseMessage]
     # 📌 수정된 부분: rephrased_query 키 추가
-    rephrased_query: str 
+    rephrased_query: str
+    # 복합 의도 처리를 위한 키들
+    detected_intents: List[Tuple[str, float]]
+    is_multi_intent: bool 
