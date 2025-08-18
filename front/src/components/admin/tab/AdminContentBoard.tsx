@@ -238,7 +238,7 @@ export default function AdminContentBoard({ type, onSelectInquiry }: AdminConten
             </div>
           </div>
       ))}
-      {inquiriesData?.empty && <div className="text-center p-4">표시할 문의가 없습니다.</div>}
+      {inquiriesData?.empty && <div className="text-center p-4">표시할 문의/건의가 없습니다.</div>}
     </div>
 
       {/* PrimeReact Paginator */}

@@ -75,7 +75,7 @@ public class InquiryController {
     ) {
         String userId = userDetails.getUsername();
         inquiryService.updateMyInquiry(userId, inquiryId, requestDto);
-        return ResponseEntity.ok(Map.of("message", "문의가 수정되었습니다."));
+        return ResponseEntity.ok(Map.of("message", "문의/건의가 수정되었습니다."));
     }
 
     /** 내 문의 삭제 */
@@ -86,6 +86,6 @@ public class InquiryController {
     ) {
         String userId = userDetails.getUsername();
         inquiryService.deleteMyInquiry(userId, inquiryId);
-        return ResponseEntity.ok(Map.of("message", "문의가 삭제되었습니다."));
+        return ResponseEntity.ok(Map.of("message", "문의/건의가 삭제되었습니다."));
     }
 }
