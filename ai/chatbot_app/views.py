@@ -323,6 +323,8 @@ class GenerateAPIView(APIView):
             new_state["pre_message_id"] = message_id # 현재 메시지 ID를 pre_message_id로 저장
             
             answer = final_message
+            
+            new_state["messages"] = new_state["messages"][-10:]
 
             # 6. 업데이트된 상태를 캐시에 다시 저장
             cache.set(cache_key, new_state, timeout=1800)
