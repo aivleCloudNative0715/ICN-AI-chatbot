@@ -158,7 +158,7 @@ def _call_flight_api(
         params = {
             "serviceKey": SERVICE_KEY,
             "type": "json",
-            "numOfRows": 100,
+            "numOfRows": 1000,
             "pageNo": 1,
             "searchday": date,
             "flight_id": flight_id,
