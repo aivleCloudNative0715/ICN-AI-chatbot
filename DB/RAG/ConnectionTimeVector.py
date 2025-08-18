@@ -139,11 +139,11 @@ try:
             parkingLot_str = f"{terminal} {floor} {zone} {parking_type}"
             
             check_in_counter = doc.get('check_in_counter', '')
-            duration_minutes = doc.get('duration_minutes', '')
+            duration_seconds = doc.get('duration_seconds', '')
 
 
             # 의미를 잘 전달할 수 있는 문장 구성
-            text_to_embed = f"{parkingLot_str}에서 체크인 카운터 {check_in_counter}까지 걸어갈 때 소요시간은 {duration_minutes}초 입니다"
+            text_to_embed = f"{parkingLot_str}에서 체크인 카운터 {check_in_counter}까지 걸어갈 때 소요시간은 {duration_seconds}초 입니다"
 
             if not text_to_embed.strip(): # 텍스트가 비어있으면 건너뛰기
                 print(f"경고: _id {doc.get('_id')} 문서에서 임베딩할 텍스트를 생성할 수 없습니다. 건너_id")
