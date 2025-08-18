@@ -124,7 +124,8 @@ def flight_info_handler(state: ChatState) -> ChatState:
                 found_date=search_date_str,
                 airport_name=airport_name,
                 airline_name=airline_name,
-                departure_airport_name=departure_airport_name
+                departure_airport_name=departure_airport_name,
+                requested_direction=direction
             )
             
         if terminal:

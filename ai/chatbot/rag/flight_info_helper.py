@@ -33,7 +33,7 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
     airlines = [word for word, slot in slots if slot in ['B-airline_name', 'I-airline_name']]
     terminals = [word for word, slot in slots if slot in ['B-terminal', 'I-terminal']]
     departure_airports = [word for word, slot in slots if slot in ['B-departure_airport_name', 'I-departure_airport_name']]
-    
+
     # 기본 쿼리 구조 생성
     query = {
         "flight_id": flight_ids[0].upper() if flight_ids else None,
@@ -239,7 +239,7 @@ def _extract_flight_info_from_response(
     for item in flight_data:
         info = {
             "flightId": item.get("flightId"),
-            "direction": "도착" if item.get("carousel") else "출발",
+            "direction": "도착" if requested_direction == "arrival" else "출발",
             "airline": item.get("airline"),
             "airport": item.get("airport"),
             "airportCode": item.get("airportCode"),
