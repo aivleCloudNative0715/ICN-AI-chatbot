@@ -5,7 +5,6 @@ class ChatState(TypedDict, total=False):
     user_input: str
     intent: str
     slots: list
-    previous_slots: list
     response: str
     confidence: float
     top_k_intents_and_probs: List[Tuple[str, float]]

@@ -1,15 +1,11 @@
 import os
 from datetime import datetime, timedelta, date
-import locale
 import re
 from chatbot.graph.state import ChatState
 from dotenv import load_dotenv
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
 from chatbot.rag.airport_congestion_helpers import _get_congestion_level, VALID_AREAS, _parse_query_with_llm, _get_congestion_data_from_db, _get_daily_congestion_data_from_db, _map_area_to_db_key
 import json
-from zoneinfo import ZoneInfo
-
-locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')
 
 load_dotenv()
 
@@ -38,7 +34,7 @@ def airport_congestion_prediction_handler(state: ChatState) -> ChatState:
             return {**state, "response": "죄송합니다. 오늘의 혼잡도 예측 정보만 제공되고 있습니다. 그 외의 날은 확인 불가능합니다."}
 
     # 현재 날짜를 YYYYMMDD 형식의 문자열로 변환하여 사용
-    requested_date_str = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d")
+    requested_date_str = datetime.now().strftime("%Y%m%d")
     
     try:
         for request in requests_list:
@@ -51,7 +47,7 @@ def airport_congestion_prediction_handler(state: ChatState) -> ChatState:
             if is_daily_request:
                 data = _get_daily_congestion_data_from_db()
             else:
-                query_time = requested_time if requested_time is not None else datetime.now(ZoneInfo("Asia/Seoul")).hour
+                query_time = requested_time if requested_time is not None else datetime.now().hour
                 data = _get_congestion_data_from_db(requested_date_str, query_time)
 
             if not data:
@@ -77,7 +73,7 @@ def airport_congestion_prediction_handler(state: ChatState) -> ChatState:
         context_for_llm = json.dumps(response_parts_data, ensure_ascii=False, indent=2)
 
         if not response_parts_data:
-            final_response_text = f"죄송합니다. {datetime.now(ZoneInfo("Asia/Seoul")).strftime('%Y년 %m월 %d일')}의 혼잡도 정보를 찾을 수 없습니다."
+            final_response_text = f"죄송합니다. {datetime.now().strftime('%Y년 %m월 %d일')}의 혼잡도 정보를 찾을 수 없습니다."
         else:
             final_response_text = common_llm_rag_caller(query_to_process, context_for_llm, "공항 혼잡도 예측 정보", "airport_congestion_prediction")
 
