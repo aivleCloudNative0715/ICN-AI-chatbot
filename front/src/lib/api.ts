@@ -14,7 +14,7 @@ import {
   PassengerForecast,
   FlightArrival,
   FlightDeparture,
-  ArrivalWeatherInfo
+  TemperatureInfo
 } from './types';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -307,9 +307,9 @@ export const getFlightDepartures = async (flightId?: string): Promise<FlightDepa
   return response.json();
 };
 
-/** 도착편 기준 날씨 정보 조회 */
-export const getArrivalsWeather = async (): Promise<ArrivalWeatherInfo[]> => {
+/** 현재 공항 기온 정보 조회 */
+export const getLatestTemperature = async (): Promise<TemperatureInfo> => {
   const response = await fetch(`${AIRPORT_API_URL}/weather`);
-  if (!response.ok) throw new Error('날씨 정보를 불러오는데 실패했습니다.');
+  if (!response.ok) throw new Error('기온 정보를 불러오는데 실패했습니다.');
   return response.json();
 };

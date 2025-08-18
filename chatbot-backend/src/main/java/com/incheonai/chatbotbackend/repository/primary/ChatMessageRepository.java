@@ -1,12 +1,9 @@
-package com.incheonai.chatbotbackend.repository.mongodb;
+package com.incheonai.chatbotbackend.repository.primary;
 
 import com.incheonai.chatbotbackend.domain.mongodb.ChatMessage;
-import com.incheonai.chatbotbackend.domain.mongodb.ChatSession;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, String> {
     /**

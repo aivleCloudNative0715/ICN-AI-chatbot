@@ -1,6 +1,7 @@
 // com/incheonai/chatbotbackend/controller/AirportInfoController.java
 package com.incheonai.chatbotbackend.controller;
 
+import com.incheonai.chatbotbackend.dto.TemperatureResponseDto;
 import com.incheonai.chatbotbackend.dto.external.*;
 import com.incheonai.chatbotbackend.service.AirportInfoService;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,15 @@ public class AirportInfoController {
                 .map(ResponseEntity::ok);
     }
 
+//    @GetMapping("/weather")
+//    public Mono<ResponseEntity<List<ArrivalWeatherInfoItem>>> getArrivalsWeatherInfo() {
+//        return airportInfoService.getArrivalsWeatherInfo()
+//                .map(ResponseEntity::ok);
+//    }
+
     @GetMapping("/weather")
-    public Mono<ResponseEntity<List<ArrivalWeatherInfoItem>>> getArrivalsWeatherInfo() {
-        return airportInfoService.getArrivalsWeatherInfo()
+    public Mono<ResponseEntity<TemperatureResponseDto>> getLatestWeather() {
+        return airportInfoService.getLatestTemperature()
                 .map(ResponseEntity::ok);
     }
 

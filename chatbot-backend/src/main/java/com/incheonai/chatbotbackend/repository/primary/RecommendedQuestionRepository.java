@@ -1,4 +1,4 @@
-package com.incheonai.chatbotbackend.repository.mongodb;
+package com.incheonai.chatbotbackend.repository.primary;
 
 import com.incheonai.chatbotbackend.domain.mongodb.RecommendedQuestion;
 import org.springframework.data.mongodb.repository.MongoRepository;

@@ -156,7 +156,7 @@ export interface FlightDeparture {
   terminalid: string;
 }
 
-export interface ArrivalWeatherInfo {
-  temp: string; // 관측 기온
-  wimage: string; // 날씨 이미지 URL
+export interface TemperatureInfo {
+  temperature: number;
+  timestamp: string;
 }
