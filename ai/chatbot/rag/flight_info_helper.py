@@ -37,10 +37,27 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
     departure_airports = [word for word, slot in slots if
                           slot in ['B-departure_airport_name', 'I-departure_airport_name']]
     vague_times = [word for word, slot in slots if slot in ['B-vague_time', 'I-vague_time']]
+    time_periods = [word for word, slot in slots if slot in ['B-time_period', 'I-time_period']]
 
-    # vague_time에 따른 시간 범위 설정
+    # vague_time과 time_period에 따른 시간 범위 설정
     from_time, to_time = None, None
-    if vague_times:
+    
+    # time_period 우선 처리 (더 구체적)
+    if time_periods:
+        time_period = time_periods[0].lower()
+        
+        if time_period in ["아침", "오전"]:
+            from_time, to_time = "0600", "1200"
+        elif time_period in ["점심", "낮", "오후"]:
+            from_time, to_time = "1200", "1800"
+        elif time_period in ["저녁", "밤", "야간"]:
+            from_time, to_time = "1800", "2359"
+        elif time_period in ["새벽", "밤늦은"]:
+            from_time, to_time = "0000", "0600"
+        print(f"디버그: time_period '{time_period}' 감지 → 시간 범위: {from_time}-{to_time}")
+    
+    # vague_time 처리 (time_period가 없을 때만)
+    elif vague_times:
         vague_time = vague_times[0].lower()
         current_time = datetime.now()
 
@@ -81,7 +98,8 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
         query["airline_name"],
         query["departure_airport_name"],
         query["terminal"],
-        vague_times  # vague_time이 있어도 의미있는 정보로 간주
+        vague_times,  # vague_time이 있어도 의미있는 정보로 간주
+        time_periods  # time_period도 의미있는 정보로 간주
     ])
 
     if has_meaningful_info:
