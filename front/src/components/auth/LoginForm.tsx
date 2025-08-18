@@ -20,10 +20,15 @@ export default function LoginForm({ onSubmit, anonymousSessionId }: LoginFormPro
 
   const validate = () => {
     const newErrors: { userId?: string; password?: string } = {};
-    if (!userId) newErrors.userId = '아이디를 입력해주세요.';
-    // 영문(대소문자), 숫자 조합으로 6~12자
-    else if (!/^[a-zA-Z0-9]{6,12}$/.test(userId))
-      newErrors.userId = '영문(대소문자), 숫자 조합으로 6~12자';
+    // ID 형식 (영문/숫자, 6~12자) 또는 이메일 형식인지 확인
+    const isIdFormat = /^[a-zA-Z0-9]{6,12}$/.test(userId);
+    const isEmailFormat = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(userId);
+
+    if (!userId) {
+      newErrors.userId = '아이디 또는 이메일을 입력해주세요.';
+    } else if (!isIdFormat && !isEmailFormat) {
+      newErrors.userId = '아이디(영문/숫자, 6~12자) 또는 이메일 형식이 올바르지 않습니다.';
+    }
 
     if (!password) newErrors.password = '비밀번호를 입력해주세요.';
     // 영문 대소문자, 숫자, 특수문자 조합으로 10~20자
