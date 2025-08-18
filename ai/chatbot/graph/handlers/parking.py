@@ -2,7 +2,7 @@ from chatbot.graph.state import ChatState
 
 from chatbot.rag.utils import get_query_embedding, perform_vector_search, close_mongo_client
 from chatbot.rag.config import RAG_SEARCH_CONFIG, common_llm_rag_caller
-from chatbot.rag.config import client
+from chatbot.rag.config import client, DISCLAIMER
 
 import os
 import requests
@@ -14,7 +14,7 @@ import json
 # 새로운 LLM 파싱 함수를 임포트합니다.
 from chatbot.rag.parking_fee_helper import _parse_parking_fee_query_with_llm
 from chatbot.rag.parking_walk_time_helper import _parse_parking_walk_time_query_with_llm
-from chatbot.graph.utils.formatting_utils import get_enhanced_prompt
+from chatbot.graph.utils.formatting_utils import get_formatted_llm_response_single_message
 
 load_dotenv()
 
@@ -97,6 +97,10 @@ def parking_fee_info_handler(state: ChatState) -> ChatState:
         # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
         final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
         
+        # DISCLAIMER 추가
+        if intent_name != "complex_intent":
+            final_response += DISCLAIMER
+        
         return {**state, "response": final_response}
 
     except Exception as e:
@@ -171,6 +175,10 @@ def parking_location_recommendation_handler(state: ChatState) -> ChatState:
         # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
         final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
 
+        # DISCLAIMER 추가
+        if intent_name != "complex_intent":
+            final_response += DISCLAIMER
+
         return {**state, "response": final_response}
 
     except Exception as e:
@@ -244,20 +252,16 @@ def parking_availability_query_handler(state: ChatState) -> ChatState:
             "4. 각 주차장은 '- **주차장명**: 주차 가능 대수 **N**대 (또는 **만차**)' 형식으로 출력\n"
         )
 
-        # 포맷팅 지침이 포함된 프롬프트 사용
-        enhanced_prompt = get_enhanced_prompt(prompt_template, intent_name)
+        # 포맷팅된 프롬프트 준비
+        formatted_prompt = prompt_template.format(user_query=query_to_process, items=json.dumps(items, ensure_ascii=False, indent=2))
         
-        formatted_prompt = enhanced_prompt.format(user_query=query_to_process, items=json.dumps(items, ensure_ascii=False, indent=2))
-        
-        llm_response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "user", "content": formatted_prompt}
-            ],
-            temperature=0.5,
+        # 포맷팅된 LLM 응답 (DISCLAIMER 포함)
+        styled_response = get_formatted_llm_response_single_message(
+            formatted_prompt, 
+            intent_name, 
+            temperature=0.5, 
             max_tokens=800
         )
-        styled_response = llm_response.choices[0].message.content
         
     except requests.RequestException as e:
         print(f"디버그: API 호출 중 오류 발생 - {e}")

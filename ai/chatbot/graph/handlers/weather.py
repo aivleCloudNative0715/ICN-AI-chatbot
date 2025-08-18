@@ -2,7 +2,7 @@ from chatbot.graph.state import ChatState
 from chatbot.rag.utils import get_mongo_collection
 from chatbot.rag.config import client
 import json
-from chatbot.graph.utils.formatting_utils import get_enhanced_prompt
+from chatbot.graph.utils.formatting_utils import get_formatted_llm_response
 
 def airport_weather_current_handler(state: ChatState) -> ChatState:
     """
@@ -60,19 +60,14 @@ def airport_weather_current_handler(state: ChatState) -> ChatState:
             taf_documents=json.dumps(taf_documents, ensure_ascii=False, indent=2, default=str)
         )
         
-        # 포맷팅 지침이 포함된 프롬프트 사용
-        enhanced_prompt = get_enhanced_prompt(formatted_prompt, intent_name)
-        
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": enhanced_prompt},
-                {"role": "user", "content": query_to_process}
-            ],
-            temperature=0.5,
+        # 포맷팅된 LLM 응답 (DISCLAIMER 포함)
+        styled_response = get_formatted_llm_response(
+            formatted_prompt, 
+            query_to_process, 
+            intent_name, 
+            temperature=0.5, 
             max_tokens=600
         )
-        styled_response = response.choices[0].message.content
         
     except Exception as e:
         print(f"디버그: 응답 처리 중 오류 발생 - {e}")
