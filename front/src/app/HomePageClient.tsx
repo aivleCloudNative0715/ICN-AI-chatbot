@@ -157,7 +157,7 @@ export default function HomePageClient() {
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm('정말로 계정을 삭제하시겠습니까?\n삭제된 계정은 복구할 수 없습니다.')) {
+    if (!window.confirm('정말로 계정을 삭제하시겠습니까?\n삭제된 계정은 복구할 수 없습니다.\n\n동일한 계정으로 30일간 재가입이 불가능합니다')) {
       return;
     }
 

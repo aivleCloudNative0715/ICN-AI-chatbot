@@ -27,17 +27,17 @@ export default function InquiryDetailPage() {
     if (inquiryId) {
       getInquiryDetail(inquiryId, token)
         .then(data => setInquiry(data))
-        .catch(err => setError('문의 내용을 불러오는데 실패했습니다.'))
+        .catch(err => setError('문의/건의 내용을 불러오는데 실패했습니다.'))
         .finally(() => setIsLoading(false));
     }
   }, [inquiryId, token]);
 
   const handleDelete = async () => {
     if (!token || !inquiry) return;
-    if (window.confirm('정말로 이 문의를 삭제하시겠습니까?')) {
+    if (window.confirm('정말로 이 문의/건의를 삭제하시겠습니까?')) {
       try {
         await deleteInquiry(inquiry.inquiryId, token);
-        alert('문의가 삭제되었습니다.');
+        alert('문의/건의가 삭제되었습니다.');
         router.push('/board');
       } catch (err) {
         alert(err instanceof Error ? err.message : '삭제 중 오류 발생');
@@ -47,7 +47,7 @@ export default function InquiryDetailPage() {
 
   if (isLoading) return <div className="p-4 text-center">로딩 중...</div>;
   if (error) return <div className="p-4 text-center text-red-500">{error}</div>;
-  if (!inquiry) return <div className="p-4 text-center">문의 내용을 찾을 수 없습니다.</div>;
+  if (!inquiry) return <div className="p-4 text-center">문의/건의 내용을 찾을 수 없습니다.</div>;
 
   const isAuthor = user?.userId === inquiry.userId;
 
