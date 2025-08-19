@@ -250,7 +250,8 @@ def _extract_flight_info_from_response(
         airline_name: Optional[str] = None,
         departure_airport_name: Optional[str] = None,
         departure_airport_code: Optional[str] = None,
-        requested_direction: Optional[str] = None  # 📌 추가: 요청 방향 매개변수
+        requested_direction: Optional[str] = None,  # 📌 추가: 요청 방향 매개변수
+        actual_api_direction: Optional[str] = None  # 📌 추가: 실제 API 호출 방향
 ) -> List[Dict[str, Any]]:
     flight_data = api_response.get("data", [])
     if not flight_data:
@@ -259,15 +260,9 @@ def _extract_flight_info_from_response(
     if isinstance(flight_data, dict):
         flight_data = [flight_data]
 
-    # 📌 핵심 수정: API 응답의 운항 방향과 요청 방향이 다르면 필터링
-    if requested_direction:
-        # 응답의 'remark' 필드에 '도착', '출발'이 명시되어 있다고 가정
-        flight_data = [
-            item for item in flight_data
-            if requested_direction == "arrival" and item.get("remark") in ["도착", "지연", "결항", "회항", "착륙"] or \
-               requested_direction == "departure" and item.get("remark") in ["출발", "탑승중", "탑승준비", "탑승마감", "마감예정"]
-        ]
-        print(f"디버그: 요청 방향('{requested_direction}')으로 필터링 완료. 남은 항목 수: {len(flight_data)}")
+
+    print(f"디버그: API에서 받은 데이터 수: {len(flight_data)}")
+    # 📌 수정: 잘못된 direction 필터링 로직 제거 - API가 이미 올바른 방향 데이터를 반환함
 
     if departure_airport_code:
         flight_data = [item for item in flight_data if item.get("airportCode") == departure_airport_code]
@@ -285,9 +280,13 @@ def _extract_flight_info_from_response(
     extracted_info = []
 
     for item in flight_data:
+        # 📌 수정: _api_direction 필드 우선 사용
+        api_direction = item.get("_api_direction")
+        direction_to_use = api_direction or actual_api_direction or requested_direction
+        
         info = {
             "flightId": item.get("flightId"),
-            "direction": "도착" if requested_direction == "arrival" else "출발",
+            "direction": "도착" if direction_to_use == "arrival" else "출발",
             "airline": item.get("airline"),
             "airport": item.get("airport"),
             "airportCode": item.get("airportCode"),

@@ -90,8 +90,17 @@ def flight_info_handler(state: ChatState) -> ChatState:
             print(f"디버그: 편명 '{flight_id}' 전용 검색 - departure/arrival 모두 호출")
             api_result_dep = _call_flight_api("departure", search_date=search_date_str, from_time=from_time, to_time=to_time, flight_id=flight_id)
             api_result_arr = _call_flight_api("arrival", search_date=search_date_str, from_time=from_time, to_time=to_time, flight_id=flight_id)
-            api_result["data"].extend(api_result_dep.get("data", []))
-            api_result["data"].extend(api_result_arr.get("data", []))
+            
+            # 📌 수정: 각 API 결과를 방향 정보와 함께 저장
+            api_result["data"] = []
+            if api_result_dep.get("data"):
+                for item in api_result_dep["data"]:
+                    item["_api_direction"] = "departure"
+                api_result["data"].extend(api_result_dep["data"])
+            if api_result_arr.get("data"):
+                for item in api_result_arr["data"]:
+                    item["_api_direction"] = "arrival"
+                api_result["data"].extend(api_result_arr["data"])
         elif direction == "departure":
             print(f"디버그: 인천 -> '{airport_code_for_api or '모든 도착지'}'에 대한 API 호출 준비 (출발 방향)")
             current_api_result = _call_flight_api(
@@ -119,8 +128,17 @@ def flight_info_handler(state: ChatState) -> ChatState:
             print(f"디버그: direction이 None이므로 departure/arrival 모두 검색")
             api_result_dep = _call_flight_api("departure", search_date=search_date_str, from_time=from_time, to_time=to_time, airport_code=airport_code_for_api, flight_id=flight_id)
             api_result_arr = _call_flight_api("arrival", search_date=search_date_str, from_time=from_time, to_time=to_time, airport_code=airport_code_for_api, flight_id=flight_id)
-            api_result["data"].extend(api_result_dep.get("data", []))
-            api_result["data"].extend(api_result_arr.get("data", []))
+            
+            # 📌 수정: 각 API 결과를 방향 정보와 함께 저장
+            api_result["data"] = []
+            if api_result_dep.get("data"):
+                for item in api_result_dep["data"]:
+                    item["_api_direction"] = "departure"
+                api_result["data"].extend(api_result_dep["data"])
+            if api_result_arr.get("data"):
+                for item in api_result_arr["data"]:
+                    item["_api_direction"] = "arrival"
+                api_result["data"].extend(api_result_arr["data"])
         
         retrieved_info = []
         if api_result.get("data"):
@@ -396,7 +414,7 @@ def airport_info_handler(state: ChatState) -> ChatState:
         # 추출된 각 공항 이름에 대해 RAG 검색을 개별적으로 수행합니다.
         for airport_name in airport_names:
             print(f"디버그: '{airport_name}'에 대해 검색 시작...")
-            
+
             # 📌 수정된 부분: 검색을 위해 query_to_process를 사용합니다.
             query_embedding = get_query_embedding(query_to_process)
             retrieved_docs_text = perform_vector_search(
