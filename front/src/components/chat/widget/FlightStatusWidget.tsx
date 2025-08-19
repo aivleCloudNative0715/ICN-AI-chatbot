@@ -42,8 +42,6 @@ export default function FlightStatusWidget({ arrivals, departures, isLoading }: 
           </div>
           <div className="flex justify-between items-center text-xs text-gray-600">
             <span>{flight.remark}</span>
-            
-            {/* ▼▼▼▼▼ 시간 표시 로직 수정 ▼▼▼▼▼ */}
             <div className="flex items-center space-x-1">
               <ClockIcon className="h-3 w-3" />
               {isTimeChanged ? (
@@ -55,8 +53,6 @@ export default function FlightStatusWidget({ arrivals, departures, isLoading }: 
                 <span>{scheduledTime}</span>
               )}
             </div>
-            {/* ▲▲▲▲▲ 시간 표시 로직 수정 ▲▲▲▲▲ */}
-
           </div>
         </div>
       </div>
@@ -78,15 +74,15 @@ export default function FlightStatusWidget({ arrivals, departures, isLoading }: 
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <h4 className="font-bold text-gray-700 mb-2 flex items-center text-sm"><ArrowDownTrayIcon className="h-5 w-5 mr-2 text-blue-600"/>도착</h4>
-            <div className="space-y-1">
-              {arrivals.length > 0 ? arrivals.slice(0, 5).map(flight => renderFlightItem(flight, 'arrival')) : <p className="text-xs text-gray-500">정보 없음</p>}
-            </div>
-          </div>
-          <div>
             <h4 className="font-bold text-gray-700 mb-2 flex items-center text-sm"><ArrowUpTrayIcon className="h-5 w-5 mr-2 text-red-600"/>출발</h4>
             <div className="space-y-1">
               {departures.length > 0 ? departures.slice(0, 5).map(flight => renderFlightItem(flight, 'departure')) : <p className="text-xs text-gray-500">정보 없음</p>}
+            </div>
+          </div>
+          <div>
+            <h4 className="font-bold text-gray-700 mb-2 flex items-center text-sm"><ArrowDownTrayIcon className="h-5 w-5 mr-2 text-blue-600"/>도착</h4>
+            <div className="space-y-1">
+              {arrivals.length > 0 ? arrivals.slice(0, 5).map(flight => renderFlightItem(flight, 'arrival')) : <p className="text-xs text-gray-500">정보 없음</p>}
             </div>
           </div>
         </div>
