@@ -88,7 +88,8 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
         "date_offset": 0,
         "from_time": from_time,
         "to_time": to_time,
-        "airport_codes": []
+        "airport_codes": [],
+        "departure_airport_codes": []
     }
 
     # 유의미한 정보가 하나라도 있으면 쿼리 반환
@@ -122,6 +123,7 @@ def _parse_flight_query_with_llm(user_query: str) -> List[Dict[str, Any]]:
         "- `airport_name`: 도착 도시명 또는 공항 이름. 인천에서 출발하는 경우에만 추출해줘. 정보가 없으면 null로 추출해줘.\n"
         "- `airport_codes`: '일본'처럼 국가명이 포함되면 해당 국가의 주요 공항 IATA 코드 리스트(예: ['NRT', 'HND', 'KIX'])를 추출해줘. '도쿄'처럼 도시명이 포함되면 해당 도시의 주요 공항 IATA 코드 리스트(예: ['NRT', 'HND'])를 추출해줘. **'미국'처럼 국가명이 언급되면 'JFK', 'LAX' 등 주요 공항 코드를 반드시 추출해줘.** 인천을 묻는 질문에서는 이 필드를 비워줘. 정보가 없으면 빈 리스트로 추출해줘.\n"
         "- `departure_airport_name`: 출발 도시명 또는 공항 이름. 인천으로 도착하는 경우에만 추출해줘. 정보가 없으면 null로 추출해줘.\n"
+        "- `departure_airport_codes`: 출발지가 도시명이나 국가명일 경우 해당 지역의 주요 공항 IATA 코드 리스트(예: '런던'이면 ['LHR', 'LGW', 'STN'], '일본'이면 ['NRT', 'HND', 'KIX'])를 추출해줘. 정보가 없으면 빈 리스트로 추출해줘.\n"
         "- `direction`: 운항 방향 ('arrival' 또는 'departure'). 질문에 명시되어 있지 않으면 null로 추출해줘.\n"
         "- `from_time`: 검색 시작 시간 (HHMM 형식). 정보가 없으면 null로 추출해줘.\n"
         "- `to_time`: 검색 종료 시간 (HHMM 형식). 정보가 없으면 null로 추출해줘.\n"
@@ -250,6 +252,7 @@ def _extract_flight_info_from_response(
         airline_name: Optional[str] = None,
         departure_airport_name: Optional[str] = None,
         departure_airport_code: Optional[str] = None,
+        departure_airport_codes: Optional[List[str]] = None,  # 📌 추가: 출발지 공항 코드 리스트
         requested_direction: Optional[str] = None,  # 📌 추가: 요청 방향 매개변수
         actual_api_direction: Optional[str] = None  # 📌 추가: 실제 API 호출 방향
 ) -> List[Dict[str, Any]]:
@@ -268,6 +271,15 @@ def _extract_flight_info_from_response(
         flight_data = [item for item in flight_data if item.get("airportCode") == departure_airport_code]
         print(
             f"디버그: '{departure_airport_name}' ({departure_airport_code})으로 출발지 정보 필터링 완료. 남은 항목 수: {len(flight_data)}")
+
+    if departure_airport_codes:
+        # departure_airport_codes로 필터링 (공항 코드 리스트가 있을 경우)
+        flight_data = [item for item in flight_data if item.get("airportCode") in departure_airport_codes]
+        print(f"디버그: '{departure_airport_codes}'으로 출발지 공항 코드 필터링 완료. 남은 항목 수: {len(flight_data)}")
+    elif departure_airport_name and not departure_airport_code:
+        # departure_airport_name으로 필터링 (공항 코드가 없을 경우)
+        flight_data = [item for item in flight_data if departure_airport_name in item.get("airport", "")]
+        print(f"디버그: '{departure_airport_name}'으로 출발지 정보 필터링 완료. 남은 항목 수: {len(flight_data)}")
 
     if airport_name:
         flight_data = [item for item in flight_data if airport_name in item.get("airport", "")]

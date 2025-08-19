@@ -149,6 +149,7 @@ def flight_info_handler(state: ChatState) -> ChatState:
                 airport_name=airport_name,
                 airline_name=airline_name,
                 departure_airport_name=departure_airport_name,
+                departure_airport_codes=query.get("departure_airport_codes"),
                 requested_direction=None if direction is None else direction
             )
             
