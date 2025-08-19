@@ -114,6 +114,8 @@ def build_chat_graph():
             
             # 🚀 스마트 라우팅: 신뢰도 높고 slot 충분하면 바로 핸들러로
             if confidence > 0.85 and has_sufficient_slots(intent, slots):
+                # 📌 수정: 확신도가 높을 때도 rephrased_query 설정 (일관성을 위해)
+                state["rephrased_query"] = user_query
                 handler_name = f"{intent}_handler"
                 print(f"DEBUG: ⚡ 스마트 라우팅 - 높은 신뢰도({confidence:.3f}) + 충분한 slot -> {handler_name} 직접 호출")
                 return handler_name
@@ -124,6 +126,8 @@ def build_chat_graph():
         # 4. 단일 의도인 경우 직접 핸들러로 라우팅
         intent = state.get("intent")
         if intent and intent != "complex_intent":
+            # 📌 수정: 단일 의도일 때도 rephrased_query 설정 (일관성을 위해)
+            state["rephrased_query"] = user_query
             handler_name = f"{intent}_handler"
             print(f"DEBUG: 단일 의도 감지 -> {handler_name}로 라우팅")
             return handler_name
