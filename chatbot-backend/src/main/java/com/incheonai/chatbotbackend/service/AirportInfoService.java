@@ -150,39 +150,80 @@ public class AirportInfoService {
 //    }
 
     public Mono<List<FlightArrivalInfoItem>> getFlightArrivalsInfo(String flightId) {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-
-        if (flightId == null || flightId.isEmpty()) {
-            // 오늘 날짜를 "YYYYMMDD" 형식으로 만듭니다.
-            String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
-
-            // searchday 파라미터를 추가하여 조회 날짜를 오늘로 고정합니다.
-            params.add("searchday", todayStr);
-            params.add("from_time", currentTime);
-            params.add("to_time", "2359");
-        } else {
-            params.add("flight_id", flightId);
-        }
-
+        // 공통 파라미터 생성 로직을 호출합니다.
+        MultiValueMap<String, String> params = createApiParams(flightId);
         return fetchApiData(flightArrivalsApiUrl, params, new ParameterizedTypeReference<>() {});
     }
 
     public Mono<List<FlightDepartureInfoItem>> getFlightDeparturesInfo(String flightId) {
+        // 공통 파라미터 생성 로직을 호출합니다.
+        MultiValueMap<String, String> params = createApiParams(flightId);
+        return fetchApiData(flightDeparturesApiUrl, params, new ParameterizedTypeReference<>() {});
+    }
+
+    /**
+     * API 요청 파라미터를 생성하는 private 헬퍼 메서드입니다.
+     * flightId가 없으면 한국 시간(KST) 기준으로 현재 날짜와 시간을 파라미터에 추가합니다.
+     * @param flightId 항공편 ID
+     * @return API 요청에 사용될 MultiValueMap
+     */
+    private MultiValueMap<String, String> createApiParams(String flightId) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
         if (flightId == null || flightId.isEmpty()) {
-            String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
+            // 1. 한국 시간대(KST)를 명시적으로 지정합니다.
+            ZoneId kstZoneId = ZoneId.of("Asia/Seoul");
 
-            // searchday 파라미터를 추가하여 조회 날짜를 오늘로 고정합니다.
+            // 2. 현재 시간을 한국 시간대 기준으로 가져옵니다.
+            ZonedDateTime nowInKst = ZonedDateTime.now(kstZoneId);
+
+            // 3. 포맷터를 사용하여 날짜와 시간을 문자열로 변환합니다.
+            String todayStr = nowInKst.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String currentTime = nowInKst.format(DateTimeFormatter.ofPattern("HHmm"));
+
             params.add("searchday", todayStr);
             params.add("from_time", currentTime);
             params.add("to_time", "2359");
         } else {
             params.add("flight_id", flightId);
         }
-
-        return fetchApiData(flightDeparturesApiUrl, params, new ParameterizedTypeReference<>() {});
+        return params;
     }
+
+//    public Mono<List<FlightArrivalInfoItem>> getFlightArrivalsInfo(String flightId) {
+//        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//
+//        if (flightId == null || flightId.isEmpty()) {
+//            // 오늘 날짜를 "YYYYMMDD" 형식으로 만듭니다.
+//            String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//            String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
+//
+//            // searchday 파라미터를 추가하여 조회 날짜를 오늘로 고정합니다.
+//            params.add("searchday", todayStr);
+//            params.add("from_time", currentTime);
+//            params.add("to_time", "2359");
+//        } else {
+//            params.add("flight_id", flightId);
+//        }
+//
+//        return fetchApiData(flightArrivalsApiUrl, params, new ParameterizedTypeReference<>() {});
+//    }
+//
+//    public Mono<List<FlightDepartureInfoItem>> getFlightDeparturesInfo(String flightId) {
+//        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//
+//        if (flightId == null || flightId.isEmpty()) {
+//            String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//            String currentTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
+//
+//            // searchday 파라미터를 추가하여 조회 날짜를 오늘로 고정합니다.
+//            params.add("searchday", todayStr);
+//            params.add("from_time", currentTime);
+//            params.add("to_time", "2359");
+//        } else {
+//            params.add("flight_id", flightId);
+//        }
+//
+//        return fetchApiData(flightDeparturesApiUrl, params, new ParameterizedTypeReference<>() {});
+//    }
 }
