@@ -1,11 +1,10 @@
 import os
 import requests
 import json
-from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 from chatbot.rag.config import client
-from chatbot.rag.llm_tools import _format_and_style_with_llm
+from chatbot.graph.utils.formatting_utils import get_enhanced_prompt
 
 load_dotenv()
 
@@ -212,17 +211,18 @@ def _generate_final_answer_with_llm(document: dict, user_query: str) -> str:
     formatted_prompt = final_prompt_with_formatting.format(
         document=json.dumps(document, ensure_ascii=False, indent=2, default=str)
     )
-        
+    
+    # 포맷팅 지침이 포함된 프롬프트 사용
+    enhanced_prompt = get_enhanced_prompt(formatted_prompt, "baggage_claim_info")
+    
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": formatted_prompt},
+            {"role": "system", "content": enhanced_prompt},
             {"role": "user", "content": user_query}
         ],
         temperature=0.5,
         max_tokens=600
     )
-    plain_text_response = response.choices[0].message.content
-    styled_response = _format_and_style_with_llm(plain_text_response, "baggage_claim_info")
     
-    return styled_response
+    return response.choices[0].message.content

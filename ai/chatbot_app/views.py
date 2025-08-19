@@ -309,6 +309,7 @@ class GenerateAPIView(APIView):
         current_state["messages"].append(HumanMessage(content=user_message))
         
         current_state["user_input"] = user_message # 현재 질문도 state에 업데이트
+        current_state["rephrased_query"] = user_message
         
 
         try:

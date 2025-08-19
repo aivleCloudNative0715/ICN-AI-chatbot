@@ -1,21 +1,18 @@
 import json
 from typing import Dict, Any, List
 from langgraph.graph import StateGraph, END
-from openai import OpenAI
 from functools import partial
 from chatbot.graph.state import ChatState
 from langchain_core.messages import HumanMessage, AIMessage
-from chatbot.graph.nodes.classifiy_intent import classify_intent
 import re
-from chatbot.rag.llm_tools import _format_and_style_with_llm
+from chatbot.graph.utils.formatting_utils import get_enhanced_prompt
 
 # 환경 변수를 로드합니다.
 from dotenv import load_dotenv
 load_dotenv()
 
-# 직접 openai 클라이언트를 사용합니다.
-from openai import OpenAI
-client = OpenAI()
+# 설정된 openai 클라이언트를 사용합니다.
+from chatbot.rag.config import client
 
 DISCLAIMER = (
     "\n\n"
@@ -33,7 +30,7 @@ def _decompose_and_classify_queries(user_query: str, supported_intents: List[str
     LLM을 사용하여 복합 의도 질문을 단일 질문으로 분해하고 의도를 분류합니다.
     이전 대화 맥락을 활용하여 후속 질문을 처리합니다.
     """
-    client = OpenAI() # OpenAI 클라이언트 초기화
+    # 설정된 클라이언트 사용
     supported_intents_str = ", ".join(supported_intents)
 
     system_prompt = f"""
@@ -147,7 +144,19 @@ def handle_complex_intent(state: ChatState, handlers: Dict[str, Any], supported_
 
     final_response_text = _combine_responses(user_input, all_responses)
     
-    final_response = _format_and_style_with_llm(final_response_text, "complex_intent")
+    # 포맷팅 지침이 포함된 프롬프트로 최종 응답 생성
+    enhanced_prompt = get_enhanced_prompt("당신은 인천국제공항 AI 어시스턴트입니다. 복합적인 질문에 체계적으로 답변해주세요.", "complex_intent")
+    
+    llm_response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": enhanced_prompt},
+            {"role": "user", "content": final_response_text}
+        ],
+        temperature=0.1,
+        max_tokens=1200
+    )
+    final_response = llm_response.choices[0].message.content
     final_response += DISCLAIMER
     
     print("--- 복합 의도 처리 완료 ---")

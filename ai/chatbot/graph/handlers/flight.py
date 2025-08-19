@@ -8,6 +8,7 @@ from chatbot.rag.regular_schedule_helper import (
     _get_schedule_from_db
 )
 from chatbot.rag.flight_info_helper import (
+    _convert_slots_to_query_format,
     _parse_flight_query_with_llm,
     _call_flight_api,
     _extract_flight_info_from_response
@@ -26,6 +27,7 @@ SERVICE_KEY = os.getenv("SERVICE_KEY")
 def flight_info_handler(state: ChatState) -> ChatState:
     query_to_process = state.get("rephrased_query") or state.get("user_input", "")
     intent_name = state.get("intent", "flight_info")
+    slots = state.get("slots", [])
 
     if not query_to_process:
         return {**state, "response": "죄송합니다. 질문 내용을 파악할 수 없습니다. 다시 질문해주세요."}
@@ -33,7 +35,14 @@ def flight_info_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    parsed_queries = _parse_flight_query_with_llm(query_to_process)
+    # 🚀 최적화: slot 정보 우선 활용, 없으면 LLM fallback
+    parsed_queries = _convert_slots_to_query_format(slots, query_to_process)
+    
+    if not parsed_queries:
+        print("디버그: slot 정보 부족, LLM으로 fallback")
+        parsed_queries = _parse_flight_query_with_llm(query_to_process)
+    else:
+        print("디버그: ⚡ slot 정보로 빠른 처리 완료 (LLM 호출 생략)")
 
     if not parsed_queries:
         return {**state, "response": "죄송합니다. 요청하신 항공편 정보를 찾을 수 없습니다. 출발지 또는 도착지를 명확히 알려주시겠어요?"}
@@ -45,7 +54,8 @@ def flight_info_handler(state: ChatState) -> ChatState:
         airport_name = query.get("airport_name")
         airline_name = query.get("airline_name")
         departure_airport_name = query.get("departure_airport_name")
-        direction = query.get("direction", "departure")
+        direction = query.get("direction")  # None 가능
+        print(f"디버그: direction 값 = {direction}")
         terminal = query.get("terminal")
         
         from_time = query.get("from_time")
@@ -57,9 +67,11 @@ def flight_info_handler(state: ChatState) -> ChatState:
             to_time = (time_obj + timedelta(hours=3)).strftime("%H%M")
             
         if not from_time and not to_time:
-            from_time = datetime.now().strftime("%H%M")
+            current_time = datetime.now()
+            from_time_obj = current_time
+            from_time = from_time_obj.strftime("%H%M")
             to_time = "2359"
-            print(f"디버그: 특정 시간 언급이 없어 현재 시각({from_time}) 이후로 검색합니다.")
+            print(f"디버그: 특정 시간 언급이 없어 현재 시각({current_time.strftime('%H%M')})부터 검색합니다.")
         
         date_offset = query.get("date_offset", 0)
         search_date = datetime.now() + timedelta(days=date_offset)
@@ -73,7 +85,23 @@ def flight_info_handler(state: ChatState) -> ChatState:
 
         # 📌 핵심 수정: 방향과 상대 공항 코드 유무에 따라 API 호출 로직을 분기합니다.
         # airport_code_for_api가 None일 경우, 해당 파라미터는 전달되지 않아 전체 도착/출발 항공편을 검색합니다.
-        if direction == "departure":
+        if flight_id and not airport_name and not departure_airport_name and not other_airport_codes:
+            # 편명만 있고 출발지/도착지 정보가 없으면 양쪽 모두 검색
+            print(f"디버그: 편명 '{flight_id}' 전용 검색 - departure/arrival 모두 호출")
+            api_result_dep = _call_flight_api("departure", search_date=search_date_str, from_time=from_time, to_time=to_time, flight_id=flight_id)
+            api_result_arr = _call_flight_api("arrival", search_date=search_date_str, from_time=from_time, to_time=to_time, flight_id=flight_id)
+            
+            # 📌 수정: 각 API 결과를 방향 정보와 함께 저장
+            api_result["data"] = []
+            if api_result_dep.get("data"):
+                for item in api_result_dep["data"]:
+                    item["_api_direction"] = "departure"
+                api_result["data"].extend(api_result_dep["data"])
+            if api_result_arr.get("data"):
+                for item in api_result_arr["data"]:
+                    item["_api_direction"] = "arrival"
+                api_result["data"].extend(api_result_arr["data"])
+        elif direction == "departure":
             print(f"디버그: 인천 -> '{airport_code_for_api or '모든 도착지'}'에 대한 API 호출 준비 (출발 방향)")
             current_api_result = _call_flight_api(
                 "departure",
@@ -96,13 +124,21 @@ def flight_info_handler(state: ChatState) -> ChatState:
                 flight_id=flight_id
             )
             api_result = current_api_result
-        
-        elif flight_id:
-            # 편명으로 검색할 때는 도착/출발 API를 모두 호출
-            api_result_dep = _call_flight_api("departure", search_date_str, from_time, to_time, flight_id=flight_id)
-            api_result_arr = _call_flight_api("arrival", search_date_str, from_time, to_time, flight_id=flight_id)
-            api_result["data"].extend(api_result_dep.get("data", []))
-            api_result["data"].extend(api_result_arr.get("data", []))
+        elif direction is None:
+            print(f"디버그: direction이 None이므로 departure/arrival 모두 검색")
+            api_result_dep = _call_flight_api("departure", search_date=search_date_str, from_time=from_time, to_time=to_time, airport_code=airport_code_for_api, flight_id=flight_id)
+            api_result_arr = _call_flight_api("arrival", search_date=search_date_str, from_time=from_time, to_time=to_time, airport_code=airport_code_for_api, flight_id=flight_id)
+            
+            # 📌 수정: 각 API 결과를 방향 정보와 함께 저장
+            api_result["data"] = []
+            if api_result_dep.get("data"):
+                for item in api_result_dep["data"]:
+                    item["_api_direction"] = "departure"
+                api_result["data"].extend(api_result_dep["data"])
+            if api_result_arr.get("data"):
+                for item in api_result_arr["data"]:
+                    item["_api_direction"] = "arrival"
+                api_result["data"].extend(api_result_arr["data"])
         
         retrieved_info = []
         if api_result.get("data"):
@@ -112,7 +148,9 @@ def flight_info_handler(state: ChatState) -> ChatState:
                 found_date=search_date_str,
                 airport_name=airport_name,
                 airline_name=airline_name,
-                departure_airport_name=departure_airport_name
+                departure_airport_name=departure_airport_name,
+                departure_airport_codes=query.get("departure_airport_codes"),
+                requested_direction=None if direction is None else direction
             )
             
         if terminal:
@@ -273,16 +311,17 @@ def airline_info_query_handler(state: ChatState) -> ChatState:
     print(f"\n--- {intent_name.upper()} 핸들러 실행 ---")
     print(f"디버그: 핸들러가 처리할 최종 쿼리 - '{query_to_process}'")
 
-    # 📌 수정된 로직: 슬롯에서 항공사 이름을 먼저 찾습니다.
+    # 🚀 최적화: 슬롯에서 항공사 이름을 우선 활용, 없으면 LLM fallback
     airline_names = [word for word, slot in slots if slot in ['B-airline_name', 'I-airline_name']]
     
-    # 📌 수정된 로직: 슬롯에 항공사 이름이 없으면, LLM을 사용해 쿼리에서 추출합니다.
     if not airline_names:
+        print("디버그: slot에 항공사 정보 없음, LLM으로 fallback")
         extracted_airline = _extract_airline_name_with_llm(query_to_process)
         if extracted_airline:
-            # 추출된 항공사 이름만 검색 리스트에 추가
             airline_names = [extracted_airline]
         print(f"디버그: LLM을 사용해 추출된 항공사 이름: {airline_names}")
+    else:
+        print(f"디버그: ⚡ slot에서 항공사 정보 추출 완료 (LLM 호출 생략): {airline_names}")
     
     if not airline_names:
         return {**state, "response": "죄송합니다. 요청하신 항공사 정보를 찾을 수 없습니다."}
@@ -376,7 +415,7 @@ def airport_info_handler(state: ChatState) -> ChatState:
         # 추출된 각 공항 이름에 대해 RAG 검색을 개별적으로 수행합니다.
         for airport_name in airport_names:
             print(f"디버그: '{airport_name}'에 대해 검색 시작...")
-            
+
             # 📌 수정된 부분: 검색을 위해 query_to_process를 사용합니다.
             query_embedding = get_query_embedding(query_to_process)
             retrieved_docs_text = perform_vector_search(
