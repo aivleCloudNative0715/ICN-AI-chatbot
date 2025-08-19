@@ -17,7 +17,7 @@ import {
   TemperatureInfo
 } from './types';
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+export const API_BASE_URL = '';
 
 const getAuthHeaders = (token: string | null) => {
   return {
@@ -108,7 +108,8 @@ export const deleteInquiry = async (inquiryId: number, token: string): Promise<v
 // =======================================================
 
 // 관리자용 API 기본 URL
-const ADMIN_API_URL = `${API_BASE_URL}/admin`;
+// const ADMIN_API_URL = `${API_BASE_URL}/admin`;
+const ADMIN_API_URL = `api/admin`;
 
 /**
  * [관리자] 문의 목록 조회 (GET /admin/inquiries) - 수정된 필터 적용
