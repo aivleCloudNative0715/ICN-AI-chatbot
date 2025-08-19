@@ -7,6 +7,8 @@ import com.incheonai.chatbotbackend.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,7 +27,7 @@ public class InquiryController {
     public ResponseEntity<Page<InquiryDto>> getAllInquiries(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String search,
-            Pageable pageable
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<InquiryDto> inquiries = inquiryService.getAllInquiries(category, search, pageable);
         return ResponseEntity.ok(inquiries);
@@ -37,7 +39,7 @@ public class InquiryController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String search,
-            Pageable pageable
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         String userId = userDetails.getUsername();
         Page<InquiryDto> inquiries = inquiryService.getMyInquiries(userId, category, search, pageable);

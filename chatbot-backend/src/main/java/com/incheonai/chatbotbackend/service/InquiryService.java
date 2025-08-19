@@ -47,7 +47,7 @@ public class InquiryService {
         return spec;
     }
 
-    /** ✅ 전체 문의/건의 목록 조회 (GET /api/board) */
+    /** 전체 문의/건의 목록 조회 (GET /api/board) */
     @Transactional(readOnly = true)
     public Page<InquiryDto> getAllInquiries(String category, Pageable pageable) {
         // category 파라미터가 없거나 비어있으면 모든 목록을 반환

@@ -123,7 +123,7 @@ export default function AdminFileUploadTab() {
           options={categoryOptions}
           onChange={(e) => setSelectedCategory(e.value)}
           placeholder="업로드할 파일의 종류를 선택하세요"
-          className="w-full md:w-1/2"
+          className="w-full md:w-1/2 border-2"
         />
       </div>
 

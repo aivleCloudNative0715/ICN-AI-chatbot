@@ -58,12 +58,12 @@ export default function InquiryList({ inquiries, isLoading, error, first, rows, 
         dataKey="inquiryId"
         emptyMessage={error || "표시할 내용이 없습니다."}
       >
-        <Column field="inquiryId" header="번호" style={{ width: '10%' }} />
+        {/* <Column field="inquiryId" header="번호" style={{ width: '10%' }} /> */}
         {/* <Column field="category" header="카테고리" style={{ width: '15%' }} /> */}
+        <Column field="createdAt" header="작성일" body={dateBodyTemplate} style={{ width: '15%' }} />
         <Column field="title" header="제목" />
         <Column field="userId" header="작성자" style={{ width: '20%' }} />
         <Column field="status" header="상태" body={statusBodyTemplate} style={{ width: '15%' }} />
-        <Column field="createdAt" header="작성일" body={dateBodyTemplate} style={{ width: '15%' }} />
       </DataTable>
     </div>
   );
