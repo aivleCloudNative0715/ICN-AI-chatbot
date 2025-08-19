@@ -39,7 +39,7 @@ export default function AdminFileUploadTab() {
         return;
     }
 
-    const aiServerUrl = process.env.NEXT_PUBLIC_AI_SERVER_URL;
+    // const aiServerUrl = process.env.NEXT_PUBLIC_AI_SERVER_URL;
     const files = event.files;
 
     // FormData 객체를 생성하여 서버로 보낼 데이터를 담습니다.
@@ -52,7 +52,7 @@ export default function AdminFileUploadTab() {
 
     try {
       // 3. fetch를 사용하여 AI 서버로 FormData를 전송합니다.
-      const response = await fetch(`${aiServerUrl}/chatbot/upload`, {
+      const response = await fetch(`api-ai/chatbot/upload`, {
         method: 'POST',
         headers: {
           // FormData를 전송할 때는 'Content-Type'을 설정하지 않습니다.

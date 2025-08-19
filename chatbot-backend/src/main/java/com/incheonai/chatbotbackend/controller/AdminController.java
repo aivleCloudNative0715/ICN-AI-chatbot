@@ -21,7 +21,7 @@ import com.incheonai.chatbotbackend.service.AdminService;
 import com.incheonai.chatbotbackend.service.AdminInquiryService;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("api/admin")
 public class AdminController {
 
     private final AdminService adminService;

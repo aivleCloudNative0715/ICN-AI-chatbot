@@ -72,7 +72,7 @@ export default function ChatBotScreen({ sessionId, initialHistory  }: ChatBotScr
   useEffect(() => {
     if (!sessionId) return;
     const client = new Client({
-      webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws-chat`),
+      webSocketFactory: () => new SockJS(`${process.env.NEXT_PUBLIC_API_BASE_URL}/ws-chat`),
       connectHeaders: { Authorization: `Bearer ${localStorage.getItem('jwt_token') || ''}` },
       onConnect: () => {
         setIsConnected(true);
