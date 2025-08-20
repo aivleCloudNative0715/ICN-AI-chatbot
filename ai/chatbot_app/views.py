@@ -22,6 +22,7 @@ import os
 from dotenv import load_dotenv
 
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 from sentence_transformers import SentenceTransformer
 from langchain_core.messages import HumanMessage, AIMessage
@@ -67,7 +68,7 @@ def save_embedding_async(question, answer, cached_collection, embedding_model):
             "question": question,
             "embedding": embedding,
             "answer": answer,
-            "created_at": datetime.now(timezone.utc)
+            "created_at": datetime.now(ZoneInfo("Asia/Seoul"))
         })
     Thread(target=task).start()
 

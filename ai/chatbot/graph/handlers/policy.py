@@ -7,6 +7,7 @@ from chatbot.rag.baggage_helper import _parse_baggage_rule_query_with_llm
 from chatbot.rag.baggage_claim_info_helper import call_arrival_flight_api, _parse_flight_baggage_query_with_llm, _parse_airport_code_with_llm, _generate_final_answer_with_llm
 from chatbot.rag.immigration_helper import _parse_immigration_policy_query_with_llm
 from chatbot.rag.flight_info_helper import _call_flight_api, _extract_flight_info_from_response
+from zoneinfo import ZoneInfo
 
 def immigration_policy_handler(state: ChatState) -> ChatState:
     """
@@ -122,11 +123,11 @@ def baggage_claim_info_handler(state: ChatState) -> ChatState:
             return {**state, "response": text_response}
         
         # 📌 수정된 로직: 날짜와 시간 파라미터 설정
-        search_date = datetime.now() + timedelta(days=date_offset or 0)
+        search_date = datetime.now(ZoneInfo("Asia/Seoul")) + timedelta(days=date_offset or 0)
         search_date_str = search_date.strftime("%Y%m%d")
 
         if not from_time and not to_time:
-            now = datetime.now()
+            now = datetime.now(ZoneInfo("Asia/Seoul"))
             from_dt = now - timedelta(hours=1)
             to_dt = now + timedelta(hours=1)
             from_time_str = str(from_dt.strftime("%H%M"))

@@ -9,6 +9,7 @@ import re
 # 수정된 임포트: config.py의 common_llm_rag_caller를 직접 사용합니다.
 from chatbot.rag.config import common_llm_rag_caller
 from chatbot.rag.config import client
+from zoneinfo import ZoneInfo
 
 # 기존 코드는 그대로 유지합니다.
 BASE_URL = "http://apis.data.go.kr/B551177/StatusOfPassengerFlightsDeOdp"
@@ -59,7 +60,7 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
     # vague_time 처리 (time_period가 없을 때만)
     elif vague_times:
         vague_time = vague_times[0].lower()
-        current_time = datetime.now()
+        current_time = datetime.now(ZoneInfo("Asia/Seoul"))
 
         if vague_time in ["곧", "잠깐", "잠시", "조금"]:
             # 현재부터 1시간 후까지
@@ -196,7 +197,7 @@ def _call_flight_api(
     else:
         return {"error": "Invalid direction"}
 
-    today = datetime.now().strftime("%Y%m%d")
+    today = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d")
     date_to_search = [today] if not search_date else [search_date]
 
     all_results = []
