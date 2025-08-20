@@ -51,6 +51,12 @@ spring:
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: sub
 
+  session:
+    store-type: redis # 세션을 Redis에 저장하도록 설정
+    redis:
+      flush-mode: on_save # 세션 변경 시 즉시 Redis에 반영
+      namespace: "spring:session"
+
 mongodb:
   secondary:
     uri: ${SECONDARY_MONGO_DB_URI}
