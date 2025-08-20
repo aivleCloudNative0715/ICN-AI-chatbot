@@ -293,6 +293,11 @@ class GenerateAPIView(APIView):
                 "answer": cached_answer,
                 "re": re,
             }
+            if not current_state: 
+                # 2. 상태가 없으면, 새로운 ChatState 객체를 생성
+                print(f"디버그: 세션 ID '{session_id}'에 대한 새로운 대화 상태를 생성합니다.")
+                # **(수정)** ChatState의 구조에 맞게 초기화
+                current_state = get_initial_state()
             
             current_state["user_input"] = user_message
             current_state["answer"] = cached_answer
