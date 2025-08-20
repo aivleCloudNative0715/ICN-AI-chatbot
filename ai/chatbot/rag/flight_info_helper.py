@@ -39,9 +39,37 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
                           slot in ['B-departure_airport_name', 'I-departure_airport_name']]
     vague_times = [word for word, slot in slots if slot in ['B-vague_time', 'I-vague_time']]
     time_periods = [word for word, slot in slots if slot in ['B-time_period', 'I-time_period']]
+    date = [word for word, slot in slots if slot in ['B-date', 'I-date']]
 
     # vague_time과 time_period에 따른 시간 범위 설정
     from_time, to_time = None, None
+    date_offset = 0 
+    # date에 따라서 검색 날짜 처리
+    if date:
+        date_str = date[0]  # 리스트에서 첫 번째 값 추출
+        if date_str in ["사흘 전", "3일 전", "사흘전", "3일전", "삼일전", "삼일 전"]:
+            date_offset = -3
+        elif date_str in ["그제", "이틀 전", "이틀전", "그저께", "2일 전", "2일전"]:
+            date_offset = -2
+        elif date_str in ["어제", "어저께", "작일", "하루 전", "하루전", "1일 전", "1일전"]:
+            date_offset = -1
+        elif date_str in ["오늘", "금일", "당일", "투데이", "today"]:
+            date_offset = 0
+        elif date_str in ["내일", "하루 뒤", "하루뒤", "1일 뒤", "1일뒤", "명일", "익일", "tomorrow"]:
+            date_offset = 1
+        elif date_str in ["모레", "이틀 뒤", "이틀뒤", "내일모레", "내일 모레", "명후일", "2일 뒤", "2일뒤"]:
+            date_offset = 2
+        elif date_str in ["글피", "사흘 뒤", "사흘뒤", "삼명일", "3일 뒤", "3일뒤"]:
+            date_offset = 3
+        elif date_str in ["나흘 뒤", "나흘뒤", "4일 뒤", "4일뒤"]:
+            date_offset = 4
+        elif date_str in ["닷새 뒤", "닷새뒤", "5일 뒤", "5일뒤"]:
+            date_offset = 5
+        elif date_str in ["엿새 뒤", "엿새뒤", "6일 뒤", "6일뒤"]:
+            date_offset = 6
+
+        print(f"디버그: 일자 키워드 '{date_str}' 감지 → date_offset: {date_offset}")
+
     
     # time_period 우선 처리 (더 구체적)
     if time_periods:
@@ -86,7 +114,7 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
             "2" in str(t) for t in terminals) else None,
         "direction": "arrival" if departure_airports else None,  # 출발지가 있으면 도착, 없으면 None (두 방향 모두 검색)
         "info_type": "운항 정보",
-        "date_offset": 0,
+        "date_offset": date_offset,
         "from_time": from_time,
         "to_time": to_time,
         "airport_codes": [],
@@ -101,7 +129,8 @@ def _convert_slots_to_query_format(slots: List[tuple], user_query: str) -> List[
         query["departure_airport_name"],
         query["terminal"],
         vague_times,  # vague_time이 있어도 의미있는 정보로 간주
-        time_periods  # time_period도 의미있는 정보로 간주
+        time_periods,  # time_period도 의미있는 정보로 간주
+        
     ])
 
     if has_meaningful_info:
