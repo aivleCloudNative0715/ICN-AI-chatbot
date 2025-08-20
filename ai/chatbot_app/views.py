@@ -253,6 +253,14 @@ class GenerateAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
             
+
+        # 1. 캐시에서 기존 대화 상태를 가져옴
+        cache_key = CHATBOT_SESSION_CACHE_KEY.format(session_id)
+        current_state = cache.get(cache_key)
+        
+        print(f"[DEBUG] 캐시 조회 - Key: {cache_key}")
+        print(f"[DEBUG] 캐시 내용: {current_state}")
+        
         input_embeddings = embedding_model.encode(user_message).tolist()
 
         retrieved_docs = perform_vector_search(
@@ -268,20 +276,36 @@ class GenerateAPIView(APIView):
             cached_answer = retrieved_docs[0]["text"]
             similarity_score = retrieved_docs[0]["score"]
             print(f"[DEBUG] 캐시 검색 결과: {cached_answer} (유사도: {similarity_score})")
+
+            if parent_id and current_state.get("pre_message_id") == parent_id:
+                re = 1
+
+            # 만약 이전 메시지가 HumanMessage이고 마지막 메시지가 AIMessage인 경우,
+            # 마지막 두 메시지를 제거하고 새로운 HumanMessage를 추가합니다.
+            # 그렇지 않으면, 단순히 새로운 HumanMessage를 추가합니다.
+            if re == 1:
+                if (len(current_state["messages"]) >= 2 and
+                    isinstance(current_state["messages"][-2], HumanMessage) and
+                    isinstance(current_state["messages"][-1], AIMessage)):
+                    current_state["messages"] = current_state["messages"][:-2]
+
             response_data = {
                 "answer": cached_answer,
                 "re": re,
             }
+            
+            current_state["user_input"] = user_message
+            current_state["answer"] = cached_answer
+            
+            current_state["messages"] = current_state["messages"][-10:]
+
+            # 6. 업데이트된 상태를 캐시에 다시 저장
+            cache.set(cache_key, current_state, timeout=1800)
+            
+            print(f"[DEBUG] 캐시 저장 완료 - Key: {cache_key}")
+            print(f"[DEBUG] 저장된 캐시 내용: {current_state}")
+            
             return Response(response_data, status=status.HTTP_200_OK)
-
-                  
-
-        # 1. 캐시에서 기존 대화 상태를 가져옴
-        cache_key = CHATBOT_SESSION_CACHE_KEY.format(session_id)
-        current_state = cache.get(cache_key)
-        
-        print(f"[DEBUG] 캐시 조회 - Key: {cache_key}")
-        print(f"[DEBUG] 캐시 내용: {current_state}")
         
 
         if not current_state: 
