@@ -102,8 +102,8 @@ export default function RegisterForm({ onSubmit, anonymousSessionId }: RegisterF
 
   // Google 로그인 URL 동적 생성
     const googleLoginUrl = anonymousSessionId
-      ? `${API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
-      : `${API_BASE_URL}/api/auth/oauth2/start`;
+    ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
+    : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/oauth2/start`;
 
   return (
     <form onSubmit={handleRegister} className="p-fluid">

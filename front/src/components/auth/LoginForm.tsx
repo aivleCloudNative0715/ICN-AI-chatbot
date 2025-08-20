@@ -49,8 +49,8 @@ export default function LoginForm({ onSubmit, anonymousSessionId }: LoginFormPro
 
   // Google 로그인 URL을 동적으로 생성
   const googleLoginUrl = anonymousSessionId
-    ? `${API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
-    : `${API_BASE_URL}/api/auth/oauth2/start`;
+    ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/oauth2/start?anonymousSessionId=${anonymousSessionId}`
+    : `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/oauth2/start`;
 
   return (
     <form onSubmit={handleSubmit} className="p-fluid">
