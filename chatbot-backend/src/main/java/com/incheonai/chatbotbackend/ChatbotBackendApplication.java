@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 @EnableJpaRepositories(basePackages = "com.incheonai.chatbotbackend.repository.jpa")
-@EnableMongoRepositories(basePackages = "com.incheonai.chatbotbackend.repository.primary")
 @EnableRedisHttpSession
 @SpringBootApplication
 public class ChatbotBackendApplication {
