@@ -175,10 +175,6 @@ def parking_location_recommendation_handler(state: ChatState) -> ChatState:
         # 📌 수정된 부분: common_llm_rag_caller에 query_to_process를 전달합니다.
         final_response = common_llm_rag_caller(query_to_process, context_for_llm, intent_description, intent_name)
 
-        # DISCLAIMER 추가
-        if intent_name != "complex_intent":
-            final_response += DISCLAIMER
-
         return {**state, "response": final_response}
 
     except Exception as e:
