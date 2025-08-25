@@ -1,6 +1,9 @@
 import pandas as pd
 import re
 
+from ai.shared.normalize_with_morph import normalize_with_morph
+
+
 def clean_text(text):
     """
     KoBERT 기반 전처리에 적합하도록 특수문자 제거 및 공백 정리
@@ -16,13 +19,15 @@ def preprocess_intent_csv(input_path: str, output_path: str):
     df = pd.read_csv(input_path)
 
     # 필수 컬럼 확인 및 NaN 제거
-    df.dropna(subset=['intent', 'question', 'slots'], inplace=True)
+    df.dropna(subset=['intent_list', 'question'], inplace=True)
 
     # 문자열로 변환 후 전처리
     df['question'] = df['question'].astype(str).apply(clean_text)
 
+    df['question'] = df['question'].apply(normalize_with_morph)
+
     # 중복 제거
-    df.drop_duplicates(subset=['intent', 'question'], inplace=True)
+    df.drop_duplicates(subset=['intent_list', 'question'], inplace=True)
 
     # 저장
     df.to_csv(output_path, index=False, encoding='utf-8-sig')
@@ -30,5 +35,5 @@ def preprocess_intent_csv(input_path: str, output_path: str):
 
 # 실행 예시
 if __name__ == "__main__":
-    preprocess_intent_csv("intent_slot_dataset.csv", "intent_slot_dataset_cleaned.csv")
+    preprocess_intent_csv("data/intent_dataset.csv", "data/intent_dataset_cleaned.csv")
 

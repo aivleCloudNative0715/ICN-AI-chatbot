@@ -1,95 +1,138 @@
-import torch
-import torch.nn as nn
-from torch.nn.functional import softmax
-from transformers import BertModel, AutoTokenizer
-import pickle
+from shared.config import INTENT_CLASSIFICATION
+from shared.normalize_with_morph import normalize_with_morph
+from shared.predict_intent_and_slots import predict_with_bce
 
 
-# 📌 KoBERTIntentSlotModel 로드
-class KoBERTIntentSlotModel(nn.Module):
-    def __init__(self, num_intents, num_slots):
-        super().__init__()
-        self.bert = BertModel.from_pretrained("skt/kobert-base-v1")
-        self.intent_classifier = nn.Linear(self.bert.config.hidden_size, num_intents)
-        self.slot_classifier = nn.Linear(self.bert.config.hidden_size, num_slots)
+# 🎯 라우팅 결정 함수 (3구간 임계값)
+def make_routing_decision(text, tau_hi=0.8, multi_threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"]):
+    """
+    3구간 임계값 기반 라우팅 결정
 
-    def forward(self, input_ids, attention_mask):
-        outputs = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        sequence_output = outputs.last_hidden_state
-        pooled_output = outputs.pooler_output
-
-        intent_logits = self.intent_classifier(pooled_output)
-        slot_logits = self.slot_classifier(sequence_output)
-
-        return intent_logits, slot_logits
-
-
-# 🔧 설정
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# ✅ 토크나이저 및 인텐트 인덱스 로드
-tokenizer = AutoTokenizer.from_pretrained("skt/kobert-base-v1", use_fast=False)
-with open("best_models/intent-slot-kobert/intent2idx.pkl", "rb") as f:
-    intent2idx = pickle.load(f)
-idx2intent = {v: k for k, v in intent2idx.items()}
-
-# ✅ 모델 로드
-model = KoBERTIntentSlotModel(num_intents=len(intent2idx), num_slots=19)
-model.load_state_dict(torch.load("best_models/intent-slot-kobert/best_model.pt", map_location=device))
-model.to(device)
-model.eval()
-
-
-# 🔮 예측 함수
-def predict_top_k_intents_and_slots(text, k=3):
-    encoding = tokenizer(
+    Args:
+        tau_hi: 높은 임계값 (바로 라우팅)
+        multi_threshold: 복합 의도 판단 임계값
+    """
+    result = predict_with_bce(
         text,
-        truncation=True,
-        padding='max_length',
-        max_length=64,
-        return_tensors='pt'
+        threshold=multi_threshold
     )
 
-    input_ids = encoding['input_ids'].to(device)
-    attention_mask = encoding['attention_mask'].to(device)
+    max_prob = result['max_intent_prob']
+    is_multi = result['is_multi_intent']
 
-    with torch.no_grad():
-        intent_logits, slot_logits = model(input_ids, attention_mask)
-        intent_probs = softmax(intent_logits, dim=1)
+    # 복합 의도인 경우
+    if is_multi:
+        decision = "multi_intent"
+        action = f"🧠 메인 LLM 처리: 복합 의도 ({len(result['high_confidence_intents'])}개)"
+        llm_type = "main"
+    # 단일 의도 + 높은 신뢰도
+    elif max_prob >= tau_hi:
+        decision = "route"
+        top_intent = result['all_top_intents'][0][0]
+        action = f"✅ 직접 라우팅: {top_intent} 핸들러 호출"
+        llm_type = None
+    # 단일 의도 + 낮은 신뢰도
+    else:
+        decision = "abstain"
+        action = "🧠 메인 LLM 처리: 신뢰도 낮음, 전체 의도 분석 필요"
+        llm_type = "main"
 
-        # 🎯 인텐트 Top-K
-        topk_probs, topk_indices = torch.topk(intent_probs, k, dim=1)
-        intents = [(idx2intent[topk_indices[0][i].item()], topk_probs[0][i].item()) for i in range(k)]
+    return {
+        'decision': decision,
+        'action': action,
+        'llm_type': llm_type,
+        'confidence': max_prob,
+        'intents': result['high_confidence_intents'],
+        'all_intents': result['all_top_intents'],
+        'slots': result['slots'],
+        'is_multi_intent': is_multi
+    }
 
-        # 🎯 슬롯 예측
-        slot_pred = torch.argmax(slot_logits, dim=2)[0].tolist()
-        tokens = tokenizer.convert_ids_to_tokens(encoding['input_ids'][0])
+# 🔍 상세 분석 함수
+def analyze_prediction(text, threshold=INTENT_CLASSIFICATION["DEFAULT_THRESHOLD"], show_all_probs=False):
+    """상세한 예측 분석"""
+    result = predict_with_bce(text, threshold=threshold)
 
-        # 슬롯 인덱스 로드
-        with open("best_models/intent-slot-kobert/slot2idx.pkl", "rb") as f:
-            slot2idx = pickle.load(f)
-        idx2slot = {v: k for k, v in slot2idx.items()}
+    print(f"\n📝 입력: {text}")
+    print(f"🎯 임계값: {threshold}")
+    print(f"🔢 복합 의도 여부: {'Yes' if result['is_multi_intent'] else 'No'}")
 
-        # 🏷️ 실제 텍스트 단어 단위에 대응하는 토큰 + 슬롯만 추출 (special token 제외)
-        words_with_slots = []
-        for token, slot_id in zip(tokens, slot_pred):
-            if token not in ["[CLS]", "[SEP]", "[PAD]"]:
-                words_with_slots.append((token, idx2slot[slot_id]))
+    print(f"\n🏆 임계값 이상 인텐트 ({len(result['high_confidence_intents'])}개):")
+    for i, (intent, prob) in enumerate(result['high_confidence_intents'], 1):
+        print(f"   {i}. {intent}: {prob:.4f}")
 
-    return intents, words_with_slots
+    print(f"\n📊 전체 Top-{len(result['all_top_intents'])} 인텐트:")
+    for i, (intent, prob) in enumerate(result['all_top_intents'], 1):
+        print(f"   {i}. {intent}: {prob:.4f}")
+
+    print(f"\n🎭 슬롯 태깅 결과:")
+    for word, slot in result['slots']:
+        print(f"   - {word}: {slot}")
+
+    if result['is_multi_intent']:
+        print(f"\n🎯 복합 의도 감지됨!")
+
+    return result
+
+# 🧪 인터랙티브 테스트 함수
+def interactive_test():
+    """인터랙티브 테스트"""
+    print("🚀 BCEWithLogitsLoss 기반 인텐트/슬롯 예측기")
+    print("=" * 50)
 
 
-if __name__ == "__main__":
+    threshold = 0.5 # Default threshold for analyze_prediction
+    multi_threshold = 0.5 # Default threshold for make_routing_decision
+
     while True:
-        text = input("✉️ 질문을 입력하세요 (종료하려면 'exit'): ")
-        if text.lower() == 'exit':
+        user_input = input(f"\n✉️ 입력 (Analyze Thresh={threshold:.2f}, Multi Thresh={multi_threshold:.2f}): ").strip()
+        if user_input.lower() == "exit":
+            print("👋 종료합니다.")
             break
-        intents, word_slots = predict_top_k_intents_and_slots(text, k=3)
 
-        print("🔍 예측된 인텐트 TOP 3:")
-        for intent, conf in intents:
-            print(f" - {intent}: {conf:.4f}")
+        if user_input.startswith("/threshold"):
+            try:
+                parts = user_input.split()
+                if len(parts) > 1:
+                    new_threshold = float(parts[1])
+                    threshold = max(0.0, min(1.0, new_threshold))
+                    print(f"🎯 상세 분석 임계값 변경: {threshold:.2f}")
+                if len(parts) > 2:
+                    new_multi_threshold = float(parts[2])
+                    multi_threshold = max(0.0, min(1.0, new_multi_threshold))
+                    print(f"🎯 복합 의도 임계값 변경: {multi_threshold:.2f}")
+                elif len(parts) == 2:
+                    print("💡 복합 의도 임계값도 함께 변경하려면 `/threshold [분석 임계값] [복합 의도 임계값]` 형식으로 입력하세요.")
 
-        print("🎯 예측된 슬롯 정보:")
-        for word, slot in word_slots:
-            print(f" - {word}: {slot}")
+            except:
+                print("❌ 사용법: /threshold [분석 임계값] [복합 의도 임계값 (선택 사항)]")
+            continue
+
+        # Process any input as a query
+        if user_input:
+            # Routing decision
+            routing_result = make_routing_decision(user_input, multi_threshold=multi_threshold)
+            print(f"\n--- 라우팅 결정 ---")
+            print(f"🎯 결정: {routing_result['decision'].upper()}")
+            print(f"📊 최대 신뢰도: {routing_result['confidence']:.4f}")
+            print(f"🔄 액션: {routing_result['action']}")
+            if routing_result['intents']:
+                 intents_str = ", ".join([f"{intent}({prob:.3f})"
+                                          for intent, prob in routing_result['intents']])
+                 print(f"🏷️ 예측 의도 (임계값 {multi_threshold:.2f} 이상): {intents_str}")
+
+            # Detailed analysis
+            print(f"\n--- 상세 예측 분석 ---")
+            analyze_prediction(
+                user_input, threshold=threshold, show_all_probs=False # show_all_probs는 항상 False로 유지
+            )
+
+# 🚀 메인 실행
+if __name__ == "__main__":
+    # 인터랙티브 모드
+    interactive_test()
+
+    # 또는 간단한 테스트
+    # intents, slots = predict_top_k_intents_and_slots("내일 비행기 시간표 알려주세요")
+    # print("인텐트:", intents)
+    # print("슬롯:", slots)
