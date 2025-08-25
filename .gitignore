@@ -1,11 +1,13 @@
 .env
 .venv/
 .vscode/
+.gitignore
 ai/.chroma_db/
 
 __pycache__/
 
 ai/best_models/intent-kobert-v2/best_model.pt
+ai/best_models/intent-kobert-v3/best_model.pt
 ai/intent_classifier/best_models/intent-kobert-v2/best_model.pt
 
 chatbot-vm_key.pem
