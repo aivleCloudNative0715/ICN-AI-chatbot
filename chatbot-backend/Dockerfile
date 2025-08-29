@@ -19,6 +19,9 @@ WORKDIR /app
 # 빌드 환경에서 생성된 JAR 파일을 실행 환경으로 복사합니다.
 COPY --from=build /home/gradle/src/build/libs/app.jar app.jar
 
+# 컨테이너가 8080 포트를 사용한다고 외부에 알립니다.
+EXPOSE 8080
+
 # 컨테이너가 시작될 때 실행될 명령어
 # 운영(prod) 프로필을 활성화합니다.
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
